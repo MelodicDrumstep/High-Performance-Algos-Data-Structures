@@ -36,7 +36,7 @@ template <int32_t UpperBound>
 int32_t sum_predication_masking(std::vector<int32_t> & elements) {
     int32_t sum = 0;
     for(auto e : elements) {
-        sum += (((e < UpperBound) >> 31) - 1) & e;
+        sum += ((~((e < UpperBound) - 1))) & e;
     }
     return sum;
 }
