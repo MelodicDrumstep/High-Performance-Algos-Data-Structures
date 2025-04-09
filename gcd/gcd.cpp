@@ -43,9 +43,9 @@ int main() {
         elements_b[i] = dist(gen);
     }
 
-    testGcd([](int32_t a, int32_t b){ return gcd_baseline_recursion(a, b); }, "gcd_baseline_recursion", elements_a, elements_b);
-    testGcd([](int32_t a, int32_t b){ return gcd_baseline_loop(a, b); }, "gcd_baseline_loop", elements_a, elements_b);
-    testGcd([](int32_t a, int32_t b){ return gcd_binary(a, b); }, "gcd_binary", elements_a, elements_b);
-    testGcd([](int32_t a, int32_t b){ return gcd_binary_opt1(a, b); }, "gcd_binary_opt1", elements_a, elements_b);
-    testGcd([](int32_t a, int32_t b){ return gcd_binary_opt2(a, b); }, "gcd_binary_opt2", elements_a, elements_b);
+    testGcd(gcd_baseline_recursion, "gcd_baseline_recursion", elements_a, elements_b);
+    testGcd(gcd_baseline_loop, "gcd_baseline_loop", elements_a, elements_b);
+    testGcd(gcd_binary, "gcd_binary", elements_a, elements_b);
+    testGcd(gcd_binary_opt1, "gcd_binary_opt1", elements_a, elements_b);
+    testGcd(gcd_binary_opt2, "gcd_binary_opt2", elements_a, elements_b);
 }

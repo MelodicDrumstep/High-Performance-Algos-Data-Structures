@@ -16,6 +16,10 @@ Function 'gcd_binary_opt2' took 151 µs to complete.
 
 Assembly code can be found at [here](https://godbolt.org/z/Wr3z7MqY1)
 
+### Recursion & Loop
+
+Actually the recursion version has been optimized to loop verison.
+
 ```asm
 .LC0:
         .string "basic_string::_M_construct null not valid"
@@ -65,7 +69,11 @@ gcd_baseline_loop(int, int):
         mov     r8d, edi          ; Return original a when b <= 0
         mov     eax, r8d
         ret
+```
 
+### Gcd Binary
+
+```asm
 ; Binary GCD algorithm implementation
 ; Uses properties of even/odd numbers to avoid modulo operations
 ; Input: edi = a, esi = b
@@ -128,7 +136,13 @@ gcd_binary(int, int):
         add     eax, edx
         sar     eax               ; b /= 2
         jmp     .L43              ; Continue loop
+```
 
+The problem is —— too many branches!
+
+### Gcd Binary Optimization : Smart Observations
+
+```asm
 ; Optimized binary GCD version 1
 ; Uses __builtin_ctz for counting trailing zeros
 ; Input: edi = a, esi = b
@@ -161,8 +175,8 @@ gcd_binary_opt1(int, int):
         xor     ecx, ecx
         sar     eax, 31           ; Compute absolute value
         xor     edi, eax
-        sub     edi, eax
-        rep bsf ecx, edi          ; Count trailing zeros in diff
+        sub     edi, eax          ; a = abs(diff)
+        rep bsf ecx, edi          ; Count trailing zeros in a
         mov     eax, edi
         sar     eax, cl           ; Remove trailing zeros
         test    eax, eax          ; Check if a == 0
@@ -219,6 +233,23 @@ gcd_binary_opt2(int, int):
 .L66:
         ret
 ```
+
+Notice that
+
+```asm
+        rep bsf ecx, edi          ; Count trailing zeros in a
+        rep bsf edx, esi          ; Count trailing zeros in b
+```
+
+gives us potential performance benifit because it can be executed as `tzcnt` instruction on some machines. Actually if we disassemble the executable, we will see
+
+```asm
+    1fe4:	f3 0f bc cf          	tzcnt  %edi,%ecx
+```
+
+And we can see that after using `a >>= __builtin_ctz(diff);` rather than `a >>= __builtin_ctz(a);` in `gcd_binary_opt2`, the data hazard is eliminated. And the compiler actually reorder "computing __builtin_ctz(diff)" before "a = std::abs(diff)" for better performance. 
+
+Here we can see the power for eliminating data hazard in the CPU pipeline.
 
 ## Reference
 
