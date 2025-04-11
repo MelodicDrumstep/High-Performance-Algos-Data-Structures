@@ -253,8 +253,8 @@ Here we can see the power for eliminating data hazard in the CPU pipeline.
 
 ## Reference
 
-[en.algorithmica.org](https://en.algorithmica.org/hpc/algorithms/gcd/)
+1. [en.algorithmica.org](https://en.algorithmica.org/hpc/algorithms/gcd/)
 
-[x86 assembly](https://web.stanford.edu/class/cs107/guide/x86-64.html)
+2. [x86 assembly](https://web.stanford.edu/class/cs107/guide/x86-64.html)
 
-[x86 assembly cheat sheet](https://web.stanford.edu/class/archive/cs/cs107/cs107.1256/resources/x86-64-reference.pdf)
+3. [x86 assembly cheat sheet](https://web.stanford.edu/class/archive/cs/cs107/cs107.1256/resources/x86-64-reference.pdf)
