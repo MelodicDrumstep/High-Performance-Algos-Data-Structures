@@ -4,6 +4,20 @@ For the optimizations performed, please check out the code and the comments in [
 
 ## Performance Tests
 
+### Testing Environment
+
++ CPU: Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz
+
++ OS: Rocky Linux 8.9 (Green Obsidian)
+
++ Compiler Version: G++ 10.5.0
+
++ Compilation Flags: -O3
+
++ Execution Command: taskset -c 0 ./gcd.
+
+### Testing Result
+
 ```
 Function 'gcd_baseline_recursion' took 232 µs to complete.
 Function 'gcd_baseline_loop' took 232 µs to complete.

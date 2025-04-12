@@ -2,6 +2,20 @@
 
 ## Performance Tests
 
+### Testing Environment
+
++ CPU: Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz
+
++ OS: Rocky Linux 8.9 (Green Obsidian)
+
++ Compiler Version: G++ 10.5.0
+
++ Compilation Flags: -O3
+
++ Execution Command: taskset -c 0 ./gcd.
+
+### Testing Result
+
 ```
 Function 'find_factor_baseline' took 36 µs to complete.
 Function 'find_factor_brute_pruning' took 12 µs to complete.
