@@ -9,13 +9,39 @@
 #include <random>
 
 #include "constexpr_bitmap.hpp"
+#include "montogomery_space.hpp"
 
+/* Helper functions */
 int randint(int a, int b) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(a, b);
     return dis(gen);
 }
+
+int32_t gcd(int32_t a, int32_t b) {
+    if(a == 0) {
+        return b;
+    }
+    if(b == 0) {
+        return a;
+    }
+    int32_t az = __builtin_ctz(a);
+    int32_t bz = __builtin_ctz(b);
+    int32_t shift = std::min(az, bz);
+    a >>= az;
+    b >>= bz;
+
+    while(a != 0) {
+        int32_t diff = a - b;
+        b = std::min(a, b);
+        a = std::abs(diff);
+        a >>= __builtin_ctz(diff);
+    }
+
+    return b << shift;
+}
+/* Helper functions */
 
 uint64_t find_factor_baseline(uint64_t n) {
     for(uint64_t d = 2; d < n; d++) {
@@ -182,30 +208,7 @@ uint64_t find_factor_prime_table_lemire(uint64_t n) {
  * @brief A random algorithm that may return 1 when n is factorizable.
  */
 uint64_t find_factor_Pollard_Pho(uint64_t n) {
-    auto gcd = [](int32_t a, int32_t b) {
-        if(a == 0) {
-            return b;
-        }
-        if(b == 0) {
-            return a;
-        }
-        int32_t az = __builtin_ctz(a);
-        int32_t bz = __builtin_ctz(b);
-        int32_t shift = std::min(az, bz);
-        a >>= az;
-        b >>= bz;
-    
-        while(a != 0) {
-            int32_t diff = a - b;
-            b = std::min(a, b);
-            a = std::abs(diff);
-            a >>= __builtin_ctz(diff);
-        }
-    
-        return b << shift;
-    };
-
-    // We can run a multi
+    // We can run a multi-round test loop to get larger correctness rate
     // constexpr int32_t TestTimes = 10;
     // for(int32_t i = 0; i < TestTimes; i++) {
         uint64_t c = randint(1, n - 1);
@@ -225,5 +228,82 @@ uint64_t find_factor_Pollard_Pho(uint64_t n) {
             // there's a cycle
         }
     // }
+    return 1;
+}
+
+uint64_t find_factor_Pollard_Brent(uint64_t n) {
+    // We can run a multi-round test loop to get larger correctness rate
+    // constexpr int32_t TestTimes = 10;
+    // for(int32_t i = 0; i < TestTimes; i++) {
+        uint64_t c = randint(1, n - 1);
+        auto f = [n, c](uint64_t x) {
+            return (static_cast<__uint128_t>(x) * x + c) % n;
+        };
+        uint64_t x = f(0);
+        for(int32_t l = (1 << 8); l < (1 << 20); l *= 2) {
+            uint64_t y = x;
+            for(int32_t i = 0; i < l; i++) {
+                x = f(x);
+                uint64_t g = gcd(abs(x - y), n);
+                if(g != 1) {
+                    return g;
+                }
+            }
+        }
+    // }
+    return 1;
+}
+
+uint64_t find_factor_Pollard_Brent_batch(uint64_t n) {
+    constexpr int32_t M = (1 << 10);
+    // We can run a multi-round test loop to get larger correctness rate
+    // constexpr int32_t TestTimes = 10;
+    // for(int32_t i = 0; i < TestTimes; i++) {
+        uint64_t c = randint(1, n - 1);
+        auto f = [n, c](uint64_t x) {
+            return (static_cast<__uint128_t>(x) * x + c) % n;
+        };
+        uint64_t x = f(0);
+        for(int32_t l = (1 << 10); l < (1 << 20); l *= 2) {
+            uint64_t y = x;
+            uint64_t p = l;
+            for(int32_t i = 0; i < l; i += M) {
+                for(int32_t j = 0; j < M; j++) {
+                    y = f(y);
+                    p = (static_cast<__uint128_t>(p) * abs(x - y)) % n;
+                }
+                uint64_t g = gcd(p, n);
+                if(g != 1) {
+                    return g;
+                }
+            }
+        }
+    // }
+    return 1;
+}
+
+uint64_t find_factor_Pollard_Brent_batch_opt(uint64_t n) {
+    constexpr int32_t M = 1024;
+    Montgomery m(n);
+
+    auto f = [&m](uint64_t x) {
+        return m.multiply(x, x) + 1;
+    };
+
+    uint64_t x = 42;
+    
+    for (int l = M; l < (1 << 20); l *= 2) {
+        uint64_t y = x, p = 1;
+        for (int i = 0; i < l; i += M) {
+            for (int j = 0; j < M; j++) {
+                x = f(x);
+                p = m.multiply(p, abs(x - y));
+            }
+            uint64_t g = gcd(p, n);
+            if (g != 1)
+                return g;
+        }
+    }
+
     return 1;
 }
