@@ -11,14 +11,6 @@
 #include "constexpr_bitmap.hpp"
 #include "montogomery_space.hpp"
 
-/* Helper functions */
-int randint(int a, int b) {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(a, b);
-    return dis(gen);
-}
-
 int32_t gcd(int32_t a, int32_t b) {
     if(a == 0) {
         return b;
@@ -208,10 +200,14 @@ uint64_t find_factor_prime_table_lemire(uint64_t n) {
  * @brief A random algorithm that may return 1 when n is factorizable.
  */
 uint64_t find_factor_Pollard_Pho(uint64_t n) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<uint64_t> dis(1, n - 1);
+    uint64_t c = dis(gen);
+
     // We can run a multi-round test loop to get larger correctness rate
     // constexpr int32_t TestTimes = 10;
     // for(int32_t i = 0; i < TestTimes; i++) {
-        uint64_t c = randint(1, n - 1);
         auto f = [n, c](uint64_t x) {
             return (static_cast<__uint128_t>(x) * x + c) % n;
         };
@@ -232,10 +228,14 @@ uint64_t find_factor_Pollard_Pho(uint64_t n) {
 }
 
 uint64_t find_factor_Pollard_Brent(uint64_t n) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<uint64_t> dis(1, n - 1);
+    uint64_t c = dis(gen);
+
     // We can run a multi-round test loop to get larger correctness rate
     // constexpr int32_t TestTimes = 10;
     // for(int32_t i = 0; i < TestTimes; i++) {
-        uint64_t c = randint(1, n - 1);
         auto f = [n, c](uint64_t x) {
             return (static_cast<__uint128_t>(x) * x + c) % n;
         };
@@ -255,11 +255,15 @@ uint64_t find_factor_Pollard_Brent(uint64_t n) {
 }
 
 uint64_t find_factor_Pollard_Brent_batch(uint64_t n) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<uint64_t> dis(1, n - 1);
+    uint64_t c = dis(gen);
+
     constexpr int32_t M = (1 << 10);
     // We can run a multi-round test loop to get larger correctness rate
     // constexpr int32_t TestTimes = 10;
     // for(int32_t i = 0; i < TestTimes; i++) {
-        uint64_t c = randint(1, n - 1);
         auto f = [n, c](uint64_t x) {
             return (static_cast<__uint128_t>(x) * x + c) % n;
         };

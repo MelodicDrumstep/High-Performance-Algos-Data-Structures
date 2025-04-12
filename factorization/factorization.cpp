@@ -4,8 +4,8 @@
 
 #include <factorization.hpp>
 
-constexpr int32_t UpperBound = 500;
-constexpr int32_t TestElements = 10000;
+constexpr int32_t UpperBound = 100;
+constexpr int32_t TestElements = 1000;
 constexpr int32_t WarmupElements = TestElements;
 
 using TestArray = std::array<int32_t, WarmupElements + TestElements>;

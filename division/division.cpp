@@ -32,6 +32,24 @@ void testDivision(Func && func, const std::string& funcName, const TestArray & e
     // std::cout << "result is {" << result.quotient << ", " << result.remainder << "}" << std::endl;
 }
 
+template <typename Func>
+void testDivisionPrecompute(Func && func, const std::string& funcName, const TestArray & elements_a, uint32_t b) {
+    DivResult result;
+    for(int32_t i = 0; i < WarmupElements; i++) {
+        result = func(elements_a[i], b);
+        doNotOptimizeAway(result);
+    }
+    auto start_time = std::chrono::high_resolution_clock::now();
+    for(int32_t i = 0; i < TestElements; i++) {
+        result = func(elements_a[i], b);
+        doNotOptimizeAway(result);
+    }
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    std::cout << "Function '" << funcName << "' (Precomputing Version) took " << duration.count() << " µs to complete." << std::endl;
+    // std::cout << "result is {" << result.quotient << ", " << result.remainder << "}" << std::endl;
+}
+
 int main() {
     TestArray elements_a;
     TestArray elements_b;
@@ -47,4 +65,9 @@ int main() {
     testDivision(division_baseline2, "division_baseline2", elements_a, elements_b);
     testDivision(division_Barrett_reduction, "division_Barrett_reduction", elements_a, elements_b);
     testDivision(division_Lemire_reduction, "division_Lemire_reduction", elements_a, elements_b);
+
+    testDivisionPrecompute(division_baseline, "division_baseline", elements_a, elements_b[0]);
+    testDivisionPrecompute(division_baseline2, "division_baseline2", elements_a, elements_b[0]);
+    testDivisionPrecompute(division_Barrett_reduction_precompute, "division_Barrett_reduction", elements_a, elements_b[0]);
+    testDivisionPrecompute(division_Lemire_reduction_precompute, "division_Lemire_reduction", elements_a, elements_b[0]);
 }
