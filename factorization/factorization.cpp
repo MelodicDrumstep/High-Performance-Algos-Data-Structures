@@ -29,7 +29,7 @@ void testFactorization(Func && func, const std::string& funcName, const TestArra
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
     std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
-    // std::cout << "result is " << result << std::endl;
+    std::cout << "result is " << result << std::endl;
 }
 
 int main() {
@@ -37,8 +37,10 @@ int main() {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int32_t> dist(1, UpperBound);
+    int32_t a;
+    std::cin >> a;
     for (int32_t i = 0; i < TestElements; i++) {
-        elements[i] = dist(gen);
+        elements[i] = a;
     }
 
     testFactorization(find_factor_baseline, "find_factor_baseline", elements);
@@ -48,4 +50,5 @@ int main() {
     testFactorization(find_factor_wheel2, "find_factor_wheel2", elements);
     testFactorization(find_factor_prime_table, "find_factor_prime_table", elements);
     testFactorization(find_factor_prime_table_lemire, "find_factor_prime_table_lemire", elements);
+    testFactorization(find_factor_Pollard_Pho, "find_factor_Pollard_Pho", elements);
 }
