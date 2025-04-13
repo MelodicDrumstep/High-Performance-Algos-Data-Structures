@@ -4,6 +4,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <libdivide.h>
 
 // type of the return result of the division function
 struct DivResult {
@@ -122,6 +123,34 @@ DivResult division_Lemire_reduction_precompute2(uint32_t a, uint32_t b) {
     // ceil(2^64 / b)
 
     uint32_t quotient = (static_cast<__uint128_t>(m) * a) >> 64;
+    uint32_t remainder = a - b * quotient;
+    return {quotient, remainder};
+}
+
+DivResult division_libdivide_branchfull(uint32_t a, uint32_t b) {
+    libdivide::divider<uint32_t> fast_d(b);
+    uint32_t quotient = a / fast_d;
+    uint32_t remainder = a - b * quotient;
+    return {quotient, remainder};
+}
+
+DivResult division_libdivide_branchfull_precompute(uint32_t a, uint32_t b) {
+    static libdivide::divider<uint32_t> fast_d(b);
+    uint32_t quotient = a / fast_d;
+    uint32_t remainder = a - b * quotient;
+    return {quotient, remainder};
+}
+
+DivResult division_libdivide_branchfree(uint32_t a, uint32_t b) {
+    libdivide::branchfree_divider<uint32_t> fast_d(b);
+    uint32_t quotient = a / fast_d;
+    uint32_t remainder = a - b * quotient;
+    return {quotient, remainder};
+}
+
+DivResult division_libdivide_branchfree_precompute(uint32_t a, uint32_t b) {
+    static libdivide::branchfree_divider<uint32_t> fast_d(b);
+    uint32_t quotient = a / fast_d;
     uint32_t remainder = a - b * quotient;
     return {quotient, remainder};
 }

@@ -1,0 +1,3 @@
+[submodule "division/libdivide"]
+	path = division/libdivide
+	url = https://github.com/ridiculousfish/libdivide.git

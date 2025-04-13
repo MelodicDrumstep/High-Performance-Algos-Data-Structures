@@ -10,4 +10,7 @@ endif()
 
 add_executable(division division.cpp division.hpp)
 
-target_include_directories(division PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(division PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/libdivide
+)

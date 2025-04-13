@@ -55,7 +55,7 @@ int main() {
     TestArray elements_b;
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint32_t> dist(1, UpperBound);
+    std::uniform_int_distribution<uint32_t> dist(2, UpperBound);
     for (int32_t i = 0; i < TestElements; i++) {
         elements_a[i] = dist(gen);
         elements_b[i] = dist(gen);
@@ -66,10 +66,14 @@ int main() {
     testDivision(division_Barrett_reduction, "division_Barrett_reduction", elements_a, elements_b);
     testDivision(division_Lemire_reduction, "division_Lemire_reduction", elements_a, elements_b);
     testDivision(division_Lemire_reduction2, "division_Lemire_reduction2", elements_a, elements_b);
+    testDivision(division_libdivide_branchfull, "division_libdivide_branchfull", elements_a, elements_b);
+    testDivision(division_libdivide_branchfree, "division_libdivide_branchfree", elements_a, elements_b);
 
     testDivisionPrecompute(division_baseline, "division_baseline", elements_a, elements_b[0]);
     testDivisionPrecompute(division_baseline2, "division_baseline2", elements_a, elements_b[0]);
     testDivisionPrecompute(division_Barrett_reduction_precompute, "division_Barrett_reduction", elements_a, elements_b[0]);
     testDivisionPrecompute(division_Lemire_reduction_precompute, "division_Lemire_reduction", elements_a, elements_b[0]);
     testDivisionPrecompute(division_Lemire_reduction_precompute2, "division_Lemire_reduction2", elements_a, elements_b[0]);
+    testDivisionPrecompute(division_libdivide_branchfull_precompute, "division_libdivide_branchfull", elements_a, elements_b[0]);
+    testDivisionPrecompute(division_libdivide_branchfree_precompute, "division_libdivide_branchfree", elements_a, elements_b[0]);
 }

@@ -24,11 +24,16 @@ Function 'division_baseline2' took 18 µs to complete.
 Function 'division_Barrett_reduction' took 30 µs to complete.
 Function 'division_Lemire_reduction' took 31 µs to complete.
 Function 'division_Lemire_reduction2' took 31 µs to complete.
+Function 'division_libdivide_branchfull' took 117 µs to complete.
+Function 'division_libdivide_branchfree' took 143 µs to complete.
+
 Function 'division_baseline' (Precomputing Version) took 18 µs to complete.
 Function 'division_baseline2' (Precomputing Version) took 18 µs to complete.
 Function 'division_Barrett_reduction' (Precomputing Version) took 12 µs to complete.
 Function 'division_Lemire_reduction' (Precomputing Version) took 22 µs to complete.
 Function 'division_Lemire_reduction2' (Precomputing Version) took 17 µs to complete.
+Function 'division_libdivide_branchfull' (Precomputing Version) took 22 µs to complete.
+Function 'division_libdivide_branchfree' (Precomputing Version) took 22 µs to complete.
 ```
 
 ## Assembly Code
