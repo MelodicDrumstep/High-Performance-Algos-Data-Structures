@@ -91,6 +91,19 @@ DivResult division_Lemire_reduction(uint32_t a, uint32_t b) {
 }
 
 /**
+ * @brief We can also compute remainder = a - b * quotient
+ * In this way instructions are simpler, but it introduce data hazard, which may harm the CPU pipelineing
+ */
+DivResult division_Lemire_reduction2(uint32_t a, uint32_t b) {
+    uint64_t m = static_cast<uint64_t>(-1) / b + 1;
+    // ceil(2^64 / b)
+
+    uint32_t quotient = (static_cast<__uint128_t>(m) * a) >> 64;
+    uint32_t remainder = a - b * quotient;
+    return {quotient, remainder};
+}
+
+/**
  * @brief Precomputed vesion of Lemire Reduction, when "b" (the divisor) is known ahead of time.
  * Then we can compute m = ceil(2^{64} / b) ahead of time to eliminate the "div" instruction
  * in the critical path.
@@ -101,5 +114,14 @@ DivResult division_Lemire_reduction_precompute(uint32_t a, uint32_t b) {
 
     uint32_t quotient = (static_cast<__uint128_t>(m) * a) >> 64;
     uint32_t remainder = (static_cast<__uint128_t>(m * a) * b) >> 64;
+    return {quotient, remainder};
+}
+
+DivResult division_Lemire_reduction_precompute2(uint32_t a, uint32_t b) {
+    static uint64_t m = static_cast<uint64_t>(-1) / b + 1;
+    // ceil(2^64 / b)
+
+    uint32_t quotient = (static_cast<__uint128_t>(m) * a) >> 64;
+    uint32_t remainder = a - b * quotient;
     return {quotient, remainder};
 }

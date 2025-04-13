@@ -11,6 +11,7 @@
 #include "constexpr_bitmap.hpp"
 #include "montogomery_space.hpp"
 
+/* Helper functions */
 int32_t gcd(int32_t a, int32_t b) {
     if(a == 0) {
         return b;
@@ -35,6 +36,9 @@ int32_t gcd(int32_t a, int32_t b) {
 }
 /* Helper functions */
 
+/**
+ * @brief Naive brute-force
+ */
 uint64_t find_factor_baseline(uint64_t n) {
     for(uint64_t d = 2; d < n; d++) {
         if(n % d == 0) {
@@ -44,6 +48,10 @@ uint64_t find_factor_baseline(uint64_t n) {
     return 1;
 }
 
+/**
+ * @brief No need to iterate from 2 to n
+ * Just iterate from 2 to ceil(sqrt(n))
+ */
 uint64_t find_factor_brute_pruning(uint64_t n) {
     for(uint64_t d = 2; d * d <= n; d++) {
         if(n % d == 0) {
@@ -83,11 +91,17 @@ struct PrecalculationLookupTable {
     }
 };
 
+/**
+ * @brief Pre-computing lookup table.
+ */
 uint64_t find_factor_lookup_table(uint64_t n) {
     static constexpr PrecalculationLookupTable<> P {};
     return P.divisor[n];
 }
 
+/**
+ * @brief Specialize multiple of 2.
+ */
 uint64_t find_factor_wheel(uint64_t n) {
     if(n % 2 == 0) {
         return 2;
@@ -100,6 +114,9 @@ uint64_t find_factor_wheel(uint64_t n) {
     return 1;
 }
 
+/**
+ * @brief Specialize multiple of 2, 3, 5.
+ */
 uint64_t find_factor_wheel2(uint64_t n) {
     for(uint64_t d : {2, 3, 5}) {
         if(n % d == 0) {
@@ -140,6 +157,10 @@ struct PrecalculationPrimeTable {
     }
 };
 
+/**
+ * @brief This is an extreme of wheel algorithm. Specialize every prime number.
+ * And only check if the input is a multiple of any prime number.
+ */
 uint64_t find_factor_prime_table(uint64_t n) {
     static constexpr PrecalculationPrimeTable prime_table;
     for(uint16_t prime : prime_table.primes) {
@@ -183,6 +204,9 @@ struct PrecalculationPrimeTableLemire {
     }
 };
 
+/**
+ * @brief Using lemire reduction to accelerate modulo operation.
+ */
 uint64_t find_factor_prime_table_lemire(uint64_t n) {
     static constexpr PrecalculationPrimeTableLemire prime_magic_table;
     for(uint64_t prime_magic : prime_magic_table.primes_magic) {
@@ -227,6 +251,9 @@ uint64_t find_factor_Pollard_Pho(uint64_t n) {
     return 1;
 }
 
+/**
+ * @brief Pollard Brent algorithm.
+ */
 uint64_t find_factor_Pollard_Brent(uint64_t n) {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -254,6 +281,10 @@ uint64_t find_factor_Pollard_Brent(uint64_t n) {
     return 1;
 }
 
+/**
+ * @brief Pollard Brent algorithm. Batch processing optimization. 
+ * (Actually it's a negative optimization when input is small)
+ */
 uint64_t find_factor_Pollard_Brent_batch(uint64_t n) {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -286,6 +317,9 @@ uint64_t find_factor_Pollard_Brent_batch(uint64_t n) {
     return 1;
 }
 
+/**
+ * @brief Using montogmery space to accelerate the modulo operations in Pollard Brent algorithm. 
+ */
 uint64_t find_factor_Pollard_Brent_batch_opt(uint64_t n) {
     constexpr int32_t M = 1024;
     Montgomery m(n);

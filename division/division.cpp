@@ -65,9 +65,11 @@ int main() {
     testDivision(division_baseline2, "division_baseline2", elements_a, elements_b);
     testDivision(division_Barrett_reduction, "division_Barrett_reduction", elements_a, elements_b);
     testDivision(division_Lemire_reduction, "division_Lemire_reduction", elements_a, elements_b);
+    testDivision(division_Lemire_reduction2, "division_Lemire_reduction2", elements_a, elements_b);
 
     testDivisionPrecompute(division_baseline, "division_baseline", elements_a, elements_b[0]);
     testDivisionPrecompute(division_baseline2, "division_baseline2", elements_a, elements_b[0]);
     testDivisionPrecompute(division_Barrett_reduction_precompute, "division_Barrett_reduction", elements_a, elements_b[0]);
     testDivisionPrecompute(division_Lemire_reduction_precompute, "division_Lemire_reduction", elements_a, elements_b[0]);
+    testDivisionPrecompute(division_Lemire_reduction_precompute2, "division_Lemire_reduction2", elements_a, elements_b[0]);
 }

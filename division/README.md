@@ -23,10 +23,12 @@ Function 'division_baseline' took 18 µs to complete.
 Function 'division_baseline2' took 18 µs to complete.
 Function 'division_Barrett_reduction' took 30 µs to complete.
 Function 'division_Lemire_reduction' took 31 µs to complete.
+Function 'division_Lemire_reduction2' took 31 µs to complete.
 Function 'division_baseline' (Precomputing Version) took 18 µs to complete.
 Function 'division_baseline2' (Precomputing Version) took 18 µs to complete.
-Function 'division_Barrett_reduction' (Precomputing Version) took 13 µs to complete.
+Function 'division_Barrett_reduction' (Precomputing Version) took 12 µs to complete.
 Function 'division_Lemire_reduction' (Precomputing Version) took 22 µs to complete.
+Function 'division_Lemire_reduction2' (Precomputing Version) took 17 µs to complete.
 ```
 
 ## Assembly Code
@@ -298,7 +300,7 @@ The compiler maintains guard variable for each function static variable to indic
 
 And if the static variable has not been initialized, we jump here. And we call "__cxa_guard_acquire" / "__cxa_guard_release" function pair to ensure thread safety. Then we compute the value of the static variable.
 
-Therefore, the "div" instruction is only executed once and not executed in the critical path. In this way we can achieve better performance than naive integer division. (And in my test cases, only Barrett Reduction is better than naive way)
+Therefore, the "div" instruction is only executed once and not executed in the critical path. In this way we can achieve better performance than naive integer division.
 
 ## References
 

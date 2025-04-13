@@ -29,5 +29,6 @@ Function 'find_factor_Pollard_Brent' took 79450 µs to complete.
 Function 'find_factor_Pollard_Brent_batch_opt' took 61089 µs to complete.
 ```
 
-## Assembly Code
+## References
 
+1. [en.algorithmica.org:factorization](https://en.algorithmica.org/hpc/algorithms/factorization/)
