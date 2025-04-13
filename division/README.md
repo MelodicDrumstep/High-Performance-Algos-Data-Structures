@@ -86,6 +86,7 @@ division_Barrett_reduction(unsigned int, unsigned int):
         
 .L6:
         ; Pack quotient and remainder into xmm0 for return
+        ; using general 64bits register or vector register is a choice for the compiler
         movd    xmm0, eax     ; Move quotient to xmm0[31:0]
         movd    xmm1, edi     ; Move remainder to xmm1[31:0]
         punpckldq xmm0, xmm1  ; Pack both 32-bit values into xmm0[63:0]
@@ -254,3 +255,51 @@ division_Barrett_reduction_precompute(unsigned int, unsigned long):
         call    __cxa_guard_release
         jmp     .L38             ; Continue to main execution
 ```
+
+### Why the precomputing version is faster
+
+Take the Barrett Reduction (Precomputing Version) as example, we can also learn about the way g++ implements function static variable:
+
+```asm
+        ; Check if static variable 'm' is already initialized
+        movzx   eax, BYTE PTR guard variable for division_Lemire_reduction_precompute(unsigned int, unsigned int)::m[rip]
+        test    al, al           ; Test initialization flag
+        je      .L16             ; Jump if not initialized
+
+.L10:   ; Main execution path (after initialization)
+        ; Load precomputed m = ceil(2^64 / b)
+        mov     rsi, QWORD PTR division_Lemire_reduction_precompute(unsigned int, unsigned int)::m[rip]
+        mov     edi, ebx         ; Reload dividend (a)
+        add     rsp, 8           ; Restore stack
+```
+
+The compiler maintains guard variable for each function static variable to indicate intialization state. And before touching the static variable, we look into the guard variable to see if the static variable has been initialized. If so, we can load it from the address table. 
+
+```asm
+.L16:   ; Initialization path for static variable 'm'
+        ; Thread-safe initialization using guard variable
+        mov     edi, OFFSET FLAT:guard variable for division_Lemire_reduction_precompute(unsigned int, unsigned int)::m
+        call    __cxa_guard_acquire  ; Acquire guard lock
+        test    eax, eax             ; Check if initialization is needed
+        je      .L10                 ; Jump if another thread did it
+
+        ; Compute m = ceil(2^64 / b) = (2^64-1)/b + 1
+        xor     edx, edx         ; Clear upper dividend bits
+        mov     rax, -1          ; Load 2^64-1
+        mov     edi, OFFSET FLAT:guard variable for division_Lemire_reduction_precompute(unsigned int, unsigned int)::m
+        div     rbp              ; Divide (2^64-1) by b (result in rax)
+        add     rax, 1           ; ceil(2^64 / b) = floor((2^64-1)/b) + 1
+        mov     QWORD PTR division_Lemire_reduction_precompute(unsigned int, unsigned int)::m[rip], rax  ; Store m
+
+        ; Release guard and finish initialization
+        call    __cxa_guard_release
+        jmp     .L10             ; Continue to main execution
+```
+
+And if the static variable has not been initialized, we jump here. And we call "__cxa_guard_acquire" / "__cxa_guard_release" function pair to ensure thread safety. Then we compute the value of the static variable.
+
+Therefore, the "div" instruction is only executed once and not executed in the critical path. In this way we can achieve better performance than naive integer division. (And in my test cases, only Barrett Reduction is better than naive way)
+
+## References
+
+1. [en.algorithmica.org:division](https://en.algorithmica.org/hpc/arithmetic/division/)

@@ -50,6 +50,11 @@ DivResult division_Barrett_reduction(uint32_t a, uint32_t b) {
     return {q, r};
 }
 
+/**
+ * @brief Precomputed vesion of Barrett Reduction, when "b" (the divisor) is known ahead of time.
+ * Then we can compute m = floor(2^{64} / b) ahead of time to eliminate the "div" instruction
+ * in the critical path.
+ */
 DivResult division_Barrett_reduction_precompute(uint32_t a, uint64_t b) {
     // Step 1: Precompute m = floor(2^64 / b)
     static uint64_t m = (static_cast<uint64_t>(-1)) / b;
@@ -85,6 +90,11 @@ DivResult division_Lemire_reduction(uint32_t a, uint32_t b) {
     return {quotient, remainder};
 }
 
+/**
+ * @brief Precomputed vesion of Lemire Reduction, when "b" (the divisor) is known ahead of time.
+ * Then we can compute m = ceil(2^{64} / b) ahead of time to eliminate the "div" instruction
+ * in the critical path.
+ */
 DivResult division_Lemire_reduction_precompute(uint32_t a, uint32_t b) {
     static uint64_t m = static_cast<uint64_t>(-1) / b + 1;
     // ceil(2^64 / b)
