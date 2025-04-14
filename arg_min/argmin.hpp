@@ -236,7 +236,7 @@ int32_t argmin_vectorize2_unroll4(const Vector & elements) {
     return idx;
 }
 
-
+// Compact the m256i mask into unsigned mask
 unsigned get_mask(const __m256i m) {
     return _mm256_movemask_ps(reinterpret_cast<const __m256>(m));
 }
@@ -260,14 +260,23 @@ int32_t find(const int32_t * a, int32_t n, int32_t needle) {
         __m256i m2 = cmp(x, a + i + 8);
         __m256i m3 = cmp(x, a + i + 16);
         __m256i m4 = cmp(x, a + i + 24);
+
+        // Compact the 4 comparison results into one __m256i
+        // for testing if there's a value equal to needle
         __m256i m12 = _mm256_or_si256(m1, m2);
         __m256i m34 = _mm256_or_si256(m3, m4);
         __m256i m = _mm256_or_si256(m12, m34);
         if (!_mm256_testz_si256(m, m)) {
+            // If something match needle, process further
+
+            // we just use some bit trick to make each mask bit
+            // matches the corresponding position
             unsigned mask = (get_mask(m4) << 24)
                           + (get_mask(m3) << 16)
                           + (get_mask(m2) << 8)
                           +  get_mask(m1);
+            // Therefore, counting the trailing zero will get us
+            // the position of the matched element inside the 32-bytes block
             return i + __builtin_ctz(mask);
         }
     }
@@ -276,13 +285,16 @@ int32_t find(const int32_t * a, int32_t n, int32_t needle) {
 }
 
 __m256i hmin(__m256i x) {
-    // 2  1  4  3  6  5  8  7 
-    __m256i y = (__m256i) _mm256_permute_ps( (__m256) x, 1 + (0 << 2) + (3 << 4) + (2 << 6));
+    // 2  1  4  3  6  5  8  7
+    // re-arrange the elements for pairwise comparison
+    __m256i y = reinterpret_cast<__m256i>(_mm256_permute_ps( (__m256) x, 1 + (0 << 2) + (3 << 4) + (2 << 6)));
     x = _mm256_min_epi32(x, y);
     // 2  1  4  3  6  5  8  7 
-    y = (__m256i) _mm256_permute_pd( (__m256d) x, 5);
+    // 2-nd re-arrange
+    y = reinterpret_cast<__m256i>(_mm256_permute_pd( (__m256d) x, 5));
     x = _mm256_min_epi32(x, y);
-    // 5  6  7  8  1  2  3  4 
+    // 5  6  7  8  1  2  3  4
+    // 3-rd re-arrange
     y = _mm256_permute2x128_si256(x, y, 1);
     x = _mm256_min_epi32(x, y);
     return x;
@@ -294,13 +306,14 @@ __m256i hmin(__m256i x) {
  * 2. search in the block to find the target index
  */
 int32_t argmin_blocking_breakdown(const Vector & elements) {
-    constexpr int32_t B = 256;
+    constexpr int32_t BlockSize = 256;
     int32_t idx = 0;
     __m256i m, m1, m2;
     m = m1 = m2 = _mm256_set1_epi32(INT32_MAX);
 
-    for (int32_t i = 0; i + B < elements.size(); i += B) {
-        for (int32_t j = i; j < i + B; j += 16) {
+    for (int32_t i = 0; i + BlockSize < elements.size(); i += BlockSize) {
+        for (int32_t j = i; j < i + BlockSize; j += 16) {
+            // unroll by 2
             m1 = min(m1, elements.data() + j);
             m2 = min(m2, elements.data() + j + 8);
         }
@@ -312,7 +325,8 @@ int32_t argmin_blocking_breakdown(const Vector & elements) {
         }
     }
 
-    int32_t remaining = elements.size() % B;
+    // handle the remaining elements when the size is not a multiple of 16
+    int32_t remaining = elements.size() % BlockSize;
     if (remaining > 0) {
         for (int32_t i = elements.size() - remaining; i < elements.size(); i += 8) {
             if (i + 8 <= elements.size()) {
@@ -331,5 +345,6 @@ int32_t argmin_blocking_breakdown(const Vector & elements) {
         }
     }
 
-    return idx + find(elements.data() + idx, B, _mm256_extract_epi32(m, 0));
+    // finally, find the exact position index inside the block
+    return idx + find(elements.data() + idx, BlockSize, _mm256_extract_epi32(m, 0));
 }

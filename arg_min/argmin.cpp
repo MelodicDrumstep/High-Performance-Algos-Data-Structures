@@ -28,8 +28,8 @@ void testArgmin(Func && func, const std::string& funcName, const Vector & elemen
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
     std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
-    std::cout << "result is " << result << std::endl;
-    std::cout << "min value is " << elements[result] << "\n";
+    // std::cout << "result is " << result << std::endl;
+    // std::cout << "min value is " << elements[result] << "\n";
 }
 
 int main() {
