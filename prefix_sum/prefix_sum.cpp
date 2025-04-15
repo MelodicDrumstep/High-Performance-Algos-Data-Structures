@@ -5,6 +5,10 @@
 #include "prefix_sum.hpp"
 
 constexpr int32_t N = 4096 * 4;
+// For simplicity, the tested functions assume the size of the array is a multiple of 8.
+// And in reality when it's not, the prefix sum of the rest of the elements should
+// be calculated in the naive way.
+
 constexpr int32_t UpperBound = 100000;
 constexpr int32_t WramupTimes = 5000;
 constexpr int32_t TestTimes = 10000;
@@ -30,9 +34,9 @@ void testPrefixSum(Func && func, const std::string& funcName, const Vector & ele
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
     std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
-    std::cout << "result.front() is " << result.front() << std::endl;
-    std::cout << "result[result.size() / 2 + 3] is " << result[result.size() / 2 + 3] << std::endl;
-    std::cout << "result.back() is " << result.back() << std::endl;
+    // std::cout << "result.front() is " << result.front() << std::endl;
+    // std::cout << "result[result.size() / 2 + 3] is " << result[result.size() / 2 + 3] << std::endl;
+    // std::cout << "result.back() is " << result.back() << std::endl;
 }
 
 int main() {
