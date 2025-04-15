@@ -47,7 +47,11 @@ void prefix_8_int32(int32_t *p) {
 }
 
 // Add the acculated prefix to the 4 int32 elements
+template <bool prefetch = false, int32_t BlockSize = 4>
 __m128i accumulate_4_int32(int32_t *p, __m128i s) {
+    if constexpr (prefetch) {
+        __builtin_prefetch(p + BlockSize);
+    }
     __m128i d = reinterpret_cast<__m128i>(_mm_broadcast_ss(reinterpret_cast<float*>(p + 3)));
     __m128i x = _mm_load_si128(reinterpret_cast<__m128i*>(p));
     x = _mm_add_epi32(s, x);
@@ -64,29 +68,50 @@ Vector prefix_sum_SIMD(const Vector & elements) {
     // s maintains the last prefix sum value of the last 4-int32 block 
     
     for (int32_t i = 0; i < elements.size(); i += 4)
-        s = accumulate_4_int32(&result[i], s);
+        s = accumulate_4_int32<false>(&result[i], s);
         // accumulate the 4-int32 block and update s
 
     return result;
 }
 
-template <int32_t BlockSize>
+template <bool prefetch, int32_t BlockSize>
 __m128i local_prefix(int32_t * a, __m128i s) {
     for(int32_t i = 0; i < BlockSize; i += 8) {
         prefix_8_int32(a + i);
     }
     for(int32_t i = 0; i < BlockSize; i += 4) {
-        s = accumulate_4_int32(a + i, s);
+        s = accumulate_4_int32<prefetch, BlockSize>(a + i, s);
     }
     return s;
 }
 
+template <bool prefetch>
 Vector prefix_sum_SIMD_blocking(const Vector & elements) {
     constexpr int32_t BlockSize = 4096;
+    // make sure the array size is larger than the BlockSize
     Vector result(elements);
     __m128i s = _mm_setzero_si128();
     for(int32_t i = 0; i < elements.size(); i += BlockSize) {
-        s = local_prefix<BlockSize>(result.data() + i, s);
+        s = local_prefix<prefetch, BlockSize>(result.data() + i, s);
+    }
+    return result;
+}
+
+template <bool prefetch>
+Vector prefix_sum_SIMD_blocking_interleaving(const Vector & elements) {
+    constexpr int32_t BlockSize = 64;
+    Vector result(elements);
+    __m128i s = _mm_setzero_si128();
+    for(int32_t i = 0; i < BlockSize; i += 8) {
+        prefix_8_int32(result.data() + i);
+    }
+    for(int32_t i = BlockSize; i < elements.size(); i += 8) {
+        prefix_8_int32(result.data() + i);
+        s = accumulate_4_int32<prefetch>(result.data() + i - BlockSize, s);
+        s = accumulate_4_int32<prefetch>(result.data() + i - BlockSize + 4, s);
+    }
+    for(int32_t i = elements.size() - BlockSize; i < elements.size(); i += 4) {
+        s = accumulate_4_int32<prefetch>(result.data() + i, s);
     }
     return result;
 }

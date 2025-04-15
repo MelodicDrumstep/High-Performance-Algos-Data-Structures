@@ -4,7 +4,7 @@
 
 #include "prefix_sum.hpp"
 
-constexpr int32_t N = 4096;
+constexpr int32_t N = 4096 * 4;
 constexpr int32_t UpperBound = 100000;
 constexpr int32_t WramupTimes = 5000;
 constexpr int32_t TestTimes = 10000;
@@ -48,5 +48,8 @@ int main() {
     testPrefixSum(prefix_sum_baseline2, "prefix_sum_baseline2", elements);
     testPrefixSum(prefix_sum_std, "prefix_sum_std", elements);
     testPrefixSum(prefix_sum_SIMD, "prefix_sum_SIMD", elements);
-    testPrefixSum(prefix_sum_SIMD_blocking, "prefix_sum_SIMD_blocking", elements);
+    testPrefixSum(prefix_sum_SIMD_blocking<false>, "prefix_sum_SIMD_blocking", elements);
+    testPrefixSum(prefix_sum_SIMD_blocking<true>, "prefix_sum_SIMD_blocking_prefetch", elements);
+    testPrefixSum(prefix_sum_SIMD_blocking_interleaving<false>, "prefix_sum_SIMD_blocking_interleaving", elements);
+    testPrefixSum(prefix_sum_SIMD_blocking_interleaving<true>, "prefix_sum_SIMD_blocking_interleaving_prefetch", elements);
 }
