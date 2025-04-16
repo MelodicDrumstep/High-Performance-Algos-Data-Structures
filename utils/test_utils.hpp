@@ -33,6 +33,10 @@ public:
         input_params_ = std::move(config["input_params"].get<std::vector<int32_t>>());
         output_file_path_ = config["output_file_path"].get<std::string>();
     }
+
+    const std::vector<int32_t> & getInputParams() const {
+        return input_params_;
+    }
     
     template <typename Func>
     void launchTest(const std::string & case_name, Func && func) {

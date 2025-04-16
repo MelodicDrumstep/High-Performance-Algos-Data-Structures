@@ -7,18 +7,16 @@
 
 constexpr int32_t UpperBound = 100000;
 
-template <typename Func>
-double testDivision(Func && func, int32_t input_param) {
-    std::vector<uint32_t> elements_a(TestTimes);
-    std::vector<uint32_t> elements_b(TestTimes);
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint32_t> dist(input_param / 2 + 1, input_param);
-    for (int32_t i = 0; i < TestTimes; i++) {
-        elements_a[i] = dist(gen);
-        elements_b[i] = dist(gen);
-    }    
+struct ElementsBlock {
+    std::vector<uint32_t> elements_a;
+    std::vector<uint32_t> elements_b;
+};
 
+using InputParam2ElementBlockMap = std::unordered_map<int32_t, ElementsBlock>;
+
+template <typename Func>
+double testDivision(Func && func, int32_t input_param, const InputParam2ElementBlockMap & input_param2elements) {
+    auto & [elements_a, elements_b] = input_param2elements.at(input_param);
     DivResult result;
     for(int32_t i = 0; i < WarmupTimes; i++) {
         result = func(elements_a[i], elements_b[i]);
@@ -42,39 +40,58 @@ int main(int argc, char **argv) {
     }
     TestManager test_manager(argv[1]);
 
-    test_manager.launchTest("gcd_baseline_recursion", [](int32_t input_param) {
-        return testDivision(gcd_baseline_recursion, input_param);
+    InputParam2ElementBlockMap input_param2elements;
+    auto & input_params = test_manager.getInputParams();
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    for(int32_t input_param : input_params) {
+        std::uniform_int_distribution<uint32_t> dist(input_param / 2 + 1, input_param);
+        std::vector<uint32_t> elements_a(TestTimes);
+        std::vector<uint32_t> elements_b(TestTimes);
+        for(int32_t i = 0; i < TestTimes; i++) {
+            elements_a[i] = dist(gen);
+            elements_b[i] = dist(gen);
+        }
+        input_param2elements.emplace(input_param, ElementsBlock{std::move(elements_a), std::move(elements_b)});
+    }
+
+    test_manager.launchTest("division_baseline", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_baseline, input_param, input_param2elements);
     });
-    test_manager.launchTest("gcd_baseline_loop", [](int32_t input_param) {
-        return testDivision(gcd_baseline_loop, input_param);
+    test_manager.launchTest("division_baseline2", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_baseline2, input_param, input_param2elements);
     });
-    test_manager.launchTest("gcd_binary", [](int32_t input_param) {
-        return testDivision(gcd_binary, input_param);
+    test_manager.launchTest("division_Barrett_reduction", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_Barrett_reduction, input_param, input_param2elements);
     });
-    test_manager.launchTest("gcd_binary_opt1", [](int32_t input_param) {
-        return testDivision(gcd_binary_opt1, input_param);
+    test_manager.launchTest("division_Lemire_reduction", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_Lemire_reduction, input_param, input_param2elements);
     });
-    test_manager.launchTest("gcd_binary_opt2", [](int32_t input_param) {
-        return testDivision(gcd_binary_opt2, input_param);
+    test_manager.launchTest("division_Lemire_reduction2", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_Lemire_reduction2, input_param, input_param2elements);
+    });
+    test_manager.launchTest("division_libdivide_branchfull", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_libdivide_branchfull, input_param, input_param2elements);
+    });
+    test_manager.launchTest("division_libdivide_branchfree", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_libdivide_branchfree, input_param, input_param2elements);
+    });
+    test_manager.launchTest("division_Barrett_reduction_precompute", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_Barrett_reduction_precompute, input_param, input_param2elements);
+    });
+    test_manager.launchTest("division_Lemire_reduction_precompute", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_Lemire_reduction_precompute, input_param, input_param2elements);
+    });
+    test_manager.launchTest("division_Lemire_reduction_precompute2", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_Lemire_reduction_precompute2, input_param, input_param2elements);
+    });
+    test_manager.launchTest("division_libdivide_branchfull_precompute", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_libdivide_branchfull_precompute, input_param, input_param2elements);
+    });
+    test_manager.launchTest("division_libdivide_branchfree_precompute", [&input_param2elements](int32_t input_param) {
+        return testDivision(division_libdivide_branchfree_precompute, input_param, input_param2elements);
     });
     test_manager.dump();
-}
-
-int main() {
-
-    testDivision(division_baseline, "division_baseline", elements_a, elements_b);
-    testDivision(division_baseline2, "division_baseline2", elements_a, elements_b);
-    testDivision(division_Barrett_reduction, "division_Barrett_reduction", elements_a, elements_b);
-    testDivision(division_Lemire_reduction, "division_Lemire_reduction", elements_a, elements_b);
-    testDivision(division_Lemire_reduction2, "division_Lemire_reduction2", elements_a, elements_b);
-    testDivision(division_libdivide_branchfull, "division_libdivide_branchfull", elements_a, elements_b);
-    testDivision(division_libdivide_branchfree, "division_libdivide_branchfree", elements_a, elements_b);
-
-    testDivisionPrecompute(division_baseline, "division_baseline", elements_a, elements_b[0]);
-    testDivisionPrecompute(division_baseline2, "division_baseline2", elements_a, elements_b[0]);
-    testDivisionPrecompute(division_Barrett_reduction_precompute, "division_Barrett_reduction", elements_a, elements_b[0]);
-    testDivisionPrecompute(division_Lemire_reduction_precompute, "division_Lemire_reduction", elements_a, elements_b[0]);
-    testDivisionPrecompute(division_Lemire_reduction_precompute2, "division_Lemire_reduction2", elements_a, elements_b[0]);
-    testDivisionPrecompute(division_libdivide_branchfull_precompute, "division_libdivide_branchfull", elements_a, elements_b[0]);
-    testDivisionPrecompute(division_libdivide_branchfree_precompute, "division_libdivide_branchfree", elements_a, elements_b[0]);
 }
