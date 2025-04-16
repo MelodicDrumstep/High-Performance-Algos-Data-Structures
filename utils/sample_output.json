@@ -1,0 +1,9 @@
+{
+    "test_name" : "gemm",
+    "input_sizes" : [1, 2, 3, 4, 5],
+    "test_result" : {
+        "baseline" : [1, 2, 3, 4, 5],
+        "opt1" : [0.5, 0.1, 0.2, 0.3, 0.1]
+    },
+    "unit" : "ns"
+}

@@ -10,7 +10,7 @@ constexpr int32_t N = 32;
 // be calculated in the naive way.
 
 constexpr int32_t UpperBound = 10000;
-constexpr int32_t WramupTimes = 5000;
+constexpr int32_t WarmupTimes = 5000;
 constexpr int32_t TestTimes = 10000;
 
 template <typename T> inline void doNotOptimizeAway(T&& datum) {
@@ -20,7 +20,7 @@ template <typename T> inline void doNotOptimizeAway(T&& datum) {
 template <typename Func>
 void testMatmul(Func && func, const std::string& funcName, const Vector & elements_a, const Vector & elements_b) {
     Vector result(N * N);
-    for(int32_t i = 0; i < WramupTimes; i++) {
+    for(int32_t i = 0; i < WarmupTimes; i++) {
         func(elements_a.data(), elements_b.data(), result.data(), N);
         doNotOptimizeAway(result[0]);
         doNotOptimizeAway(result[result.size() - 1]);
@@ -55,6 +55,6 @@ int main() {
     testMatmul(matmul_transpose<false>, "matmul_transpose", elements_a, elements_b);
     testMatmul(matmul_transpose<true>, "matmul_transpose_restricted", elements_a, elements_b);
     testMatmul(matmul_vectorization, "matmul_vectorization", elements_a, elements_b);
-    // testMatmul(matmul_simd_no_copy, "matmul_simd_no_copy", elements_a, elements_b);
+    // testMatmul(matmul_simd_inplace, "matmul_simd_inplace", elements_a, elements_b);
     // testMatmul(matmul_block_transpose, "matmul_block_transpose", elements_a, elements_b);
 }

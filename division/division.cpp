@@ -2,64 +2,65 @@
 #include <random>
 #include <iostream>
 
-#include <division.hpp>
+#include "division.hpp"
+#include "test_utils.hpp"
 
 constexpr int32_t UpperBound = 100000;
-constexpr int32_t TestElements = 10000;
-constexpr int32_t WarmupElements = TestElements;
-
-using TestArray = std::array<uint32_t, WarmupElements + TestElements>;
-
-template <typename T> inline void doNotOptimizeAway(T&& datum) {
-    asm volatile ("" : "+r" (datum));
-}
 
 template <typename Func>
-void testDivision(Func && func, const std::string& funcName, const TestArray & elements_a, const TestArray & elements_b) {
+double testDivision(Func && func, int32_t input_param) {
+    std::vector<uint32_t> elements_a(TestTimes);
+    std::vector<uint32_t> elements_b(TestTimes);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<uint32_t> dist(input_param / 2 + 1, input_param);
+    for (int32_t i = 0; i < TestTimes; i++) {
+        elements_a[i] = dist(gen);
+        elements_b[i] = dist(gen);
+    }    
+
     DivResult result;
-    for(int32_t i = 0; i < WarmupElements; i++) {
+    for(int32_t i = 0; i < WarmupTimes; i++) {
         result = func(elements_a[i], elements_b[i]);
         doNotOptimizeAway(result);
     }
     auto start_time = std::chrono::high_resolution_clock::now();
-    for(int32_t i = 0; i < TestElements; i++) {
+    for(int32_t i = 0; i < TestTimes; i++) {
         result = func(elements_a[i], elements_b[i]);
         doNotOptimizeAway(result);
     }
     auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
-    std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
+    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
+    return duration.count() * 1.0 / TestTimes;
+    // std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
     // std::cout << "result is {" << result.quotient << ", " << result.remainder << "}" << std::endl;
 }
 
-template <typename Func>
-void testDivisionPrecompute(Func && func, const std::string& funcName, const TestArray & elements_a, uint32_t b) {
-    DivResult result;
-    for(int32_t i = 0; i < WarmupElements; i++) {
-        result = func(elements_a[i], b);
-        doNotOptimizeAway(result);
+int main(int argc, char **argv) {
+    if(argc != 2) {
+        throw std::runtime_error("Usage : ./executable config_path");
     }
-    auto start_time = std::chrono::high_resolution_clock::now();
-    for(int32_t i = 0; i < TestElements; i++) {
-        result = func(elements_a[i], b);
-        doNotOptimizeAway(result);
-    }
-    auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
-    std::cout << "Function '" << funcName << "' (Precomputing Version) took " << duration.count() << " µs to complete." << std::endl;
-    // std::cout << "result is {" << result.quotient << ", " << result.remainder << "}" << std::endl;
+    TestManager test_manager(argv[1]);
+
+    test_manager.launchTest("gcd_baseline_recursion", [](int32_t input_param) {
+        return testDivision(gcd_baseline_recursion, input_param);
+    });
+    test_manager.launchTest("gcd_baseline_loop", [](int32_t input_param) {
+        return testDivision(gcd_baseline_loop, input_param);
+    });
+    test_manager.launchTest("gcd_binary", [](int32_t input_param) {
+        return testDivision(gcd_binary, input_param);
+    });
+    test_manager.launchTest("gcd_binary_opt1", [](int32_t input_param) {
+        return testDivision(gcd_binary_opt1, input_param);
+    });
+    test_manager.launchTest("gcd_binary_opt2", [](int32_t input_param) {
+        return testDivision(gcd_binary_opt2, input_param);
+    });
+    test_manager.dump();
 }
 
 int main() {
-    TestArray elements_a;
-    TestArray elements_b;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint32_t> dist(2, UpperBound);
-    for (int32_t i = 0; i < TestElements; i++) {
-        elements_a[i] = dist(gen);
-        elements_b[i] = dist(gen);
-    }
 
     testDivision(division_baseline, "division_baseline", elements_a, elements_b);
     testDivision(division_baseline2, "division_baseline2", elements_a, elements_b);

@@ -8,6 +8,12 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clan
     add_compile_options(-Wall -Wextra -pedantic -O3 -g)
 endif()
 
+add_subdirectory(../utils ${CMAKE_BINARY_DIR}/utils)
+
 add_executable(gcd gcd.cpp gcd.hpp)
 
-target_include_directories(gcd PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(gcd PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(gcd PRIVATE utils)

@@ -8,6 +8,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clan
     add_compile_options(-Wall -Wextra -pedantic -O3 -g -mavx2)
 endif()
 
+add_subdirectory(../utils ${CMAKE_BINARY_DIR}/utils)
+
 add_executable(prefix_sum prefix_sum.cpp prefix_sum.hpp aligned_allocator.hpp)
 
 target_include_directories(prefix_sum PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(prefix_sum PRIVATE utils)

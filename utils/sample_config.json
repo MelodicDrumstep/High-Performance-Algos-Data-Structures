@@ -1,0 +1,5 @@
+{
+    "test_name" : "gemm",
+    "input_params" : [1, 2, 3, 4, 5],
+    "output_file_path" : "output.json"
+}

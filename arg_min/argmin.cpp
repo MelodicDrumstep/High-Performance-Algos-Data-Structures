@@ -6,7 +6,7 @@
 
 constexpr int32_t N = 10000;
 constexpr int32_t UpperBound = 100000;
-constexpr int32_t WramupTimes = 5000;
+constexpr int32_t WarmupTimes = 5000;
 constexpr int32_t TestTimes = 10000;
 
 template <typename T> inline void doNotOptimizeAway(T&& datum) {
@@ -16,7 +16,7 @@ template <typename T> inline void doNotOptimizeAway(T&& datum) {
 template <typename Func>
 void testArgmin(Func && func, const std::string& funcName, const Vector & elements) {
     int32_t result;
-    for(int32_t i = 0; i < WramupTimes; i++) {
+    for(int32_t i = 0; i < WarmupTimes; i++) {
         result = func(elements);
         doNotOptimizeAway(result);
     }

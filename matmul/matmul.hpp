@@ -12,6 +12,10 @@
 
 using Vector = std::vector<float, AlignedAllocator<float>>;
 
+constexpr static int32_t VectorSizeInBytes = 32; // 8 floats, using __m256
+constexpr static int32_t BlockSizeInElements = VectorSizeInBytes / sizeof(float); // 8 floats inside one block
+using simd_vec_256 = float __attribute__ ((vector_size(VectorSizeInBytes))); // using gcc vector type extension
+
 template <bool UseRestrict = false>
 using float_ptr_wrapper = std::conditional_t<UseRestrict, float * __restrict__, float *>;
 
@@ -67,13 +71,10 @@ T * alloc(int32_t n) {
  * @brief Use gcc vector type for SIMD processing.
  */
 void matmul_vectorization(const float * a, const float * b, float * c, int32_t n) {
-    constexpr static int32_t VectorSizeInBytes = 32; // 8 floats
-    constexpr static int32_t BlockSizeInElements = VectorSizeInBytes / sizeof(float);
-    using vec = float __attribute__ ((vector_size(VectorSizeInBytes)));
-
     int32_t num_blocks = (n + BlockSizeInElements - 1) / BlockSizeInElements;
-    vec * blocks_a = alloc<vec, VectorSizeInBytes>(n * num_blocks);
-    vec * blocks_b = alloc<vec, VectorSizeInBytes>(n * num_blocks);
+    simd_vec_256 * blocks_a = alloc<simd_vec_256, VectorSizeInBytes>(n * num_blocks);
+    simd_vec_256 * blocks_b = alloc<simd_vec_256, VectorSizeInBytes>(n * num_blocks);
+    // allocate an aligned space
 
     for(int32_t i = 0; i < n; i++) {
         for(int32_t j = 0; j < n; j++) {
@@ -81,13 +82,16 @@ void matmul_vectorization(const float * a, const float * b, float * c, int32_t n
             blocks_b[i * num_blocks + j / BlockSizeInElements][j % BlockSizeInElements] = b[j * n + i];
         }
     }
+    // copy the matrices to the aligned space, transpose matrix B
 
     for(int32_t i = 0; i < n; i++) {
         for(int32_t j = 0; j < n; j++) {
-            vec s{};
+            simd_vec_256 s{};
             for(int32_t k = 0; k < num_blocks; k++) {
+                // Use vector multiplication (SIMD instruction)
                 s += blocks_a[i * num_blocks + k] * blocks_b[j * num_blocks + k];
             }
+            // horizontal accumulation
             for(int32_t k = 0; k < BlockSizeInElements; k++) {
                 c[i * n + j] += s[k];
             }
@@ -95,4 +99,49 @@ void matmul_vectorization(const float * a, const float * b, float * c, int32_t n
     }
     std::free(blocks_a);
     std::free(blocks_b);
+}
+
+void kernel(float * a, simd_vec_256 * b, simd_vec_256 * c, int32_t x, int32_t y0,
+            int32_t l, int32_t r, int32_t n) {
+    constexpr int32_t h = 6;
+    constexpr int32_t w = 16;
+    constexpr int32_t w_in_vector = w / sizeof(float);
+        
+    simd_vec_256 t[6][2] {};
+
+    for(int32_t k = l; k < r; k++ ){
+        for(int32_t i = 0; i < h; i++) {
+            simd_vec_256 alpha = simd_vec_256 {} + a[(x + i ) * n + k];
+
+            for(int32_t j = 0; j < w_in_vector; j++) {
+                t[i][j] += alpha * b[(k * n + y)  / sizeof(float) + j];
+            }
+        }
+    }
+
+    for(int32_t i = 0; i < h; i++) {
+        for(int32_t j = 0; j < w_in_vector; j++) {
+            c[((x + i) * n + y) / sizeof(float) + j] += t[i][j];
+        }
+    }
+
+}
+
+void matmul_blocking(const float * a, const float * b, float * c, int32_t n) {
+    constexpr int32_t h = 6;
+    constexpr int32_t w = 16;
+    constexpr int32_t w_in_vector = w / sizeof(float);
+        
+    int32_t nx = (n + h - 1) / h * h;
+    int32_t ny = (n + w - 1) / w * w;
+
+    float * blocks_a = alloc<float, 32>(nx * ny);
+    float * blocks_b = alloc<float, 32>(nx * ny);
+
+    for(int32_t i = 0; i < n; i++) {
+        std::memcpy(blocks_a + i * ny, a + i * n, 4 * n);
+        std::memcpy(blocks_a + i * ny, a + i * n, 4 * n);
+    }
+
+
 }
