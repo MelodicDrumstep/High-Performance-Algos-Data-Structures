@@ -10,4 +10,10 @@ Currently, this repository contains these parts:
 
 + integer factorization
 
++ arg min algorithm
+
++ prefix sum algorithm
+
++ matrix multiplication
+
 + binary search
