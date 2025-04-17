@@ -101,47 +101,47 @@ void matmul_vectorization(const float * a, const float * b, float * c, int32_t n
     std::free(blocks_b);
 }
 
-void kernel(float * a, simd_vec_256 * b, simd_vec_256 * c, int32_t x, int32_t y0,
-            int32_t l, int32_t r, int32_t n) {
-    constexpr int32_t h = 6;
-    constexpr int32_t w = 16;
-    constexpr int32_t w_in_vector = w / sizeof(float);
+// void kernel(float * a, simd_vec_256 * b, simd_vec_256 * c, int32_t x, int32_t y0,
+//             int32_t l, int32_t r, int32_t n) {
+//     constexpr int32_t h = 6;
+//     constexpr int32_t w = 16;
+//     constexpr int32_t w_in_vector = w / sizeof(float);
         
-    simd_vec_256 t[6][2] {};
+//     simd_vec_256 t[6][2] {};
 
-    for(int32_t k = l; k < r; k++ ){
-        for(int32_t i = 0; i < h; i++) {
-            simd_vec_256 alpha = simd_vec_256 {} + a[(x + i ) * n + k];
+//     for(int32_t k = l; k < r; k++ ){
+//         for(int32_t i = 0; i < h; i++) {
+//             simd_vec_256 alpha = simd_vec_256 {} + a[(x + i ) * n + k];
 
-            for(int32_t j = 0; j < w_in_vector; j++) {
-                t[i][j] += alpha * b[(k * n + y)  / sizeof(float) + j];
-            }
-        }
-    }
+//             for(int32_t j = 0; j < w_in_vector; j++) {
+//                 t[i][j] += alpha * b[(k * n + y)  / sizeof(float) + j];
+//             }
+//         }
+//     }
 
-    for(int32_t i = 0; i < h; i++) {
-        for(int32_t j = 0; j < w_in_vector; j++) {
-            c[((x + i) * n + y) / sizeof(float) + j] += t[i][j];
-        }
-    }
+//     for(int32_t i = 0; i < h; i++) {
+//         for(int32_t j = 0; j < w_in_vector; j++) {
+//             c[((x + i) * n + y) / sizeof(float) + j] += t[i][j];
+//         }
+//     }
 
-}
+// }
 
-void matmul_blocking(const float * a, const float * b, float * c, int32_t n) {
-    constexpr int32_t h = 6;
-    constexpr int32_t w = 16;
-    constexpr int32_t w_in_vector = w / sizeof(float);
+// void matmul_blocking(const float * a, const float * b, float * c, int32_t n) {
+//     constexpr int32_t h = 6;
+//     constexpr int32_t w = 16;
+//     constexpr int32_t w_in_vector = w / sizeof(float);
         
-    int32_t nx = (n + h - 1) / h * h;
-    int32_t ny = (n + w - 1) / w * w;
+//     int32_t nx = (n + h - 1) / h * h;
+//     int32_t ny = (n + w - 1) / w * w;
 
-    float * blocks_a = alloc<float, 32>(nx * ny);
-    float * blocks_b = alloc<float, 32>(nx * ny);
+//     float * blocks_a = alloc<float, 32>(nx * ny);
+//     float * blocks_b = alloc<float, 32>(nx * ny);
 
-    for(int32_t i = 0; i < n; i++) {
-        std::memcpy(blocks_a + i * ny, a + i * n, 4 * n);
-        std::memcpy(blocks_a + i * ny, a + i * n, 4 * n);
-    }
+//     for(int32_t i = 0; i < n; i++) {
+//         std::memcpy(blocks_a + i * ny, a + i * n, 4 * n);
+//         std::memcpy(blocks_a + i * ny, a + i * n, 4 * n);
+//     }
 
 
-}
+// }

@@ -117,7 +117,7 @@ __m128i prefix_sum_inside_block(int32_t * a, __m128i s) {
  */
 template <bool prefetch>
 Vector prefix_sum_SIMD_blocking(const Vector & elements) {
-    constexpr int32_t BlockSize = 4096;
+    constexpr int32_t BlockSize = 1024;
     // make sure the array size is larger than the BlockSize
     Vector result(elements);
     __m128i s = _mm_setzero_si128();

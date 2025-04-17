@@ -10,7 +10,7 @@ endif()
 
 add_subdirectory(../utils ${CMAKE_BINARY_DIR}/utils)
 
-add_executable(matmul matmul.cpp matmul.hpp aligned_allocator.hpp)
+add_executable(matmul matmul.cpp matmul.hpp)
 
 target_include_directories(matmul PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 

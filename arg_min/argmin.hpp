@@ -306,7 +306,7 @@ __m256i hmin(__m256i x) {
  * 2. search in the block to find the target index
  */
 int32_t argmin_blocking_breakdown(const Vector & elements) {
-    constexpr int32_t BlockSize = 256;
+    constexpr int32_t BlockSize = 128;
     int32_t idx = 0;
     __m256i m, m1, m2;
     m = m1 = m2 = _mm256_set1_epi32(INT32_MAX);

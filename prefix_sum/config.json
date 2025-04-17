@@ -1,0 +1,6 @@
+{
+    "test_name" : "Prefix Sum",
+    "input_params" : [1024, 2048, 8192, 32768, 131072],
+    "input_param_meaning" : "Array Size",
+    "output_file_path" : "prefix_sum_output.json"
+}

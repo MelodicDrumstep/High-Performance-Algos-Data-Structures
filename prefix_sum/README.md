@@ -29,7 +29,7 @@ Therefore we can do block processing to mitigate that. We can assign a block siz
 
 + Compilation Flags: -O3
 
-+ Execution Command: taskset -c 0 ./prefix_sum.
++ Execution Command: `taskset -c 0 ./prefix_sum ../config.json`
 
 ### Test Results
 

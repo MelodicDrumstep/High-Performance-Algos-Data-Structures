@@ -29,9 +29,9 @@ double testDivision(Func && func, int32_t input_param, const InputParam2ElementB
     }
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
+    // std::cout << "For input_param = " << input_param << ", result is {" << result.quotient << ", " << result.remainder << "}" << std::endl;
     return duration.count() * 1.0 / TestTimes;
     // std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
-    // std::cout << "result is {" << result.quotient << ", " << result.remainder << "}" << std::endl;
 }
 
 int main(int argc, char **argv) {

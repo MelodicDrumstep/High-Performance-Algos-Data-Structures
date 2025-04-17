@@ -1,5 +1,5 @@
 
-# Branchless Array Sum Experiments
+# ConditionalArray Sum Experiments
 
 For a simple function that "calculates the sum of elements in an array not exceeding UpperBound," I have implemented the following four versions:
 
@@ -71,7 +71,7 @@ Here, if e < UpperBound, the generated mask is 0x11111111; otherwise, it is 0x00
 
 + Compilation Flags: -O3
 
-+ Execution Command: taskset -c 0 ./sum.
++ Execution Command: `taskset -c 0 ./sum ../config.json`
 
 ### Test Results
 

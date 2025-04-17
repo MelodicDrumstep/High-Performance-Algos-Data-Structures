@@ -31,6 +31,7 @@ public:
 
         test_name_ = config["test_name"].get<std::string>();
         input_params_ = std::move(config["input_params"].get<std::vector<int32_t>>());
+        input_param_meaning_ = config["input_param_meaning"].get<std::string>();
         output_file_path_ = config["output_file_path"].get<std::string>();
     }
 
@@ -53,6 +54,7 @@ public:
         json output_json;
         output_json["test_name"] = test_name_;
         output_json["input_params"] = input_params_;
+        output_json["input_param_meaning"] = input_param_meaning_;
 
         // Auto convert the unit
         constexpr double us_threshold = 1'000.0;    // 1μs = 1000ns
@@ -99,6 +101,7 @@ private:
 
     std::string test_name_;
     std::string output_file_path_;
+    std::string input_param_meaning_;
 
     std::vector<int32_t> input_params_;
     std::vector<TestResultNode> test_results_;

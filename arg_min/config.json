@@ -1,0 +1,6 @@
+{
+    "test_name" : "Argmin",
+    "input_params" : [256, 512, 1024, 2048, 8192, 32768, 131072, 2097152],
+    "input_param_meaning" : "Array Size",
+    "output_file_path" : "argmin_output.json"
+}

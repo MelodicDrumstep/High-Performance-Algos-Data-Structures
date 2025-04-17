@@ -12,7 +12,9 @@
 
 + Compilation Flags: -O3
 
-+ Execution Command: taskset -c 0 ./gcd.
++ Execution Command: `taskset -c 0 ./gcd ../config.json`
+
+Use the product of two prime numbers to test the functions.
 
 ### Testing Result
 

@@ -14,7 +14,7 @@ For the optimizations performed, please check out the code and the comments in [
 
 + Compilation Flags: -O3
 
-+ Execution Command: taskset -c 0 ./gcd.
++ Execution Command: `taskset -c 0 ./gcd ../config.json`
 
 ### Testing Result
 

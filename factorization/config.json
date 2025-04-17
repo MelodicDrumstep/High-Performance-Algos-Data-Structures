@@ -1,0 +1,6 @@
+{
+    "test_name" : "Factorization",
+    "input_params" : [10, 100, 1000, 10000],
+    "input_param_meaning" : "Input Number Scale",
+    "output_file_path" : "factorization_output.json"
+}

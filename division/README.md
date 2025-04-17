@@ -12,7 +12,7 @@
 
 + Compilation Flags: -O3
 
-+ Execution Command: taskset -c 0 ./division.
++ Execution Command: `taskset -c 0 ./division ../config.json`
 
 ### Testing Result
 

@@ -10,7 +10,7 @@ endif()
 
 add_subdirectory(../utils ${CMAKE_BINARY_DIR}/utils)
 
-add_executable(prefix_sum prefix_sum.cpp prefix_sum.hpp aligned_allocator.hpp)
+add_executable(prefix_sum prefix_sum.cpp prefix_sum.hpp)
 
 target_include_directories(prefix_sum PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 

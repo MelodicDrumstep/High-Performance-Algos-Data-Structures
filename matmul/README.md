@@ -16,7 +16,7 @@
 
 + Compilation Flags: -O3
 
-+ Execution Command: taskset -c 0 ./matmul.
++ Execution Command: `taskset -c 0 ./matmul ../config.json`
 
 ### Test Results
 

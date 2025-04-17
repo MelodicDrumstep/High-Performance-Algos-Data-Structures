@@ -35,7 +35,7 @@ And in the code, I use some clever trick referenced from [argmin code](https://g
 
 + Compilation Flags: -O3
 
-+ Execution Command: taskset -c 0 ./argmin.
++ Execution Command: `taskset -c 0 ./argmin ../config.json`
 
 ### Test Results
 
