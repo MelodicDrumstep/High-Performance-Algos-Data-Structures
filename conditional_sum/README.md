@@ -69,20 +69,17 @@ Here, if e < UpperBound, the generated mask is 0x11111111; otherwise, it is 0x00
 
 + Compiler Version: G++ 10.5.0
 
-+ Compilation Flags: -O3
++ Compilation Flags: -O3 -g
 
 + Execution Command: `taskset -c 0 ./sum ../config.json`
 
 ### Test Results
 
-```
-Function 'sum_baseline' took 155139 µs to complete.
-Function 'sum_predication' took 154643 µs to complete.
-Function 'sum_predication_tenary' took 155241 µs to complete.
-Function 'sum_predication_masking' took 228358 µs to complete.
-```
+<img src="../images/sum_result.png" alt="Sum Result" width="1000" height="auto">
 
-It can be observed that the performance of the first three implementations is identical, while the performance of the fourth implementation is relatively poor.
+Test result data is located at [sum_result.json](./sum_result.json).
+
+It can be observed that the performance of these 4 versions are nearly indentical.
 
 ## Assembly
 
@@ -272,7 +269,7 @@ int sum_predication_masking<100>(std::vector<int, std::allocator<int>>&):
         jmp     .L56                       ; Jump to handle remaining elements
 ```
 
-Therefore, in this case, the overhead of using bitwise operations is greater than the approach using `pandn` or `cmov` instructions.
+Therefore, in this case, the overhead of using bitwise operations is similar to (and a little bit higher than) the approach using `pandn` or `cmov` instructions.
 
 This also reminds us that modern compilers are already very powerful at eliminating branches. If you want to use bitwise operation tricks, you must measure performance and inspect the generated assembly.
 

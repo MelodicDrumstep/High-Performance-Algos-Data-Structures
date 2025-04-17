@@ -83,7 +83,7 @@ public:
                 // adjustment
                 value *= scale;
             }
-            output_json[case_name] = result;
+            output_json["result"][case_name] = result;
         }
         output_json["unit"] = unit;
         std::ofstream output_file(output_file_path_);

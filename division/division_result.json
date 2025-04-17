@@ -1,0 +1,111 @@
+{
+    "input_param_meaning": "Input Number Scale",
+    "input_params": [
+        10,
+        100,
+        1000,
+        10000,
+        100000,
+        1000000
+    ],
+    "result": {
+        "division_Barrett_reduction": [
+            5.9626,
+            3.3972,
+            3.1369,
+            3.1118,
+            3.112,
+            3.1109
+        ],
+        "division_Barrett_reduction_precompute": [
+            4.8066,
+            1.5739,
+            1.5624,
+            1.5649,
+            1.5452,
+            1.5689
+        ],
+        "division_Lemire_reduction": [
+            3.1483,
+            3.1484,
+            3.1515,
+            3.1461,
+            3.1431,
+            3.1456
+        ],
+        "division_Lemire_reduction2": [
+            3.1594,
+            3.1552,
+            3.1571,
+            3.1553,
+            3.3233,
+            3.1564
+        ],
+        "division_Lemire_reduction_precompute": [
+            2.1372,
+            2.1286,
+            2.1289,
+            2.1288,
+            2.1288,
+            2.1391
+        ],
+        "division_Lemire_reduction_precompute2": [
+            2.0112,
+            1.9976,
+            2.0011,
+            1.998,
+            2.0002,
+            2.0
+        ],
+        "division_baseline": [
+            1.8323,
+            1.8252,
+            1.8245,
+            1.8243,
+            1.8248,
+            1.8244
+        ],
+        "division_baseline2": [
+            1.8275,
+            1.8244,
+            1.8243,
+            1.8244,
+            1.8249,
+            1.8242
+        ],
+        "division_libdivide_branchfree": [
+            8.3175,
+            10.896,
+            10.9229,
+            10.8753,
+            10.9688,
+            10.9609
+        ],
+        "division_libdivide_branchfree_precompute": [
+            2.4455,
+            2.4425,
+            2.4468,
+            2.4464,
+            2.442,
+            2.443
+        ],
+        "division_libdivide_branchfull": [
+            7.922,
+            8.5006,
+            8.5871,
+            7.3637,
+            7.4369,
+            7.5713
+        ],
+        "division_libdivide_branchfull_precompute": [
+            2.4373,
+            2.4324,
+            2.4347,
+            2.4324,
+            2.4325,
+            2.5975
+        ]
+    },
+    "test_name": "Division",
+    "unit": "ns"
+}
