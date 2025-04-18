@@ -2,7 +2,7 @@ This repository contains my exploration on high performance algorithms and data 
 
 Currently, this repository contains these parts:
 
-+ branchless programming
++ conditional sum
 
 + gcd algorithm
 

@@ -33,16 +33,9 @@ Therefore we can do block processing to mitigate that. We can assign a block siz
 
 ### Test Results
 
-```
-Function 'prefix_sum_baseline' took 109552 µs to complete.
-Function 'prefix_sum_baseline2' took 91508 µs to complete.
-Function 'prefix_sum_std' took 109675 µs to complete.
-Function 'prefix_sum_SIMD' took 76732 µs to complete.
-Function 'prefix_sum_SIMD_blocking' took 53284 µs to complete.
-Function 'prefix_sum_SIMD_blocking_prefetch' took 55162 µs to complete.
-Function 'prefix_sum_SIMD_blocking_interleaving' took 58256 µs to complete.
-Function 'prefix_sum_SIMD_blocking_interleaving_prefetch' took 64065 µs to complete.
-```
+<img src="../images/prefix_sum_result.png" alt="PrefixSum" width="850" height="auto">
+
+Test result data is located at [prefix_sum_result.json](./prefix_sum_result.json).
 
 ## References
 

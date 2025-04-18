@@ -15,7 +15,8 @@ struct ElementsBlock {
 using InputParam2ElementBlockMap = std::unordered_map<int32_t, ElementsBlock>;
 
 template <typename Func>
-double testGcd(Func && func, int32_t input_param, const InputParam2ElementBlockMap & input_param2elements) {
+double testGcd(Func && func, std::string_view func_name, int32_t input_param, 
+        const InputParam2ElementBlockMap & input_param2elements) {
     auto & [elements_a, elements_b] = input_param2elements.at(input_param);
     int32_t result;
     for(int32_t i = 0; i < WarmupTimes; i++) {
@@ -57,20 +58,16 @@ int main(int argc, char **argv) {
         input_param2elements.emplace(input_param, ElementsBlock{std::move(elements_a), std::move(elements_b)});
     }
 
-    test_manager.launchTest("gcd_baseline_recursion", [&input_param2elements](int32_t input_param) {
-        return testGcd(gcd_baseline_recursion, input_param, input_param2elements);
-    });
-    test_manager.launchTest("gcd_baseline_loop", [&input_param2elements](int32_t input_param) {
-        return testGcd(gcd_baseline_loop, input_param, input_param2elements);
-    });
-    test_manager.launchTest("gcd_binary", [&input_param2elements](int32_t input_param) {
-        return testGcd(gcd_binary, input_param, input_param2elements);
-    });
-    test_manager.launchTest("gcd_binary_opt1", [&input_param2elements](int32_t input_param) {
-        return testGcd(gcd_binary_opt1, input_param, input_param2elements);
-    });
-    test_manager.launchTest("gcd_binary_opt2", [&input_param2elements](int32_t input_param) {
-        return testGcd(gcd_binary_opt2, input_param, input_param2elements);
-    });
+    #define launchFuncTest(func_name) \
+        test_manager.launchTest(#func_name, [&input_param2elements](int32_t input_param) {   \
+            return testGcd(func_name, #func_name, input_param, input_param2elements);    \
+        });
+
+    launchFuncTest(gcd_baseline_recursion);
+    launchFuncTest(gcd_baseline_loop);
+    launchFuncTest(gcd_binary);
+    launchFuncTest(gcd_binary_opt1);
+    launchFuncTest(gcd_binary_opt2);
+
     test_manager.dump();
 }

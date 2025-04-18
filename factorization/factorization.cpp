@@ -68,7 +68,7 @@ int32_t generateProductOfTwoPrimes(int32_t lower_bound, int32_t upper_bound) {
 }
 
 template <typename Func>
-double testFactorization(Func && func, int32_t input_param, const InputParam2ElementBlockMap & input_param2elements) {
+double testFactorization(Func && func, std::string_view func_name, int32_t input_param, const InputParam2ElementBlockMap & input_param2elements) {
     auto & [elements] = input_param2elements.at(input_param);
     int32_t result;
     for(int32_t i = 0; i < WarmupTimes; i++) {
@@ -82,7 +82,7 @@ double testFactorization(Func && func, int32_t input_param, const InputParam2Ele
     }
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
-    // std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
+    // std::cout << "Function '" << func_name << "' took " << duration.count() << " µs to complete." << std::endl;
     // std::cout << "result is " << result << std::endl;
     return duration.count() * 1.0 / TestTimes;
 }
@@ -108,35 +108,21 @@ int32_t main(int32_t argc, char **argv) {
         input_param2elements.emplace(input_param, ElementsBlock{std::move(elements)});
     }
 
-    test_manager.launchTest("find_factor_baseline", [&input_param2elements](int32_t input_param) {
-        return testFactorization(find_factor_baseline, input_param, input_param2elements);
-    });
-    test_manager.launchTest("find_factor_brute_pruning", [&input_param2elements](int32_t input_param) {
-        return testFactorization(find_factor_brute_pruning, input_param, input_param2elements);
-    });
-    test_manager.launchTest("find_factor_lookup_table", [&input_param2elements](int32_t input_param) {
-        return testFactorization(find_factor_lookup_table, input_param, input_param2elements);
-    });
-    test_manager.launchTest("find_factor_wheel", [&input_param2elements](int32_t input_param) {
-        return testFactorization(find_factor_wheel, input_param, input_param2elements);
-    });
-    test_manager.launchTest("find_factor_wheel2", [&input_param2elements](int32_t input_param) {
-        return testFactorization(find_factor_wheel2, input_param, input_param2elements);
-    });
-    test_manager.launchTest("find_factor_prime_table", [&input_param2elements](int32_t input_param) {
-        return testFactorization(find_factor_prime_table, input_param, input_param2elements);
-    });
-    test_manager.launchTest("find_factor_prime_table_lemire", [&input_param2elements](int32_t input_param) {
-        return testFactorization(find_factor_prime_table_lemire, input_param, input_param2elements);
-    });
-    test_manager.launchTest("find_factor_Pollard_Pho", [&input_param2elements](int32_t input_param) {
-        return testFactorization(find_factor_Pollard_Pho, input_param, input_param2elements);
-    });
-    test_manager.launchTest("find_factor_Pollard_Brent", [&input_param2elements](int32_t input_param) {
-        return testFactorization(find_factor_Pollard_Brent, input_param, input_param2elements);
-    });
-    test_manager.launchTest("find_factor_Pollard_Brent_batch_opt", [&input_param2elements](int32_t input_param) {
-        return testFactorization(find_factor_Pollard_Brent_batch_opt, input_param, input_param2elements);
-    });
+    #define launchFuncTest(func_name) \
+        test_manager.launchTest(#func_name, [&input_param2elements](int32_t input_param) {   \
+            return testFactorization(func_name, #func_name, input_param, input_param2elements);    \
+        });
+
+    launchFuncTest(find_factor_baseline);
+    launchFuncTest(find_factor_brute_pruning);
+    launchFuncTest(find_factor_lookup_table);
+    launchFuncTest(find_factor_wheel);
+    launchFuncTest(find_factor_wheel2);
+    launchFuncTest(find_factor_prime_table);
+    launchFuncTest(find_factor_prime_table_lemire);
+    launchFuncTest(find_factor_Pollard_Pho);
+    launchFuncTest(find_factor_Pollard_Brent);
+    launchFuncTest(find_factor_Pollard_Brent_batch_opt);
+
     test_manager.dump();
 }

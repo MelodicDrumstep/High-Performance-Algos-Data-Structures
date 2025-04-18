@@ -24,13 +24,50 @@ using float_ptr_wrapper = std::conditional_t<UseRestrict, float * __restrict__, 
  */
 template <bool UseRestrict = false>
 void matmul_baseline(const float * a,
-                     const float * b, 
+                     const float * b,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
+    std::memset(c, 0, n * n);
     for(int32_t i = 0; i < n; i++) {
         for(int32_t j = 0; j < n; j++) {
             for(int32_t k = 0; k < n; k++) {
                 c[i * n + j] += a[i * n + k] * b[k * n + j];
+            }
+        }
+    }
+}
+
+template <bool UseRestrict = false>
+void matmul_baseline_loop_interchange(const float * a,
+                     const float * b,
+                     float_ptr_wrapper<UseRestrict> c, 
+                     int32_t n) {
+    std::memset(c, 0, n * n);
+    for(int32_t i = 0; i < n; i++) {
+        for(int32_t k = 0; k < n; k++) {
+            for(int32_t j = 0; j < n; j++) {
+                c[i * n + j] += a[i * n + k] * b[k * n + j];
+            }
+        }
+    }
+}
+
+/** 
+ * @brief Unroll the outer loop of "j". For better cache hit rate.
+ */
+template <bool UseRestrict = false>
+void matmul_baseline_loop_interchange_unroll4(const float * a,
+                     const float * b,
+                     float_ptr_wrapper<UseRestrict> c, 
+                     int32_t n) {
+    std::memset(c, 0, n * n);
+    for(int32_t i = 0; i < n; i++) {
+        for(int32_t k = 0; k < n; k ++) {
+            for(int32_t j = 0; j < n; j += 4) {
+                c[i * n + j] += a[i * n + k] * b[k * n + j];
+                c[i * n + j + 1] += a[i * n + k] * b[k * n + j + 1];
+                c[i * n + j + 1] += a[i * n + k] * b[k * n + j + 1];
+                c[i * n + j + 1] += a[i * n + k] * b[k * n + j + 1];
             }
         }
     }
@@ -41,9 +78,10 @@ void matmul_baseline(const float * a,
  */
 template <bool UseRestrict = false>
 void matmul_transpose(const float * a,
-                      const float * b, 
-                      float_ptr_wrapper<UseRestrict> c, 
+                      const float * b,
+                      float_ptr_wrapper<UseRestrict> c,
                       int32_t n) {
+    std::memset(c, 0, n * n);
     std::vector<float> b_transpose(n * n);
     for(int32_t i = 0; i < n; i++) {
         for(int32_t j = 0; j < n; j++) {
@@ -71,6 +109,7 @@ T * alloc(int32_t n) {
  * @brief Use gcc vector type for SIMD processing.
  */
 void matmul_vectorization(const float * a, const float * b, float * c, int32_t n) {
+    std::memset(c, 0, n * n);
     int32_t num_blocks = (n + BlockSizeInElements - 1) / BlockSizeInElements;
     simd_vec_256 * blocks_a = alloc<simd_vec_256, VectorSizeInBytes>(n * num_blocks);
     simd_vec_256 * blocks_b = alloc<simd_vec_256, VectorSizeInBytes>(n * num_blocks);
@@ -101,47 +140,69 @@ void matmul_vectorization(const float * a, const float * b, float * c, int32_t n
     std::free(blocks_b);
 }
 
-// void kernel(float * a, simd_vec_256 * b, simd_vec_256 * c, int32_t x, int32_t y0,
-//             int32_t l, int32_t r, int32_t n) {
-//     constexpr int32_t h = 6;
-//     constexpr int32_t w = 16;
-//     constexpr int32_t w_in_vector = w / sizeof(float);
-        
-//     simd_vec_256 t[6][2] {};
+template <int32_t h, int32_t w>
+void kernel_h_w_matmul(float * a, simd_vec_256 * b, simd_vec_256 * c, 
+        int32_t x, int32_t y, int32_t l, int32_t r, int32_t n) {
+    constexpr int32_t w_in_vector = w / BlockSizeInElements;
+    simd_vec_256 t[h][w_in_vector] {};
 
-//     for(int32_t k = l; k < r; k++ ){
-//         for(int32_t i = 0; i < h; i++) {
-//             simd_vec_256 alpha = simd_vec_256 {} + a[(x + i ) * n + k];
+    for(int32_t k = l; k < r; k++ ){
+        for(int32_t i = 0; i < h; i++) {
+            simd_vec_256 alpha = simd_vec_256 {} + a[(x + i) * n + k];
 
-//             for(int32_t j = 0; j < w_in_vector; j++) {
-//                 t[i][j] += alpha * b[(k * n + y)  / sizeof(float) + j];
-//             }
-//         }
-//     }
+            for(int32_t j = 0; j < w_in_vector; j++) {
+                t[i][j] += alpha * b[(k * n + y)  / BlockSizeInElements + j];
+            }
+        }
+    }
 
-//     for(int32_t i = 0; i < h; i++) {
-//         for(int32_t j = 0; j < w_in_vector; j++) {
-//             c[((x + i) * n + y) / sizeof(float) + j] += t[i][j];
-//         }
-//     }
+    for(int32_t i = 0; i < h; i++) {
+        for(int32_t j = 0; j < w_in_vector; j++) {
+            c[((x + i) * n + y) / BlockSizeInElements + j] += t[i][j];
+        }
+    }
+}
 
-// }
+void matmul_kernel_blocking(const float * a, const float * b, float * c, int32_t n) {
+    constexpr int32_t h = 6;
+    constexpr int32_t w = 16;
+    constexpr int32_t w_in_vector = w / BlockSizeInElements;
 
-// void matmul_blocking(const float * a, const float * b, float * c, int32_t n) {
-//     constexpr int32_t h = 6;
-//     constexpr int32_t w = 16;
-//     constexpr int32_t w_in_vector = w / sizeof(float);
-        
-//     int32_t nx = (n + h - 1) / h * h;
-//     int32_t ny = (n + w - 1) / w * w;
+    std::memset(c, 0, n * n);
 
-//     float * blocks_a = alloc<float, 32>(nx * ny);
-//     float * blocks_b = alloc<float, 32>(nx * ny);
+    int32_t nx = (n + h - 1) / h * h;
+    int32_t ny = (n + w - 1) / w * w;
+    // do padding
 
-//     for(int32_t i = 0; i < n; i++) {
-//         std::memcpy(blocks_a + i * ny, a + i * n, 4 * n);
-//         std::memcpy(blocks_a + i * ny, a + i * n, 4 * n);
-//     }
+    float * pad_a = alloc<float, 32>(nx * ny);
+    float * pad_b = alloc<float, 32>(nx * ny);
+    float * pad_c = alloc<float, 32>(nx * ny);
 
+    for(int32_t i = 0; i < n; i++) {
+        std::memcpy(pad_a + i * ny, a + i * n, 4 * n);
+        std::memcpy(pad_b + i * ny, b + i * n, 4 * n);
+        // no need for transposing B here
+    }
 
+    for(int32_t x = 0; x < nx; x += h) {
+        for(int32_t y = 0; y < ny; y += w) {
+            kernel_h_w_matmul<h, w>(pad_a, reinterpret_cast<simd_vec_256 *>(pad_b), 
+            reinterpret_cast<simd_vec_256 *>(pad_c), x, y, 0, n, ny);
+        }
+    }
+
+    for(int32_t i = 0; i < n; i++) {
+        std::memcpy(c + i * n, pad_c + i * ny, 4 * n);
+    }
+
+    std::free(pad_a);
+    std::free(pad_b);
+    std::free(pad_c);
+}
+
+// template <int32_t L1CacheSize, int32_t L2CacheSize, int32_t L3CacheSize>
+// void matmul_kernel_blocking2(const float * a, const float * b, float * c, int32_t n) {
+//     std::memset(c, 0, n * n);
+    
+//     for(int32_t i3 = 0; i3 < )
 // }

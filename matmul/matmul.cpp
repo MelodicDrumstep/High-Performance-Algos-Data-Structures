@@ -15,7 +15,8 @@ struct ElementsBlock {
 using InputParam2ElementBlockMap = std::unordered_map<int32_t, ElementsBlock>;
 
 template <typename Func>
-double testMatmul(Func && func, int32_t input_param, const InputParam2ElementBlockMap & input_param2elements) {
+double testMatmul(Func && func, std::string_view func_name, int32_t input_param, 
+        const InputParam2ElementBlockMap & input_param2elements) {
     auto & [elements_a, elements_b] = input_param2elements.at(input_param);
     Vector result(input_param * input_param, 0);
     for(int32_t i = 0; i < WarmupTimes; i++) {
@@ -31,10 +32,11 @@ double testMatmul(Func && func, int32_t input_param, const InputParam2ElementBlo
     }
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
-    // std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
-    // std::cout << "result.front() is " << result.front() << std::endl;
-    // std::cout << "result[result.size() / 2 + 3] is " << result[result.size() / 2 + 3] << std::endl;
-    // std::cout << "result.back() is " << result.back() << std::endl;
+    std::cout << "\nFunction '" << func_name << "' took " << duration.count() << " µs to complete." << std::endl;
+    
+    std::cout << "result.front() is " << result.front() << std::endl;
+    std::cout << "result[result.size() / 2 + 3] is " << result[result.size() / 2 + 3] << std::endl;
+    std::cout << "result.back() is " << result.back() << std::endl;
     return duration.count() * 1.0 / TestTimes;
 }
 
@@ -62,20 +64,21 @@ int main(int argc, char **argv) {
         input_param2elements.emplace(input_param, ElementsBlock{std::move(elements_a), std::move(elements_b)});
     }
 
-    test_manager.launchTest("matmul_baseline", [&input_param2elements](int32_t input_param) {
-        return testMatmul(matmul_baseline<false>, input_param, input_param2elements);
-    });
-    test_manager.launchTest("matmul_baseline_restricted", [&input_param2elements](int32_t input_param) {
-        return testMatmul(matmul_baseline<true>, input_param, input_param2elements);
-    });
-    test_manager.launchTest("matmul_transpose", [&input_param2elements](int32_t input_param) {
-        return testMatmul(matmul_transpose<false>, input_param, input_param2elements);
-    });
-    test_manager.launchTest("matmul_transpose_restricted", [&input_param2elements](int32_t input_param) {
-        return testMatmul(matmul_transpose<true>, input_param, input_param2elements);
-    });
-    test_manager.launchTest("matmul_vectorization", [&input_param2elements](int32_t input_param) {
-        return testMatmul(matmul_vectorization, input_param, input_param2elements);
-    });
+    #define launchFuncTest(system_func_name, string_func_name) \
+        test_manager.launchTest(#string_func_name, [&input_param2elements](int32_t input_param) {   \
+            return testMatmul(system_func_name, #string_func_name, input_param, input_param2elements);    \
+        });
+
+    launchFuncTest(matmul_baseline<false>, matmul_baseline);
+    launchFuncTest(matmul_baseline<true>, matmul_baseline_restricted);
+    launchFuncTest(matmul_baseline_loop_interchange<true>, matmul_baseline_loop_interchange);
+    launchFuncTest(matmul_baseline_loop_interchange<true>, matmul_baseline_loop_interchange_restricted);
+    launchFuncTest(matmul_baseline_loop_interchange_unroll4<false>, matmul_baseline_loop_interchange_unroll4);
+    launchFuncTest(matmul_baseline_loop_interchange_unroll4<true>, matmul_baseline_loop_interchange_unroll4_restricted);
+    launchFuncTest(matmul_transpose<false>, matmul_transpose);
+    launchFuncTest(matmul_transpose<true>, matmul_transpose_restricted);
+    launchFuncTest(matmul_vectorization, matmul_vectorization);
+    launchFuncTest(matmul_kernel_blocking, matmul_kernel_blocking);
+    
     test_manager.dump();
 }

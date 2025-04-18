@@ -15,7 +15,8 @@ struct ElementsBlock {
 using InputParam2ElementBlockMap = std::unordered_map<int32_t, ElementsBlock>;
 
 template <typename Func>
-double testDivision(Func && func, int32_t input_param, const InputParam2ElementBlockMap & input_param2elements) {
+double testDivision(Func && func, std::string_view func_name, int32_t input_param, 
+        const InputParam2ElementBlockMap & input_param2elements) {
     auto & [elements_a, elements_b] = input_param2elements.at(input_param);
     DivResult result;
     for(int32_t i = 0; i < WarmupTimes; i++) {
@@ -31,7 +32,7 @@ double testDivision(Func && func, int32_t input_param, const InputParam2ElementB
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
     // std::cout << "For input_param = " << input_param << ", result is {" << result.quotient << ", " << result.remainder << "}" << std::endl;
     return duration.count() * 1.0 / TestTimes;
-    // std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
+    // std::cout << "Function '" << func_name << "' took " << duration.count() << " µs to complete." << std::endl;
 }
 
 int main(int argc, char **argv) {
@@ -57,41 +58,23 @@ int main(int argc, char **argv) {
         input_param2elements.emplace(input_param, ElementsBlock{std::move(elements_a), std::move(elements_b)});
     }
 
-    test_manager.launchTest("division_baseline", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_baseline, input_param, input_param2elements);
-    });
-    test_manager.launchTest("division_baseline2", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_baseline2, input_param, input_param2elements);
-    });
-    test_manager.launchTest("division_Barrett_reduction", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_Barrett_reduction, input_param, input_param2elements);
-    });
-    test_manager.launchTest("division_Lemire_reduction", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_Lemire_reduction, input_param, input_param2elements);
-    });
-    test_manager.launchTest("division_Lemire_reduction2", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_Lemire_reduction2, input_param, input_param2elements);
-    });
-    test_manager.launchTest("division_libdivide_branchfull", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_libdivide_branchfull, input_param, input_param2elements);
-    });
-    test_manager.launchTest("division_libdivide_branchfree", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_libdivide_branchfree, input_param, input_param2elements);
-    });
-    test_manager.launchTest("division_Barrett_reduction_precompute", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_Barrett_reduction_precompute, input_param, input_param2elements);
-    });
-    test_manager.launchTest("division_Lemire_reduction_precompute", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_Lemire_reduction_precompute, input_param, input_param2elements);
-    });
-    test_manager.launchTest("division_Lemire_reduction_precompute2", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_Lemire_reduction_precompute2, input_param, input_param2elements);
-    });
-    test_manager.launchTest("division_libdivide_branchfull_precompute", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_libdivide_branchfull_precompute, input_param, input_param2elements);
-    });
-    test_manager.launchTest("division_libdivide_branchfree_precompute", [&input_param2elements](int32_t input_param) {
-        return testDivision(division_libdivide_branchfree_precompute, input_param, input_param2elements);
-    });
+    #define launchFuncTest(func_name) \
+        test_manager.launchTest(#func_name, [&input_param2elements](int32_t input_param) {   \
+            return testDivision(func_name, #func_name, input_param, input_param2elements);    \
+        });
+
+    launchFuncTest(division_baseline);
+    launchFuncTest(division_baseline2);
+    launchFuncTest(division_Barrett_reduction);
+    launchFuncTest(division_Lemire_reduction);
+    launchFuncTest(division_Lemire_reduction2);
+    launchFuncTest(division_libdivide_branchfull);
+    launchFuncTest(division_libdivide_branchfree);
+    launchFuncTest(division_Barrett_reduction_precompute);
+    launchFuncTest(division_Lemire_reduction_precompute);
+    launchFuncTest(division_Lemire_reduction_precompute2);
+    launchFuncTest(division_libdivide_branchfull_precompute);
+    launchFuncTest(division_libdivide_branchfree_precompute);
+
     test_manager.dump();
 }

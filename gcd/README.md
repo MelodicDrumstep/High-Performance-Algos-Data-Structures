@@ -18,13 +18,9 @@ For the optimizations performed, please check out the code and the comments in [
 
 ### Testing Result
 
-```
-Function 'gcd_baseline_recursion' took 232 µs to complete.
-Function 'gcd_baseline_loop' took 232 µs to complete.
-Function 'gcd_binary' took 498 µs to complete.
-Function 'gcd_binary_opt1' took 177 µs to complete.
-Function 'gcd_binary_opt2' took 151 µs to complete.
-```
+<img src="../images/gcd_result.png" alt="Gcd" width="850" height="auto">
+
+Test result data is located at [gcd_result.json](./gcd_result.json).
 
 ## Assembly Code
 

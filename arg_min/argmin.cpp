@@ -14,7 +14,8 @@ struct ElementsBlock {
 using InputParam2ElementBlockMap = std::unordered_map<int32_t, ElementsBlock>;
 
 template <typename Func>
-double testArgmin(Func && func, int32_t input_param, const InputParam2ElementBlockMap & input_param2elements) {
+double testArgmin(Func && func, std::string_view func_name, int32_t input_param, 
+        const InputParam2ElementBlockMap & input_param2elements) {
     auto & [elements] = input_param2elements.at(input_param);
     int32_t result;
     for(int32_t i = 0; i < WarmupTimes; i++) {
@@ -28,7 +29,7 @@ double testArgmin(Func && func, int32_t input_param, const InputParam2ElementBlo
     }
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
-    // std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
+    // std::cout << "Function '" << func_name << "' took " << duration.count() << " µs to complete." << std::endl;
     // std::cout << "input_param is " << input_param << "\n";
     // std::cout << "result is " << result << "\n";
     // std::cout << "min value is " << elements[result] << "\n";
@@ -56,32 +57,20 @@ int main(int argc, char **argv) {
         input_param2elements.emplace(input_param, ElementsBlock{std::move(elements)});
     }
 
-    test_manager.launchTest("argmin_baseline", [&input_param2elements](int32_t input_param) {
-        return testArgmin(argmin_baseline, input_param, input_param2elements);
-    });
-    test_manager.launchTest("argmin_baseline_with_hint", [&input_param2elements](int32_t input_param) {
-        return testArgmin(argmin_baseline_with_hint, input_param, input_param2elements);
-    });
-    test_manager.launchTest("argmin_std", [&input_param2elements](int32_t input_param) {
-        return testArgmin(argmin_std, input_param, input_param2elements);
-    });
-    test_manager.launchTest("argmin_vectorize", [&input_param2elements](int32_t input_param) {
-        return testArgmin(argmin_vectorize, input_param, input_param2elements);
-    });
-    test_manager.launchTest("argmin_vectorize2", [&input_param2elements](int32_t input_param) {
-        return testArgmin(argmin_vectorize2, input_param, input_param2elements);
-    });
-    test_manager.launchTest("argmin_vectorize2_with_hint", [&input_param2elements](int32_t input_param) {
-        return testArgmin(argmin_vectorize2_with_hint, input_param, input_param2elements);
-    });
-    test_manager.launchTest("argmin_vectorize2_unroll2", [&input_param2elements](int32_t input_param) {
-        return testArgmin(argmin_vectorize2_unroll2, input_param, input_param2elements);
-    });
-    test_manager.launchTest("argmin_vectorize2_unroll4", [&input_param2elements](int32_t input_param) {
-        return testArgmin(argmin_vectorize2_unroll4, input_param, input_param2elements);
-    });
-    test_manager.launchTest("argmin_blocking_breakdown", [&input_param2elements](int32_t input_param) {
-        return testArgmin(argmin_blocking_breakdown, input_param, input_param2elements);
-    });
+    #define launchFuncTest(func_name) \
+        test_manager.launchTest(#func_name, [&input_param2elements](int32_t input_param) {   \
+            return testArgmin(func_name, #func_name, input_param, input_param2elements);    \
+        });
+
+    launchFuncTest(argmin_baseline);
+    launchFuncTest(argmin_baseline_with_hint);
+    launchFuncTest(argmin_std);
+    launchFuncTest(argmin_vectorize);
+    launchFuncTest(argmin_vectorize2);
+    launchFuncTest(argmin_vectorize2_with_hint);
+    launchFuncTest(argmin_vectorize2_unroll2);
+    launchFuncTest(argmin_vectorize2_unroll4);
+    launchFuncTest(argmin_blocking_breakdown);
+    
     test_manager.dump();
 }

@@ -1,0 +1,73 @@
+{
+    "input_param_meaning": "Input Number Scale",
+    "input_params": [
+        10,
+        100,
+        1000,
+        10000
+    ],
+    "result": {
+        "find_factor_Pollard_Brent": [
+            4834.0816,
+            5877.7426,
+            7155.5306,
+            8723.3245
+        ],
+        "find_factor_Pollard_Brent_batch_opt": [
+            6245.8474,
+            10434.3678,
+            9033.4073,
+            9537.1445
+        ],
+        "find_factor_Pollard_Pho": [
+            4673.4013,
+            4716.9497,
+            4756.0406,
+            4818.8703
+        ],
+        "find_factor_baseline": [
+            4.4851,
+            15.2101,
+            43.5093,
+            81.5077
+        ],
+        "find_factor_brute_pruning": [
+            3.9004,
+            15.194,
+            43.1966,
+            81.077
+        ],
+        "find_factor_lookup_table": [
+            1.2205,
+            1.217,
+            1.2177,
+            1.2175
+        ],
+        "find_factor_prime_table": [
+            6.0207,
+            12.1536,
+            28.4004,
+            39.2639
+        ],
+        "find_factor_prime_table_lemire": [
+            3.9549,
+            3.1941,
+            13.8081,
+            16.3785
+        ],
+        "find_factor_wheel": [
+            3.6872,
+            6.0806,
+            26.2783,
+            44.9043
+        ],
+        "find_factor_wheel2": [
+            3.8251,
+            3.0421,
+            12.6472,
+            21.9364
+        ]
+    },
+    "test_name": "Factorization",
+    "unit": "ns"
+}

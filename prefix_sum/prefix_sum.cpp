@@ -19,7 +19,8 @@ using InputParam2ElementBlockMap = std::unordered_map<int32_t, ElementsBlock>;
 
 
 template <typename Func>
-double testPrefixSum(Func && func, int32_t input_param, const InputParam2ElementBlockMap & input_param2elements) {
+double testPrefixSum(Func && func, std::string_view func_name, int32_t input_param, 
+        const InputParam2ElementBlockMap & input_param2elements) {
     auto & [elements] = input_param2elements.at(input_param);
     Vector result;
     for(int32_t i = 0; i < WarmupTimes; i++) {
@@ -35,7 +36,7 @@ double testPrefixSum(Func && func, int32_t input_param, const InputParam2Element
     }
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
-    // std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
+    // std::cout << "Function '" << func_name << "' took " << duration.count() << " µs to complete." << std::endl;
     // std::cout << "result.front() is " << result.front() << std::endl;
     // std::cout << "result[result.size() / 2 + 3] is " << result[result.size() / 2 + 3] << std::endl;
     // std::cout << "result.back() is " << result.back() << std::endl;
@@ -63,29 +64,19 @@ int main(int argc, char **argv) {
         input_param2elements.emplace(input_param, ElementsBlock{std::move(elements)});
     }
 
-    test_manager.launchTest("prefix_sum_baseline", [&input_param2elements](int32_t input_param) {
-        return testPrefixSum(prefix_sum_baseline, input_param, input_param2elements);
-    });
-    test_manager.launchTest("prefix_sum_baseline2", [&input_param2elements](int32_t input_param) {
-        return testPrefixSum(prefix_sum_baseline2, input_param, input_param2elements);
-    });
-    test_manager.launchTest("prefix_sum_std", [&input_param2elements](int32_t input_param) {
-        return testPrefixSum(prefix_sum_std, input_param, input_param2elements);
-    });
-    test_manager.launchTest("prefix_sum_SIMD", [&input_param2elements](int32_t input_param) {
-        return testPrefixSum(prefix_sum_SIMD, input_param, input_param2elements);
-    });
-    test_manager.launchTest("prefix_sum_SIMD_blocking", [&input_param2elements](int32_t input_param) {
-        return testPrefixSum(prefix_sum_SIMD_blocking<false>, input_param, input_param2elements);
-    });
-    test_manager.launchTest("prefix_sum_SIMD_blocking_prefetching", [&input_param2elements](int32_t input_param) {
-        return testPrefixSum(prefix_sum_SIMD_blocking<true>, input_param, input_param2elements);
-    });
-    test_manager.launchTest("prefix_sum_SIMD_blocking_interleaving", [&input_param2elements](int32_t input_param) {
-        return testPrefixSum(prefix_sum_SIMD_blocking_interleaving<false>, input_param, input_param2elements);
-    });
-    test_manager.launchTest("prefix_sum_SIMD_blocking_interleaving_prefetching", [&input_param2elements](int32_t input_param) {
-        return testPrefixSum(prefix_sum_SIMD_blocking_interleaving<true>, input_param, input_param2elements);
-    });
+    #define launchFuncTest(system_func_name, string_func_name) \
+        test_manager.launchTest(#string_func_name, [&input_param2elements](int32_t input_param) {   \
+            return testPrefixSum(system_func_name, #string_func_name, input_param, input_param2elements);    \
+        });
+
+    launchFuncTest(prefix_sum_baseline, prefix_sum_baseline);
+    launchFuncTest(prefix_sum_baseline2, prefix_sum_baseline2);
+    launchFuncTest(prefix_sum_std, prefix_sum_std);
+    launchFuncTest(prefix_sum_SIMD, prefix_sum_SIMD);
+    launchFuncTest(prefix_sum_SIMD_blocking<false>, prefix_sum_SIMD_blocking);
+    launchFuncTest(prefix_sum_SIMD_blocking<true>, prefix_sum_SIMD_blocking_prefetching);
+    launchFuncTest(prefix_sum_SIMD_blocking_interleaving<false>, prefix_sum_SIMD_blocking_interleaving);
+    launchFuncTest(prefix_sum_SIMD_blocking_interleaving<true>, prefix_sum_SIMD_blocking_interleaving_prefetching);
+
     test_manager.dump();
 }

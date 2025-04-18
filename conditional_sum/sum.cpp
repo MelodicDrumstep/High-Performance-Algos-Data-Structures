@@ -13,8 +13,10 @@ struct ElementsBlock {
 
 using InputParam2ElementBlockMap = std::unordered_map<int32_t, ElementsBlock>;
 
+// take the func_name as a parameter for debugging and correctness testing
 template <typename Func>
-double testSum(Func && func, int32_t input_param, const InputParam2ElementBlockMap & input_param2elements) {
+double testSum(Func && func, std::string_view func_name, int32_t input_param, 
+        const InputParam2ElementBlockMap & input_param2elements) {
     auto & [elements] = input_param2elements.at(input_param);
     int32_t result;
     for(int32_t i = 0; i < WarmupTimes; i++) {
@@ -28,7 +30,7 @@ double testSum(Func && func, int32_t input_param, const InputParam2ElementBlockM
     }
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
-    // std::cout << "Function '" << funcName << "' took " << duration.count() << " µs to complete." << std::endl;
+    // std::cout << "Function '" << func_name << "' took " << duration.count() << " µs to complete." << std::endl;
     return duration.count() * 1.0 / TestTimes;
     // std::cout << "result is " << result << std::endl;
 }
@@ -54,17 +56,15 @@ int main(int argc, char **argv) {
         input_param2elements.emplace(input_param, ElementsBlock{std::move(elements)});
     }
 
-    test_manager.launchTest("sum_baseline", [&input_param2elements](int32_t input_param) {
-        return testSum(sum_baseline<UpperBound>, input_param, input_param2elements);
-    });
-    test_manager.launchTest("sum_predication", [&input_param2elements](int32_t input_param) {
-        return testSum(sum_predication<UpperBound>, input_param, input_param2elements);
-    });
-    test_manager.launchTest("sum_predication_tenary", [&input_param2elements](int32_t input_param) {
-        return testSum(sum_predication_tenary<UpperBound>, input_param, input_param2elements);
-    });
-    test_manager.launchTest("sum_predication_masking", [&input_param2elements](int32_t input_param) {
-        return testSum(sum_predication_masking<UpperBound>, input_param, input_param2elements);
-    });
+    #define launchFuncTest(system_func_name, output_func_name) \
+        test_manager.launchTest(#output_func_name, [&input_param2elements](int32_t input_param) {   \
+            return testSum(system_func_name, #output_func_name, input_param, input_param2elements);    \
+        });
+
+    launchFuncTest(sum_baseline<UpperBound>, sum_baseline);
+    launchFuncTest(sum_predication<UpperBound>, sum_predication);
+    launchFuncTest(sum_predication_tenary<UpperBound>, sum_predication_tenary);
+    launchFuncTest(sum_predication_masking<UpperBound>, sum_predication_masking);
+
     test_manager.dump();
 }

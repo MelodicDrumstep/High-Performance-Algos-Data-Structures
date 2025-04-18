@@ -39,33 +39,9 @@ And in the code, I use some clever trick referenced from [argmin code](https://g
 
 ### Test Results
 
-+ Array Size = 4096 (A multiple of 8, and even a multiple of 32)
+<img src="../images/argmin_result.png" alt="Argmin" width="850" height="auto">
 
-```
-Function 'argmin_baseline' took 99497 µs to complete.
-Function 'argmin_baseline_with_hint' took 99357 µs to complete.
-Function 'argmin_std' took 86955 µs to complete.
-Function 'argmin_vectorize' took 3885 µs to complete.
-Function 'argmin_vectorize2' took 3495 µs to complete.
-Function 'argmin_vectorize2_with_hint' took 3812 µs to complete.
-Function 'argmin_vectorize2_unroll2' took 2247 µs to complete.
-Function 'argmin_vectorize2_unroll4' took 2145 µs to complete.
-Function 'argmin_blocking_breakdown' took 1370 µs to complete.
-```
-
-+ Array Size = 1000 (Not a multiple of 8)
-
-```
-Function 'argmin_baseline' took 243309 µs to complete.
-Function 'argmin_baseline_with_hint' took 243135 µs to complete.
-Function 'argmin_std' took 212887 µs to complete.
-Function 'argmin_vectorize' took 9340 µs to complete.
-Function 'argmin_vectorize2' took 9036 µs to complete.
-Function 'argmin_vectorize2_with_hint' took 9442 µs to complete.
-Function 'argmin_vectorize2_unroll2' took 5877 µs to complete.
-Function 'argmin_vectorize2_unroll4' took 4713 µs to complete.
-Function 'argmin_blocking_breakdown' took 3532 µs to complete.
-```
+Test result data is located at [argmin_result.json](./argmin_result.json).
 
 ## References
 

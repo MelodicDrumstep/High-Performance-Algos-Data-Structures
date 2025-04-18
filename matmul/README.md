@@ -24,3 +24,7 @@
 ## References
 
 1. [en.algorithmica.org:matrix multiplication](https://en.algorithmica.org/hpc/algorithms/matmul/)
+
+2. [how-to-optimize-gemm](https://github.com/flame/how-to-optimize-gemm/wiki)
+
+3. [Optimizing-DGEMM-on-Intel-CPUs-with-AVX512F](https://github.com/yzhaiustc/Optimizing-DGEMM-on-Intel-CPUs-with-AVX512F)
