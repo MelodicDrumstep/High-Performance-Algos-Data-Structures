@@ -7,6 +7,8 @@
 
 constexpr int32_t UpperBound = 10000;
 
+// #define DEBUG_MATMUL
+
 struct ElementsBlock {
     Vector elements_a;
     Vector elements_b;
@@ -53,16 +55,29 @@ int main(int argc, char **argv) {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int32_t> dist(UpperBound / 2, UpperBound);
 
-    for(int32_t input_param : input_params) {
-        size_t array_size = input_param * input_param;
-        Vector elements_a(array_size);
-        Vector elements_b(array_size);
-        for(int32_t i = 0; i < array_size; i++) {
-            elements_a[i] = dist(gen);
-            elements_b[i] = dist(gen);
+    #ifdef DEBUG_MATMUL
+        for(int32_t input_param : input_params) {
+            size_t array_size = input_param * input_param;
+            Vector elements_a(array_size);
+            Vector elements_b(array_size);
+            for(int32_t i = 0; i < array_size; i++) {
+                elements_a[i] = 1.0;
+                elements_b[i] = 1.0;
+            }
+            input_param2elements.emplace(input_param, ElementsBlock{std::move(elements_a), std::move(elements_b)});
         }
-        input_param2elements.emplace(input_param, ElementsBlock{std::move(elements_a), std::move(elements_b)});
-    }
+    #else 
+        for(int32_t input_param : input_params) {
+            size_t array_size = input_param * input_param;
+            Vector elements_a(array_size);
+            Vector elements_b(array_size);
+            for(int32_t i = 0; i < array_size; i++) {
+                elements_a[i] = dist(gen);
+                elements_b[i] = dist(gen);
+            }
+            input_param2elements.emplace(input_param, ElementsBlock{std::move(elements_a), std::move(elements_b)});
+        }
+    #endif
 
     #define launchFuncTest(system_func_name, string_func_name) \
         test_manager.launchTest(#string_func_name, [&input_param2elements](int32_t input_param) {   \
@@ -78,9 +93,9 @@ int main(int argc, char **argv) {
     launchFuncTest(matmul_opt3_register_reuse<true>, matmul_opt3_register_reuse);
     launchFuncTest(matmul_opt4_register_reuse2<true>, matmul_opt4_register_reuse2);
     launchFuncTest(matmul_opt5_4x4<true>, matmul_opt5_4x4);
-    launchFuncTest(matmul_opt5_4x4_vectorization<true>, matmul_opt5_4x4_vectorization);
     launchFuncTest(matmul_opt6_blocking_4x4<true>, matmul_opt6_blocking_4x4);
-    launchFuncTest(matmul_opt7_blocking_4x4_vectorization<true>, matmul_opt7_blocking_4x4_vectorization);
+    launchFuncTest(matmul_opt7_4x4_vectorization<true>, matmul_opt7_4x4_vectorization);
+    launchFuncTest(matmul_opt8_blocking_4x4_vectorization<true>, matmul_opt8_blocking_4x4_vectorization);
     // launchFuncTest(matmul_baseline_loop_interchange_unroll4<false>, matmul_baseline_loop_interchange_unroll4);
     // launchFuncTest(matmul_baseline_loop_interchange_unroll4<true>, matmul_baseline_loop_interchange_unroll4_restricted);
     launchFuncTest(matmul_transpose<true>, matmul_transpose);

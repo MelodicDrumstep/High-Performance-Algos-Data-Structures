@@ -31,7 +31,7 @@ void matmul_baseline(const float * a,
                      const float * b,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
-    std::memset(c, 0, n * n);
+    std::memset(c, 0, n * n * sizeof(float));
     for(int32_t i = 0; i < n; i++) {
         for(int32_t j = 0; j < n; j++) {
             for(int32_t k = 0; k < n; k++) {
@@ -46,7 +46,7 @@ void matmul_opt1_loop_interchange(const float * a,
                      const float * b,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
-    std::memset(c, 0, n * n);
+    std::memset(c, 0, n * n * sizeof(float));
     for(int32_t i = 0; i < n; i++) {
         for(int32_t k = 0; k < n; k++) {
             for(int32_t j = 0; j < n; j++) {
@@ -61,7 +61,7 @@ void matmul_opt2_invariant(const float * a,
                      const float * b,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
-    std::memset(c, 0, n * n);
+    std::memset(c, 0, n * n * sizeof(float));
     for(int32_t i = 0; i < n; i++) {
         for(int32_t k = 0; k < n; k++) {
             float a_value = a[i * n + k];
@@ -77,7 +77,7 @@ void matmul_opt3_register_reuse(const float * a,
                      const float * b,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
-    std::memset(c, 0, n * n);
+    std::memset(c, 0, n * n * sizeof(float));
     for(int32_t j = 0; j < n; j += 4) {
         for(int32_t i = 0; i < n; i++) {
             float c_00 = 0.0;
@@ -107,7 +107,7 @@ void matmul_opt4_register_reuse2(const float * a,
                      const float * b,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
-    std::memset(c, 0, n * n);
+    std::memset(c, 0, n * n * sizeof(float));
     for(int32_t i = 0; i < n; i++) {
         for(int32_t j = 0; j < n; j += 4) {
             float c_00 = 0.0;
@@ -184,63 +184,40 @@ void kernel_matmul_block_4x4(int32_t m, int32_t n, int32_t k, const float * a, i
 }
 
 template <bool UseRestrict = false>
-void kernel_matmul_block_4x4_vectorization(int32_t m, int32_t n, int32_t k, const float * a, int32_t lda,
-    const float * b, int32_t ldb, float * c, int32_t ldc) {
-    // Declare SIMD registers to accumulate results
-    __m256 c_00_c_01_c_02_c_03 = _mm256_setzero_ps();
-    __m256 c_10_c_11_c_12_c_13 = _mm256_setzero_ps();
-    __m256 c_20_c_21_c_22_c_23 = _mm256_setzero_ps();
-    __m256 c_30_c_31_c_32_c_33 = _mm256_setzero_ps();
-
+void kernel_matmul_block_4x4_vectorization(int32_t m, int32_t n, int32_t k, const float* a, int32_t lda,
+    const float* b, int32_t ldb, float* c, int32_t ldc) {
     // Loop over blocks of 4x4 sub-matrices
     for (int32_t i = 0; i < m; i += 4) {
         for (int32_t j = 0; j < n; j += 4) {
+            // Declare SIMD registers to accumulate results (using 128-bit AVX)
             // Reset the accumulation registers for this 4x4 block
-            c_00_c_01_c_02_c_03 = _mm256_setzero_ps();
-            c_10_c_11_c_12_c_13 = _mm256_setzero_ps();
-            c_20_c_21_c_22_c_23 = _mm256_setzero_ps();
-            c_30_c_31_c_32_c_33 = _mm256_setzero_ps();
+            __m128 c_00_c_01_c_02_c_03 = _mm_setzero_ps();
+            __m128 c_10_c_11_c_12_c_13 = _mm_setzero_ps();
+            __m128 c_20_c_21_c_22_c_23 = _mm_setzero_ps();
+            __m128 c_30_c_31_c_32_c_33 = _mm_setzero_ps();
 
             for (int32_t p = 0; p < k; p++) {
                 // Load values from matrix A for rows i, i+1, i+2, i+3
-                __m256 a_row_0 = _mm256_set1_ps(a[(i + 0) * lda + p]);
-                __m256 a_row_1 = _mm256_set1_ps(a[(i + 1) * lda + p]);
-                __m256 a_row_2 = _mm256_set1_ps(a[(i + 2) * lda + p]);
-                __m256 a_row_3 = _mm256_set1_ps(a[(i + 3) * lda + p]);
+                __m128 a_row_0 = _mm_set1_ps(a[(i + 0) * lda + p]);
+                __m128 a_row_1 = _mm_set1_ps(a[(i + 1) * lda + p]);
+                __m128 a_row_2 = _mm_set1_ps(a[(i + 2) * lda + p]);
+                __m128 a_row_3 = _mm_set1_ps(a[(i + 3) * lda + p]);
 
                 // Load values from matrix B for columns j, j+1, j+2, j+3
-                __m256 b_col_0 = _mm256_loadu_ps(&b[p * ldb + j]);
-                __m256 b_col_1 = _mm256_loadu_ps(&b[p * ldb + j + 4]);
-                __m256 b_col_2 = _mm256_loadu_ps(&b[p * ldb + j + 8]);
-                __m256 b_col_3 = _mm256_loadu_ps(&b[p * ldb + j + 12]);
+                __m128 b_col = _mm_load_ps(&b[p * ldb + j]);
 
                 // Perform the multiply-accumulate (FMA) operation for each element
-                c_00_c_01_c_02_c_03 = _mm256_fmadd_ps(a_row_0, b_col_0, c_00_c_01_c_02_c_03);
-                c_10_c_11_c_12_c_13 = _mm256_fmadd_ps(a_row_0, b_col_1, c_10_c_11_c_12_c_13);
-                c_20_c_21_c_22_c_23 = _mm256_fmadd_ps(a_row_0, b_col_2, c_20_c_21_c_22_c_23);
-                c_30_c_31_c_32_c_33 = _mm256_fmadd_ps(a_row_0, b_col_3, c_30_c_31_c_32_c_33);
-
-                c_00_c_01_c_02_c_03 = _mm256_fmadd_ps(a_row_1, b_col_0, c_00_c_01_c_02_c_03);
-                c_10_c_11_c_12_c_13 = _mm256_fmadd_ps(a_row_1, b_col_1, c_10_c_11_c_12_c_13);
-                c_20_c_21_c_22_c_23 = _mm256_fmadd_ps(a_row_1, b_col_2, c_20_c_21_c_22_c_23);
-                c_30_c_31_c_32_c_33 = _mm256_fmadd_ps(a_row_1, b_col_3, c_30_c_31_c_32_c_33);
-
-                c_00_c_01_c_02_c_03 = _mm256_fmadd_ps(a_row_2, b_col_0, c_00_c_01_c_02_c_03);
-                c_10_c_11_c_12_c_13 = _mm256_fmadd_ps(a_row_2, b_col_1, c_10_c_11_c_12_c_13);
-                c_20_c_21_c_22_c_23 = _mm256_fmadd_ps(a_row_2, b_col_2, c_20_c_21_c_22_c_23);
-                c_30_c_31_c_32_c_33 = _mm256_fmadd_ps(a_row_2, b_col_3, c_30_c_31_c_32_c_33);
-
-                c_00_c_01_c_02_c_03 = _mm256_fmadd_ps(a_row_3, b_col_0, c_00_c_01_c_02_c_03);
-                c_10_c_11_c_12_c_13 = _mm256_fmadd_ps(a_row_3, b_col_1, c_10_c_11_c_12_c_13);
-                c_20_c_21_c_22_c_23 = _mm256_fmadd_ps(a_row_3, b_col_2, c_20_c_21_c_22_c_23);
-                c_30_c_31_c_32_c_33 = _mm256_fmadd_ps(a_row_3, b_col_3, c_30_c_31_c_32_c_33);
+                c_00_c_01_c_02_c_03 = _mm_add_ps(_mm_mul_ps(a_row_0, b_col), c_00_c_01_c_02_c_03);
+                c_10_c_11_c_12_c_13 = _mm_add_ps(_mm_mul_ps(a_row_1, b_col), c_10_c_11_c_12_c_13);
+                c_20_c_21_c_22_c_23 = _mm_add_ps(_mm_mul_ps(a_row_2, b_col), c_20_c_21_c_22_c_23);
+                c_30_c_31_c_32_c_33 = _mm_add_ps(_mm_mul_ps(a_row_3, b_col), c_30_c_31_c_32_c_33);
             }
 
             // Store the result back to matrix C
-            _mm256_storeu_ps(&c[(i + 0) * ldc + j], c_00_c_01_c_02_c_03);
-            _mm256_storeu_ps(&c[(i + 1) * ldc + j], c_10_c_11_c_12_c_13);
-            _mm256_storeu_ps(&c[(i + 2) * ldc + j], c_20_c_21_c_22_c_23);
-            _mm256_storeu_ps(&c[(i + 3) * ldc + j], c_30_c_31_c_32_c_33);
+            _mm_store_ps(&c[(i + 0) * ldc + j], c_00_c_01_c_02_c_03);
+            _mm_store_ps(&c[(i + 1) * ldc + j], c_10_c_11_c_12_c_13);
+            _mm_store_ps(&c[(i + 2) * ldc + j], c_20_c_21_c_22_c_23);
+            _mm_store_ps(&c[(i + 3) * ldc + j], c_30_c_31_c_32_c_33);
         }
     }
 }
@@ -250,17 +227,8 @@ void matmul_opt5_4x4(const float * a,
                      const float * b,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
-    std::memset(c, 0, n * n);
+    std::memset(c, 0, n * n * sizeof(float));
     kernel_matmul_block_4x4<UseRestrict>(n, n, n, a, n, b, n, c, n);
-}
-
-template <bool UseRestrict = false>
-void matmul_opt5_4x4_vectorization(const float * a,
-                     const float * b,
-                     float_ptr_wrapper<UseRestrict> c, 
-                     int32_t n) {
-    std::memset(c, 0, n * n);
-    kernel_matmul_block_4x4_vectorization<UseRestrict>(n, n, n, a, n, b, n, c, n);
 }
 
 template <bool UseRestrict = false>
@@ -268,7 +236,7 @@ void matmul_opt6_blocking_4x4(const float * a,
                      const float * b,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
-    std::memset(c, 0, n * n);
+    std::memset(c, 0, n * n * sizeof(float));
     constexpr int32_t MBlockSize = 256;
     constexpr int32_t KBlockSize = 128;
 
@@ -283,11 +251,20 @@ void matmul_opt6_blocking_4x4(const float * a,
 }
 
 template <bool UseRestrict = false>
-void matmul_opt7_blocking_4x4_vectorization(const float * a,
+void matmul_opt7_4x4_vectorization(const float * a,
                      const float * b,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
-    std::memset(c, 0, n * n);
+    std::memset(c, 0, n * n * sizeof(float));
+    kernel_matmul_block_4x4_vectorization<UseRestrict>(n, n, n, a, n, b, n, c, n);
+}
+
+template <bool UseRestrict = false>
+void matmul_opt8_blocking_4x4_vectorization(const float * a,
+                     const float * b,
+                     float_ptr_wrapper<UseRestrict> c, 
+                     int32_t n) {
+    std::memset(c, 0, n * n * sizeof(float));
     constexpr int32_t MBlockSize = 256;
     constexpr int32_t KBlockSize = 128;
 
@@ -309,7 +286,7 @@ void matmul_transpose(const float * a,
                       const float * b,
                       float_ptr_wrapper<UseRestrict> c,
                       int32_t n) {
-    std::memset(c, 0, n * n);
+    std::memset(c, 0, n * n * sizeof(float));
     std::vector<float> b_transpose(n * n);
     for(int32_t i = 0; i < n; i++) {
         for(int32_t j = 0; j < n; j++) {
@@ -337,7 +314,7 @@ T * alloc(int32_t n) {
  * @brief Use gcc vector type for SIMD processing.
  */
 void matmul_vectorization(const float * a, const float * b, float * c, int32_t n) {
-    std::memset(c, 0, n * n);
+    std::memset(c, 0, n * n * sizeof(float));
     int32_t num_blocks = (n + BlockSizeInElements - 1) / BlockSizeInElements;
     simd_vec_256 * blocks_a = alloc<simd_vec_256, VectorSizeInBytes>(n * num_blocks);
     simd_vec_256 * blocks_b = alloc<simd_vec_256, VectorSizeInBytes>(n * num_blocks);
@@ -396,7 +373,7 @@ void matmul_kernel_blocking(const float * a, const float * b, float * c, int32_t
     constexpr int32_t w = 16;
     constexpr int32_t w_in_vector = w / BlockSizeInElements;
 
-    std::memset(c, 0, n * n);
+    std::memset(c, 0, n * n * sizeof(float));
 
     int32_t nx = (n + h - 1) / h * h;
     int32_t ny = (n + w - 1) / w * w;
@@ -430,7 +407,7 @@ void matmul_kernel_blocking(const float * a, const float * b, float * c, int32_t
 
 // template <int32_t L1CacheSize, int32_t L2CacheSize, int32_t L3CacheSize>
 // void matmul_kernel_blocking2(const float * a, const float * b, float * c, int32_t n) {
-//     std::memset(c, 0, n * n);
+//     std::memset(c, 0, n * n * sizeof(float));
     
 //     for(int32_t i3 = 0; i3 < )
 // }
