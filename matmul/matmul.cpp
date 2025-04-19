@@ -71,11 +71,15 @@ int main(int argc, char **argv) {
 
     launchFuncTest(matmul_baseline<false>, matmul_baseline);
     launchFuncTest(matmul_baseline<true>, matmul_baseline_restricted);
-    launchFuncTest(matmul_baseline_loop_interchange<true>, matmul_baseline_loop_interchange);
-    launchFuncTest(matmul_baseline_loop_interchange<true>, matmul_baseline_loop_interchange_restricted);
-    launchFuncTest(matmul_baseline_loop_interchange_unroll4<false>, matmul_baseline_loop_interchange_unroll4);
-    launchFuncTest(matmul_baseline_loop_interchange_unroll4<true>, matmul_baseline_loop_interchange_unroll4_restricted);
-    launchFuncTest(matmul_transpose<false>, matmul_transpose);
+    // launchFuncTest(matmul_baseline_loop_interchange<false>, matmul_baseline_loop_interchange);
+    launchFuncTest(matmul_opt1_loop_interchange<true>, matmul_opt1_loop_interchange);
+    // launchFuncTest(matmul_baseline_loop_interchange_invariant<false>, matmul_baseline_loop_interchange_invariant);
+    launchFuncTest(matmul_opt2_invariant<true>, matmul_opt2_invariant);
+    launchFuncTest(matmul_opt3_register_reuse<true>, matmul_opt3_register_reuse);
+    launchFuncTest(matmul_opt4_register_reuse2<true>, matmul_opt4_register_reuse2);
+    launchFuncTest(matmul_opt5_4x4<true>, matmul_opt5_4x4);
+    // launchFuncTest(matmul_baseline_loop_interchange_unroll4<false>, matmul_baseline_loop_interchange_unroll4);
+    // launchFuncTest(matmul_baseline_loop_interchange_unroll4<true>, matmul_baseline_loop_interchange_unroll4_restricted);
     launchFuncTest(matmul_transpose<true>, matmul_transpose_restricted);
     launchFuncTest(matmul_vectorization, matmul_vectorization);
     launchFuncTest(matmul_kernel_blocking, matmul_kernel_blocking);

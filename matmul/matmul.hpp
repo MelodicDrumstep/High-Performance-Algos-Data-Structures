@@ -38,7 +38,7 @@ void matmul_baseline(const float * a,
 }
 
 template <bool UseRestrict = false>
-void matmul_baseline_loop_interchange(const float * a,
+void matmul_opt1_loop_interchange(const float * a,
                      const float * b,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
@@ -52,23 +52,133 @@ void matmul_baseline_loop_interchange(const float * a,
     }
 }
 
-/** 
- * @brief Unroll the outer loop of "j". For better cache hit rate.
- */
 template <bool UseRestrict = false>
-void matmul_baseline_loop_interchange_unroll4(const float * a,
+void matmul_opt2_invariant(const float * a,
                      const float * b,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
     std::memset(c, 0, n * n);
     for(int32_t i = 0; i < n; i++) {
-        for(int32_t k = 0; k < n; k ++) {
-            for(int32_t j = 0; j < n; j += 4) {
-                c[i * n + j] += a[i * n + k] * b[k * n + j];
-                c[i * n + j + 1] += a[i * n + k] * b[k * n + j + 1];
-                c[i * n + j + 1] += a[i * n + k] * b[k * n + j + 1];
-                c[i * n + j + 1] += a[i * n + k] * b[k * n + j + 1];
+        for(int32_t k = 0; k < n; k++) {
+            float a_value = a[i * n + k];
+            for(int32_t j = 0; j < n; j++) {
+                c[i * n + j] += a_value * b[k * n + j];
             }
+        }
+    }
+}
+
+template <bool UseRestrict = false>
+void matmul_opt3_register_reuse(const float * a,
+                     const float * b,
+                     float_ptr_wrapper<UseRestrict> c, 
+                     int32_t n) {
+    std::memset(c, 0, n * n);
+    for(int32_t j = 0; j < n; j += 4) {
+        for(int32_t i = 0; i < n; i++) {
+            float c_00 = 0.0;
+            float c_01 = 0.0;
+            float c_02 = 0.0;
+            float c_03 = 0.0;
+            for(int32_t k = 0; k < n; k++) {
+                // we assume n is a multiple of 4, if not
+                // padding is required
+                float a_value = a[i * n + k];
+                c_00 += a_value * b[k * n + j];
+                c_01 += a_value * b[k * n + j + 1];
+                c_02 += a_value * b[k * n + j + 2];
+                c_03 += a_value * b[k * n + j + 3];
+            }
+
+            c[i * n + j] += c_00;
+            c[i * n + j + 1] += c_01;
+            c[i * n + j + 2] += c_02;
+            c[i * n + j + 3] += c_03;
+        }
+    }
+}
+
+template <bool UseRestrict = false>
+void matmul_opt4_register_reuse2(const float * a,
+                     const float * b,
+                     float_ptr_wrapper<UseRestrict> c, 
+                     int32_t n) {
+    std::memset(c, 0, n * n);
+    for(int32_t j = 0; j < n; j += 4) {
+        for(int32_t i = 0; i < n; i++) {
+            float c_00 = 0.0;
+            float c_01 = 0.0;
+            float c_02 = 0.0;
+            float c_03 = 0.0;
+            for(int32_t k = 0; k < n; k++) {
+                // we assume n is a multiple of 4, if not
+                // padding is required
+                float a_value = a[i * n + k];
+                size_t b_cached_index = k * n + j;
+                c_00 += a_value * b[b_cached_index];
+                c_01 += a_value * b[b_cached_index + 1];
+                c_02 += a_value * b[b_cached_index + 2];
+                c_03 += a_value * b[b_cached_index + 3];
+            }
+
+            size_t c_cached_index = i * n + j;
+            c[c_cached_index] += c_00;
+            c[c_cached_index + 1] += c_01;
+            c[c_cached_index + 2] += c_02;
+            c[c_cached_index + 3] += c_03;
+        }
+    }
+}
+
+template <bool UseRestrict = false>
+void matmul_opt5_4x4(const float * a,
+                     const float * b,
+                     float_ptr_wrapper<UseRestrict> c, 
+                     int32_t n) {
+    std::memset(c, 0, n * n);
+
+    #define declare_c_value(row, col) \
+    float c_##row##col = 0.0;
+
+    #define declare_a_value(row) \
+        float a_value_##row = a[(i + row) * n + k];
+
+    #define update_c_value(row, col) \
+        c_##row##col += a_value_##row * b[k * n + j + col];
+
+    #define store_back_c(row, col) \
+        c[(i + row) * n + j + col] += c_##row##col;
+
+    #define EXPAND(...) __VA_ARGS__
+
+    #define LOOP_0_H(ACTION, ...) 
+    #define LOOP_1_H(ACTION, ...) ACTION(0, __VA_ARGS__) EXPAND(LOOP_0_H(ACTION, __VA_ARGS__))
+    #define LOOP_2_H(ACTION, ...) ACTION(1, __VA_ARGS__) EXPAND(LOOP_1_H(ACTION, __VA_ARGS__))
+    #define LOOP_3_H(ACTION, ...) ACTION(2, __VA_ARGS__) EXPAND(LOOP_2_H(ACTION, __VA_ARGS__))
+    #define LOOP_4_H(ACTION, ...) ACTION(3, __VA_ARGS__) EXPAND(LOOP_3_H(ACTION, __VA_ARGS__))
+
+    #define LOOP_4_4(ACTION) \
+        EXPAND(LOOP_4_H(ACTION, 0)) \
+        EXPAND(LOOP_4_H(ACTION, 1)) \
+        EXPAND(LOOP_4_H(ACTION, 2)) \
+        EXPAND(LOOP_4_H(ACTION, 3))
+
+    #define LOOP_4(ACTION) \
+        ACTION(0)\
+        ACTION(1)\
+        ACTION(2)\
+        ACTION(3)    
+
+    for(int32_t j = 0; j < n; j += 4) {
+        for(int32_t i = 0; i < n; i += 4) {
+            LOOP_4_4(declare_c_value)
+            for(int32_t k = 0; k < n; k++) {
+                // we assume n is a multiple of 4, if not
+                // padding is required
+                LOOP_4(declare_a_value)
+                LOOP_4_4(update_c_value)
+            }
+            LOOP_4_4(store_back_c)
         }
     }
 }
