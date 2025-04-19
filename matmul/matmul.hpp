@@ -7,6 +7,10 @@
 #include <immintrin.h>
 #include <cstdlib>
 #include <cstring>
+#include <mmintrin.h>
+#include <xmmintrin.h>  // SSE
+#include <pmmintrin.h>  // SSE2
+#include <emmintrin.h>  // SSE3
 
 #include "aligned_allocator.hpp"
 
@@ -104,8 +108,8 @@ void matmul_opt4_register_reuse2(const float * a,
                      float_ptr_wrapper<UseRestrict> c, 
                      int32_t n) {
     std::memset(c, 0, n * n);
-    for(int32_t j = 0; j < n; j += 4) {
-        for(int32_t i = 0; i < n; i++) {
+    for(int32_t i = 0; i < n; i++) {
+        for(int32_t j = 0; j < n; j += 4) {
             float c_00 = 0.0;
             float c_01 = 0.0;
             float c_02 = 0.0;
@@ -131,12 +135,8 @@ void matmul_opt4_register_reuse2(const float * a,
 }
 
 template <bool UseRestrict = false>
-void matmul_opt5_4x4(const float * a,
-                     const float * b,
-                     float_ptr_wrapper<UseRestrict> c, 
-                     int32_t n) {
-    std::memset(c, 0, n * n);
-
+void kernel_matmul_block_4x4(int32_t m, int32_t n, int32_t k, const float * a, int32_t lda,
+    const float * b, int32_t ldb, float_ptr_wrapper<UseRestrict> c, int32_t ldc) {
     #define declare_c_value(row, col) \
     float c_##row##col = 0.0;
 
@@ -169,8 +169,8 @@ void matmul_opt5_4x4(const float * a,
         ACTION(2)\
         ACTION(3)    
 
-    for(int32_t j = 0; j < n; j += 4) {
-        for(int32_t i = 0; i < n; i += 4) {
+    for(int32_t i = 0; i < n; i += 4) {
+        for(int32_t j = 0; j < n; j += 4) {
             LOOP_4_4(declare_c_value)
             for(int32_t k = 0; k < n; k++) {
                 // we assume n is a multiple of 4, if not
@@ -179,6 +179,124 @@ void matmul_opt5_4x4(const float * a,
                 LOOP_4_4(update_c_value)
             }
             LOOP_4_4(store_back_c)
+        }
+    }
+}
+
+template <bool UseRestrict = false>
+void kernel_matmul_block_4x4_vectorization(int32_t m, int32_t n, int32_t k, const float * a, int32_t lda,
+    const float * b, int32_t ldb, float * c, int32_t ldc) {
+    // Declare SIMD registers to accumulate results
+    __m256 c_00_c_01_c_02_c_03 = _mm256_setzero_ps();
+    __m256 c_10_c_11_c_12_c_13 = _mm256_setzero_ps();
+    __m256 c_20_c_21_c_22_c_23 = _mm256_setzero_ps();
+    __m256 c_30_c_31_c_32_c_33 = _mm256_setzero_ps();
+
+    // Loop over blocks of 4x4 sub-matrices
+    for (int32_t i = 0; i < m; i += 4) {
+        for (int32_t j = 0; j < n; j += 4) {
+            // Reset the accumulation registers for this 4x4 block
+            c_00_c_01_c_02_c_03 = _mm256_setzero_ps();
+            c_10_c_11_c_12_c_13 = _mm256_setzero_ps();
+            c_20_c_21_c_22_c_23 = _mm256_setzero_ps();
+            c_30_c_31_c_32_c_33 = _mm256_setzero_ps();
+
+            for (int32_t p = 0; p < k; p++) {
+                // Load values from matrix A for rows i, i+1, i+2, i+3
+                __m256 a_row_0 = _mm256_set1_ps(a[(i + 0) * lda + p]);
+                __m256 a_row_1 = _mm256_set1_ps(a[(i + 1) * lda + p]);
+                __m256 a_row_2 = _mm256_set1_ps(a[(i + 2) * lda + p]);
+                __m256 a_row_3 = _mm256_set1_ps(a[(i + 3) * lda + p]);
+
+                // Load values from matrix B for columns j, j+1, j+2, j+3
+                __m256 b_col_0 = _mm256_loadu_ps(&b[p * ldb + j]);
+                __m256 b_col_1 = _mm256_loadu_ps(&b[p * ldb + j + 4]);
+                __m256 b_col_2 = _mm256_loadu_ps(&b[p * ldb + j + 8]);
+                __m256 b_col_3 = _mm256_loadu_ps(&b[p * ldb + j + 12]);
+
+                // Perform the multiply-accumulate (FMA) operation for each element
+                c_00_c_01_c_02_c_03 = _mm256_fmadd_ps(a_row_0, b_col_0, c_00_c_01_c_02_c_03);
+                c_10_c_11_c_12_c_13 = _mm256_fmadd_ps(a_row_0, b_col_1, c_10_c_11_c_12_c_13);
+                c_20_c_21_c_22_c_23 = _mm256_fmadd_ps(a_row_0, b_col_2, c_20_c_21_c_22_c_23);
+                c_30_c_31_c_32_c_33 = _mm256_fmadd_ps(a_row_0, b_col_3, c_30_c_31_c_32_c_33);
+
+                c_00_c_01_c_02_c_03 = _mm256_fmadd_ps(a_row_1, b_col_0, c_00_c_01_c_02_c_03);
+                c_10_c_11_c_12_c_13 = _mm256_fmadd_ps(a_row_1, b_col_1, c_10_c_11_c_12_c_13);
+                c_20_c_21_c_22_c_23 = _mm256_fmadd_ps(a_row_1, b_col_2, c_20_c_21_c_22_c_23);
+                c_30_c_31_c_32_c_33 = _mm256_fmadd_ps(a_row_1, b_col_3, c_30_c_31_c_32_c_33);
+
+                c_00_c_01_c_02_c_03 = _mm256_fmadd_ps(a_row_2, b_col_0, c_00_c_01_c_02_c_03);
+                c_10_c_11_c_12_c_13 = _mm256_fmadd_ps(a_row_2, b_col_1, c_10_c_11_c_12_c_13);
+                c_20_c_21_c_22_c_23 = _mm256_fmadd_ps(a_row_2, b_col_2, c_20_c_21_c_22_c_23);
+                c_30_c_31_c_32_c_33 = _mm256_fmadd_ps(a_row_2, b_col_3, c_30_c_31_c_32_c_33);
+
+                c_00_c_01_c_02_c_03 = _mm256_fmadd_ps(a_row_3, b_col_0, c_00_c_01_c_02_c_03);
+                c_10_c_11_c_12_c_13 = _mm256_fmadd_ps(a_row_3, b_col_1, c_10_c_11_c_12_c_13);
+                c_20_c_21_c_22_c_23 = _mm256_fmadd_ps(a_row_3, b_col_2, c_20_c_21_c_22_c_23);
+                c_30_c_31_c_32_c_33 = _mm256_fmadd_ps(a_row_3, b_col_3, c_30_c_31_c_32_c_33);
+            }
+
+            // Store the result back to matrix C
+            _mm256_storeu_ps(&c[(i + 0) * ldc + j], c_00_c_01_c_02_c_03);
+            _mm256_storeu_ps(&c[(i + 1) * ldc + j], c_10_c_11_c_12_c_13);
+            _mm256_storeu_ps(&c[(i + 2) * ldc + j], c_20_c_21_c_22_c_23);
+            _mm256_storeu_ps(&c[(i + 3) * ldc + j], c_30_c_31_c_32_c_33);
+        }
+    }
+}
+
+template <bool UseRestrict = false>
+void matmul_opt5_4x4(const float * a,
+                     const float * b,
+                     float_ptr_wrapper<UseRestrict> c, 
+                     int32_t n) {
+    std::memset(c, 0, n * n);
+    kernel_matmul_block_4x4<UseRestrict>(n, n, n, a, n, b, n, c, n);
+}
+
+template <bool UseRestrict = false>
+void matmul_opt5_4x4_vectorization(const float * a,
+                     const float * b,
+                     float_ptr_wrapper<UseRestrict> c, 
+                     int32_t n) {
+    std::memset(c, 0, n * n);
+    kernel_matmul_block_4x4_vectorization<UseRestrict>(n, n, n, a, n, b, n, c, n);
+}
+
+template <bool UseRestrict = false>
+void matmul_opt6_blocking_4x4(const float * a,
+                     const float * b,
+                     float_ptr_wrapper<UseRestrict> c, 
+                     int32_t n) {
+    std::memset(c, 0, n * n);
+    constexpr int32_t MBlockSize = 256;
+    constexpr int32_t KBlockSize = 128;
+
+    for(int32_t k = 0; k < n; k += KBlockSize) {
+        int32_t k_block_size = std::min(n - k, KBlockSize);
+        for(int32_t i = 0; i < n; i += MBlockSize) {
+            int32_t m_block_size = std::min(n - i, MBlockSize);
+            kernel_matmul_block_4x4<UseRestrict>(m_block_size, n, k_block_size, a + i * n + k, n,
+                b + k * n, n, c + i * n, n);
+        }
+    }
+}
+
+template <bool UseRestrict = false>
+void matmul_opt7_blocking_4x4_vectorization(const float * a,
+                     const float * b,
+                     float_ptr_wrapper<UseRestrict> c, 
+                     int32_t n) {
+    std::memset(c, 0, n * n);
+    constexpr int32_t MBlockSize = 256;
+    constexpr int32_t KBlockSize = 128;
+
+    for(int32_t k = 0; k < n; k += KBlockSize) {
+        int32_t k_block_size = std::min(n - k, KBlockSize);
+        for(int32_t i = 0; i < n; i += MBlockSize) {
+            int32_t m_block_size = std::min(n - i, MBlockSize);
+            kernel_matmul_block_4x4_vectorization<UseRestrict>(m_block_size, n, k_block_size, a + i * n + k, n,
+                b + k * n, n, c + i * n, n);
         }
     }
 }

@@ -28,3 +28,5 @@
 2. [how-to-optimize-gemm](https://github.com/flame/how-to-optimize-gemm/wiki)
 
 3. [Optimizing-DGEMM-on-Intel-CPUs-with-AVX512F](https://github.com/yzhaiustc/Optimizing-DGEMM-on-Intel-CPUs-with-AVX512F)
+
+4. [matmul-cache-blocking-demo](https://jukkasuomela.fi/cache-blocking-demo/)

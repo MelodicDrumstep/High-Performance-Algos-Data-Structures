@@ -78,9 +78,12 @@ int main(int argc, char **argv) {
     launchFuncTest(matmul_opt3_register_reuse<true>, matmul_opt3_register_reuse);
     launchFuncTest(matmul_opt4_register_reuse2<true>, matmul_opt4_register_reuse2);
     launchFuncTest(matmul_opt5_4x4<true>, matmul_opt5_4x4);
+    launchFuncTest(matmul_opt5_4x4_vectorization<true>, matmul_opt5_4x4_vectorization);
+    launchFuncTest(matmul_opt6_blocking_4x4<true>, matmul_opt6_blocking_4x4);
+    launchFuncTest(matmul_opt7_blocking_4x4_vectorization<true>, matmul_opt7_blocking_4x4_vectorization);
     // launchFuncTest(matmul_baseline_loop_interchange_unroll4<false>, matmul_baseline_loop_interchange_unroll4);
     // launchFuncTest(matmul_baseline_loop_interchange_unroll4<true>, matmul_baseline_loop_interchange_unroll4_restricted);
-    launchFuncTest(matmul_transpose<true>, matmul_transpose_restricted);
+    launchFuncTest(matmul_transpose<true>, matmul_transpose);
     launchFuncTest(matmul_vectorization, matmul_vectorization);
     launchFuncTest(matmul_kernel_blocking, matmul_kernel_blocking);
     
