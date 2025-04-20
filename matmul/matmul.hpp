@@ -11,6 +11,7 @@
 #include <xmmintrin.h>  // SSE
 #include <pmmintrin.h>  // SSE2
 #include <emmintrin.h>  // SSE3
+#include <cstdalign>
 
 #include "aligned_allocator.hpp"
 
@@ -285,11 +286,15 @@ void kernel_add_dot_block_4x4_vectorization_packed(int32_t m, int32_t n, int32_t
     for (int32_t i = 0; i < m; i += 4) {
         // pack a here
         float * pack_current_pos = packed_a + i * k;
+        const float * a_0_ptr = a + i * lda;
+        const float * a_1_ptr = a + (i + 1) * lda;
+        const float * a_2_ptr = a + (i + 2) * lda;
+        const float * a_3_ptr = a + (i + 3) * lda;
         for(int32_t pack_idx = 0; pack_idx < k; pack_idx++) {
-            *(pack_current_pos++) = a[i * lda + pack_idx];
-            *(pack_current_pos++) = a[(i + 1) * lda + pack_idx];
-            *(pack_current_pos++) = a[(i + 2) * lda + pack_idx];
-            *(pack_current_pos++) = a[(i + 3) * lda + pack_idx];
+            *(pack_current_pos++) = *(a_0_ptr++);
+            *(pack_current_pos++) = *(a_1_ptr++);
+            *(pack_current_pos++) = *(a_2_ptr++);
+            *(pack_current_pos++) = *(a_3_ptr++);
         }
         pack_current_pos = packed_a + i * k;
 
@@ -335,7 +340,7 @@ void matmul_opt9_packing(const float * a,
     constexpr int32_t MBlockSize = 32;
     constexpr int32_t KBlockSize = 32;
 
-    float packed_a[KBlockSize * MBlockSize];
+    alignas(32) float packed_a[KBlockSize * MBlockSize];
 
     for(int32_t k = 0; k < n; k += KBlockSize) {
         int32_t k_block_size = std::min(n - k, KBlockSize);
@@ -343,6 +348,88 @@ void matmul_opt9_packing(const float * a,
             int32_t m_block_size = std::min(n - i, MBlockSize);
             kernel_add_dot_block_4x4_vectorization_packed<UseRestrict>(m_block_size, n, k_block_size, 
                 a + i* k, n, b + k * n, n, c + i * n, n, packed_a);
+        }
+    }
+}
+
+template <bool UseRestrict = false>
+void kernel_add_dot_block_4x4_vectorization_packed2(int32_t m, int32_t n, int32_t k, const float* a, int32_t lda,
+    const float* b, int32_t ldb, float* c, int32_t ldc, float * packed_a, float * packed_b) {
+    // Loop over blocks of 4x4 sub-matrices
+    for (int32_t i = 0; i < m; i += 4) {
+        // pack a here
+        float * pack_a_current_pos = packed_a + i * k;
+        const float * a_0_ptr = a + i * lda;
+        const float * a_1_ptr = a + (i + 1) * lda;
+        const float * a_2_ptr = a + (i + 2) * lda;
+        const float * a_3_ptr = a + (i + 3) * lda;
+        for(int32_t pack_idx = 0; pack_idx < k; pack_idx++) {
+            *(pack_a_current_pos++) = *(a_0_ptr++);
+            *(pack_a_current_pos++) = *(a_1_ptr++);
+            *(pack_a_current_pos++) = *(a_2_ptr++);
+            *(pack_a_current_pos++) = *(a_3_ptr++);
+        }
+        pack_a_current_pos = packed_a + i * k;
+        
+        for (int32_t j = 0; j < n; j += 4) {
+            // Declare SIMD registers to accumulate results (using 128-bit AVX)
+            // Reset the accumulation registers for this 4x4 block
+            __m128 c_00_c_01_c_02_c_03 = _mm_setzero_ps();
+            __m128 c_10_c_11_c_12_c_13 = _mm_setzero_ps();
+            __m128 c_20_c_21_c_22_c_23 = _mm_setzero_ps();
+            __m128 c_30_c_31_c_32_c_33 = _mm_setzero_ps();
+
+            float * pack_b_current_pos = packed_b;
+            for(int32_t p = 0; p < k; p++) {
+                *(pack_b_current_pos++) = b[p * ldb + j];
+                *(pack_b_current_pos++) = b[p * ldb + j + 1];
+                *(pack_b_current_pos++) = b[p * ldb + j + 2];
+                *(pack_b_current_pos++) = b[p * ldb + j + 3];
+            }
+
+            for (int32_t p = 0; p < k; p++) {
+                // Load values from matrix A for rows i, i+1, i+2, i+3
+                __m128 a_row_0 = _mm_set1_ps(pack_a_current_pos[p * 4]);
+                __m128 a_row_1 = _mm_set1_ps(pack_a_current_pos[p * 4 + 1]);
+                __m128 a_row_2 = _mm_set1_ps(pack_a_current_pos[p * 4 + 2]);
+                __m128 a_row_3 = _mm_set1_ps(pack_a_current_pos[p * 4 + 3]);
+                // Load values from matrix B for columns j, j+1, j+2, j+3
+                __m128 b_col = _mm_load_ps(&(packed_b[p * 4]));
+
+                // Perform the multiply-accumulate (FMA) operation for each element
+                c_00_c_01_c_02_c_03 = _mm_add_ps(_mm_mul_ps(a_row_0, b_col), c_00_c_01_c_02_c_03);
+                c_10_c_11_c_12_c_13 = _mm_add_ps(_mm_mul_ps(a_row_1, b_col), c_10_c_11_c_12_c_13);
+                c_20_c_21_c_22_c_23 = _mm_add_ps(_mm_mul_ps(a_row_2, b_col), c_20_c_21_c_22_c_23);
+                c_30_c_31_c_32_c_33 = _mm_add_ps(_mm_mul_ps(a_row_3, b_col), c_30_c_31_c_32_c_33);
+            }
+
+            // Store the result back to matrix C
+            _mm_store_ps(&c[(i + 0) * ldc + j], c_00_c_01_c_02_c_03);
+            _mm_store_ps(&c[(i + 1) * ldc + j], c_10_c_11_c_12_c_13);
+            _mm_store_ps(&c[(i + 2) * ldc + j], c_20_c_21_c_22_c_23);
+            _mm_store_ps(&c[(i + 3) * ldc + j], c_30_c_31_c_32_c_33);
+        }
+    }
+}
+
+template <bool UseRestrict = false>
+void matmul_opt10_packing2(const float * a,
+                     const float * b,
+                     float_ptr_wrapper<UseRestrict> c, 
+                     int32_t n) {
+    std::memset(c, 0, n * n * sizeof(float));
+    constexpr int32_t MBlockSize = 32;
+    constexpr int32_t KBlockSize = 32;
+
+    alignas(32) float packed_a[KBlockSize * MBlockSize];
+    alignas(32) float packed_b[4 * KBlockSize];
+
+    for(int32_t k = 0; k < n; k += KBlockSize) {
+        int32_t k_block_size = std::min(n - k, KBlockSize);
+        for(int32_t i = 0; i < n; i += MBlockSize) {
+            int32_t m_block_size = std::min(n - i, MBlockSize);
+            kernel_add_dot_block_4x4_vectorization_packed2<UseRestrict>(m_block_size, n, k_block_size, 
+                a + i* k, n, b + k * n, n, c + i * n, n, packed_a, packed_b);
         }
     }
 }
