@@ -1,5 +1,5 @@
 {
-    "input_param_meaning": "Array Size",
+    "input_param_meaning": "value of N (we use NxN matrices)",
     "input_params": [
         8,
         16,

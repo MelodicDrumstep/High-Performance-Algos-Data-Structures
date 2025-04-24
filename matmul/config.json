@@ -1,6 +1,6 @@
 {
     "test_name" : "Matrix Multiplication",
-    "input_params" : [64],
-    "input_param_meaning" : "Array Size",
+    "input_params" : [8, 16],
+    "input_param_meaning": "value of N (we use NxN matrices)",
     "output_file_path" : "matmul_output.json"
 }

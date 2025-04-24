@@ -10,8 +10,15 @@ endif()
 
 add_subdirectory(../utils ${CMAKE_BINARY_DIR}/utils)
 
-add_executable(matmul matmul.cpp matmul.hpp)
+# Common source files
+set(MATMUL_SOURCES matmul.hpp)
 
+# Main matmul executable
+add_executable(matmul matmul.cpp ${MATMUL_SOURCES})
 target_include_directories(matmul PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-
 target_link_libraries(matmul PRIVATE utils)
+
+# Profile executable
+add_executable(matmul_profile matmul_profile.cpp ${MATMUL_SOURCES})
+target_include_directories(matmul_profile PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(matmul_profile PRIVATE utils)
