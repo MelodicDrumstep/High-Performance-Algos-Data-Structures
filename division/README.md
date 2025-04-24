@@ -16,7 +16,7 @@
 
 ### Testing Result
 
-<img src="../images/division_result.png" alt="Division" width="850" height="auto">
+<img src="../images/division_result_old.png" alt="Division" width="850" height="auto">
 
 Test result data is located at [division_result.json](./division_result.json).
 

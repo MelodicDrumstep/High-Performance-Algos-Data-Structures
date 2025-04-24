@@ -39,7 +39,7 @@ And in the code, I use some clever trick referenced from [argmin code](https://g
 
 ### Test Results
 
-<img src="../images/argmin_result.png" alt="Argmin" width="850" height="auto">
+<img src="../images/argmin_result_old.png" alt="Argmin" width="850" height="auto">
 
 Test result data is located at [argmin_result.json](./argmin_result.json).
 

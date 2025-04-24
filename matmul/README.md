@@ -1,7 +1,8 @@
 
-# Matrix Multiplication Algorithm
+# Matrix Multiplication Algorithm (Row Major)
 
 ## Optimizations
+
 
 
 ## Performance Test
@@ -20,6 +21,9 @@
 
 ### Test Results
 
+<img src="../images/matmul_result.png" alt="PrefixSum" width="850" height="auto">
+
+Test result data is located at [matmulresult.json](./matmul_result.json).
 
 ## References
 

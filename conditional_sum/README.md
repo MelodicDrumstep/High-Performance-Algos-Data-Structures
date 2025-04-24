@@ -75,7 +75,7 @@ Here, if e < UpperBound, the generated mask is 0x11111111; otherwise, it is 0x00
 
 ### Test Results
 
-<img src="../images/sum_result.png" alt="Sum Result" width="850" height="auto">
+<img src="../images/sum_result_old.png" alt="Sum Result" width="850" height="auto">
 
 Test result data is located at [sum_result.json](./sum_result.json).
 

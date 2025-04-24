@@ -18,7 +18,7 @@ For the optimizations performed, please check out the code and the comments in [
 
 ### Testing Result
 
-<img src="../images/gcd_result.png" alt="Gcd" width="850" height="auto">
+<img src="../images/gcd_result_old.png" alt="Gcd" width="850" height="auto">
 
 Test result data is located at [gcd_result.json](./gcd_result.json).
 

@@ -18,7 +18,7 @@ Use the product of two prime numbers to test the functions.
 
 ### Testing Result
 
-<img src="../images/factorization_result.png" alt="Factorization" width="850" height="auto">
+<img src="../images/factorization_result_old.png" alt="Factorization" width="850" height="auto">
 
 Test result data is located at [factorization_result.json](./factorization_result.json).
 

@@ -33,7 +33,7 @@ Therefore we can do block processing to mitigate that. We can assign a block siz
 
 ### Test Results
 
-<img src="../images/prefix_sum_result.png" alt="PrefixSum" width="850" height="auto">
+<img src="../images/prefix_sum_result_old.png" alt="PrefixSum" width="850" height="auto">
 
 Test result data is located at [prefix_sum_result.json](./prefix_sum_result.json).
 
