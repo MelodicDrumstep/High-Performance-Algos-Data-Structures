@@ -49,9 +49,10 @@ def setup_common_plot_elements(data, ax, input_params, result_names, result_valu
     # Set common labels and title
     ax.set_xlabel(data['input_param_meaning'], fontsize=12)
     
-    # Set y-axis label based on unit
+    # Set y-axis label based on unit and ylabel configuration
     if 'unit' in data and data['unit'] == 'percentage':
-        ax.set_ylabel("Cache Miss Rate (%)", fontsize=12)
+        ylabel = data.get('ylabel')
+        ax.set_ylabel(ylabel, fontsize=12)
     else:
         ax.set_ylabel(f"Execution Time ({data.get('unit', 'ns')})", fontsize=12)
     

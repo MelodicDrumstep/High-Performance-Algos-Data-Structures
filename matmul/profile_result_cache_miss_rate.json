@@ -1,4 +1,5 @@
 {
+    "ylabel" : "Cache Miss Rate (%)",
     "input_params": [
         8,
         16,

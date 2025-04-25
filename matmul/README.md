@@ -29,7 +29,15 @@ Test result data is located at [matmulresult.json](./matmul_result.json).
 
 #### Cache miss rate
 
-<img src="../images/matmul_profile.png" alt="Matmul Profile" width="850" height="auto">
+<img src="../images/matmul_profile_cache.png" alt="Matmul Profile" width="850" height="auto">
+
+#### L1 Cache miss rate
+
+<img src="../images/matmul_profile_L1_cache.png" alt="Matmul Profile" width="850" height="auto">
+
+#### Branch miss rate
+
+<img src="../images/matmul_profile_branch.png" alt="Matmul Profile" width="850" height="auto">
 
 ## References
 
