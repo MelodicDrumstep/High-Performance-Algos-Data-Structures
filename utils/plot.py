@@ -25,8 +25,12 @@ def load_data(file_path):
 
 def prepare_data(data):
     """Extract input parameters, result names and values from data"""
-    input_params = data['input_params']
-    result = data['result']
+    if 'cache miss rate' in data:
+        input_params = data['cache miss rate']['input_params']
+        result = data['cache miss rate']['result']
+    else:
+        input_params = data['input_params']
+        result = data['result']
     return input_params, list(result.keys()), list(result.values())
 
 def generate_distinct_colors(n):
@@ -44,7 +48,13 @@ def setup_common_plot_elements(data, ax, input_params, result_names, result_valu
     
     # Set common labels and title
     ax.set_xlabel(data['input_param_meaning'], fontsize=12)
-    ax.set_ylabel(f"Execution Time ({data['unit']})", fontsize=12)
+    
+    # Set y-axis label based on unit
+    if 'unit' in data and data['unit'] == 'percentage':
+        ax.set_ylabel("Cache Miss Rate (%)", fontsize=12)
+    else:
+        ax.set_ylabel(f"Execution Time ({data.get('unit', 'ns')})", fontsize=12)
+    
     ax.set_title(f"Performance Comparison: {data['test_name']}", pad=20)
     
     # Add legend
@@ -85,6 +95,10 @@ def create_linear_scale_plot(data, input_params, result_names, result_values):
     
     # Auto-adjust y-axis ticks
     ax.yaxis.set_major_locator(plt.MaxNLocator(integer=False, prune=None))
+    
+    # Add percentage sign to y-axis ticks if unit is percentage
+    if 'unit' in data and data['unit'] == 'percentage':
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1f}%'))
     
     return fig
 

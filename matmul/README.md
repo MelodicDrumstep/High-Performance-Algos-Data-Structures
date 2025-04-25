@@ -21,9 +21,15 @@
 
 ### Test Results
 
-<img src="../images/matmul_result.png" alt="PrefixSum" width="850" height="auto">
+<img src="../images/matmul_result.png" alt="Matmul" width="850" height="auto">
 
 Test result data is located at [matmulresult.json](./matmul_result.json).
+
+### Profiling Results
+
+#### Cache miss rate
+
+<img src="../images/matmul_profile.png" alt="Matmul Profile" width="850" height="auto">
 
 ## References
 

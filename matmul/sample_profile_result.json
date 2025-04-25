@@ -1,0 +1,11 @@
+{
+    "cache miss rate" : {
+        "input_params" : [8, 16, 32],
+        "result" : {
+            "baseline" : [0.5, 0.5, 0.5],
+            "opt1" : [0.4, 0.4, 0.4]
+        }
+    },
+    "input_param_meaning": "value of N (we use NxN matrices)",
+    "test_name": "Matrix Multiplication",
+}
