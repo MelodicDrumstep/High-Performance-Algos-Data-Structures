@@ -1,6 +1,6 @@
 {
     "test_name" : "Binary Search",
-    "input_params" : [10],
+    "input_params" : [5],
     "input_param_meaning" : "Array Size",
     "output_file_path" : "binary_search_output.json"
 }

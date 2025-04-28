@@ -3,8 +3,27 @@
 #include <vector>
 #include <array>
 #include <cstdint>
+#include <iostream>
+#include <functional>
+#include <optional>
 
-const int32_t & binary_search_baseline(const std::vector<int32_t> & elements, int32_t target) {
+#include "aligned_allocator.hpp"
+
+// Use the aligned allocator for better performance with SIMD
+using AlignedVector = std::vector<int32_t, AlignedAllocator<int32_t>>;
+
+template <typename T>
+using OptRef = std::optional<std::reference_wrapper<T>>;
+
+OptRef<const int32_t> binary_search_baseline(const std::vector<int32_t> & elements, int32_t target) {
+    // // DEBUGING
+    // std::cout << "[binary_search_baseline] DEBUGING\n";
+    // std::cout << "printing elements array\n";
+    // for(auto element : elements) {
+    //     std::cout << element << " ";
+    // }
+    // std::cout << "\ntarget is " << target << "\n";
+    // // DEBUGING
     int l = 0, r = elements.size() - 1;
     while (l <= r) {
         int m = (l + r) / 2;
@@ -18,15 +37,18 @@ const int32_t & binary_search_baseline(const std::vector<int32_t> & elements, in
             r = m - 1;
         }
     }
-    return elements[0];
+    return std::nullopt;
 }
 
-const int32_t & binary_search_std(const std::vector<int32_t> & elements, int32_t target) {
+OptRef<const int32_t> binary_search_std(const std::vector<int32_t> & elements, int32_t target) {
     auto it = std::lower_bound(elements.begin(), elements.end(), target);
+    if(it == elements.end()) {
+        return std::nullopt;
+    }
     return *it;
 }
 
-const int32_t & binary_search_opt1_branchless(const std::vector<int32_t> & elements, int32_t target) {
+OptRef<const int32_t> binary_search_opt1_branchless(const std::vector<int32_t> & elements, int32_t target) {
     const int32_t * base = elements.data();
     int32_t len = elements.size();
     while (len > 1) {
@@ -39,10 +61,13 @@ const int32_t & binary_search_opt1_branchless(const std::vector<int32_t> & eleme
             len = half;
         }
     }
+    if (*base != target) {
+        return std::nullopt;
+    }
     return *base;
 }
 
-const int32_t & binary_search_opt2_branchless2(const std::vector<int32_t> & elements, int32_t target) {
+OptRef<const int32_t> binary_search_opt2_branchless2(const std::vector<int32_t> & elements, int32_t target) {
     const int32_t * base = elements.data();
     int32_t len = elements.size();
     while (len > 1) {
@@ -52,10 +77,13 @@ const int32_t & binary_search_opt2_branchless2(const std::vector<int32_t> & elem
         }
         len -= half;
     }
+    if (*base != target) {
+        return std::nullopt;
+    }
     return *base;
 }
 
-const int32_t & binary_search_opt3_branchless3(const std::vector<int32_t> & elements, int32_t target) {
+OptRef<const int32_t> binary_search_opt3_branchless3(const std::vector<int32_t> & elements, int32_t target) {
     const int32_t * base = elements.data();
     int32_t len = elements.size();
     while (len > 1) {
@@ -63,10 +91,13 @@ const int32_t & binary_search_opt3_branchless3(const std::vector<int32_t> & elem
         base += (*(base + half - 1) < target) * half;
         len -= half;
     }
+    if (*base != target) {
+        return std::nullopt;
+    }
     return *base;
 }
 
-const int32_t & binary_search_opt4_prefetch(const std::vector<int32_t> & elements, int32_t target) {
+OptRef<const int32_t> binary_search_opt4_prefetch(const std::vector<int32_t> & elements, int32_t target) {
     const int32_t * base = elements.data();
     int32_t len = elements.size();
     while (len > 1) {
@@ -75,6 +106,9 @@ const int32_t & binary_search_opt4_prefetch(const std::vector<int32_t> & element
         __builtin_prefetch(&base[half + len / 2 - 1]);
         base += (*(base + half - 1) < target) * half;
         len -= half;
+    }
+    if (*base != target) {
+        return std::nullopt;
     }
     return *base;
 }
@@ -92,7 +126,7 @@ const int32_t & binary_search_opt4_prefetch(const std::vector<int32_t> & element
     It's really clever!
  */
 void recursive_transformation(std::vector<int32_t> & result, const std::vector<int32_t> & elements, int32_t & i, int32_t k) {
-    if(k < elements.size()) {
+    if(k <= elements.size()) {
         recursive_transformation(result, elements, i, 2 * k);
         result[k] = elements[i++];
         recursive_transformation(result, elements, i, 2 * k + 1);
@@ -110,8 +144,15 @@ std::vector<int32_t> eytzinger_transformation(const std::vector<int32_t> & eleme
 /**
  * @param elements_eytzinger Assume this array is 1-indexed.
  */
-const int32_t & binary_search_opt5_eytzinger(const std::vector<int32_t> & elements_eytzinger, int32_t target) {
-
+OptRef<const int32_t> binary_search_opt5_eytzinger(const std::vector<int32_t> & elements_eytzinger, int32_t target) {
+    // // DEBUGING
+    // std::cout << "[binary_search_opt5_eytzinger] DEBUGING\n";
+    // std::cout << "printing elements array\n";
+    // for(auto element : elements_eytzinger) {
+    //     std::cout << element << " ";
+    // }
+    // std::cout << "\ntarget is " << target << "\n";
+    // // DEBUGING
     int32_t k = 1;
     while(k < elements_eytzinger.size()) {
         if(elements_eytzinger[k] == target) {
@@ -123,13 +164,13 @@ const int32_t & binary_search_opt5_eytzinger(const std::vector<int32_t> & elemen
             k = 2 * k;
         }
     }
-    return elements_eytzinger[k];
+    return std::nullopt;
 }
 
 /**
  * @param elements_eytzinger Assume this array is 1-indexed.
  */
-const int32_t & binary_search_opt6_eytzinger_branchless(const std::vector<int32_t> & elements_eytzinger, int32_t target) {
+OptRef<const int32_t> binary_search_opt6_eytzinger_branchless(const std::vector<int32_t> & elements_eytzinger, int32_t target) {
     int32_t k = 1;
     while(k < elements_eytzinger.size()) {
         // avoid branch. But also leads to a problem:
@@ -149,5 +190,25 @@ const int32_t & binary_search_opt6_eytzinger_branchless(const std::vector<int32_
     // And we need to get rid of the redundant bits since "k" matches the target.
     // Then we use __builtin_ffs to find the first 1 from the LSB in "~k".
     // And we right shift "k" by that value to retrieve the answer.
+    if(elements_eytzinger[k] != target) {
+        return std::nullopt;
+    }
+    return elements_eytzinger[k];
+}
+
+/**
+ * @param elements_eytzinger Assume this array is 1-indexed.
+ */
+template <int32_t PrefetchStrideInElements>
+OptRef<const int32_t> binary_search_opt7_eytzinger_prefetch(const std::vector<int32_t> & elements_eytzinger, int32_t target) {
+    int32_t k = 1;
+    while(k < elements_eytzinger.size()) {
+        __builtin_prefetch(elements_eytzinger.data() + k * PrefetchStrideInElements * sizeof(int32_t));
+        k = 2 * k + (elements_eytzinger[k] < target);
+    }
+    k >>= __builtin_ffs(~k);
+    if(elements_eytzinger[k] != target) {
+        return std::nullopt;
+    }
     return elements_eytzinger[k];
 }

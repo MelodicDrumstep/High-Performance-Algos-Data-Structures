@@ -8,7 +8,9 @@
 
 constexpr int32_t UpperBound = 100;
 
+// template <bool Aligned = false>
 struct ElementsBlock {
+    // using VecType = std::conditional_t<Aligned, >
     std::vector<int32_t> elements;
     std::vector<int32_t> targets;
 };
@@ -16,22 +18,31 @@ struct ElementsBlock {
 using InputParam2ElementBlockMap = std::unordered_map<int32_t, ElementsBlock>;
 
 // take the func_name as a parameter for debugging and correctness testing
-template <bool transform = false, typename Func>
+template <bool Transform = false, typename Func>
 double testBinarySearch(Func && func, std::string_view func_name, int32_t input_param, 
-        InputParam2ElementBlockMap & input_param2elements) {
-    auto & [elements, targets] = input_param2elements[input_param];
-    if constexpr (transform) {
+        const InputParam2ElementBlockMap & input_param2elements) {
+    auto & elements_block = input_param2elements.at(input_param);
+    std::vector<int32_t> elements(elements_block.elements);
+    const std::vector<int32_t> & targets = elements_block.targets;
+    if constexpr (Transform) {
         elements = eytzinger_transformation(elements);
     }
-    int32_t result;
     for(int32_t i = 0; i < WarmupTimes; i++) {
-        result = func(elements, targets[i]);
-        doNotOptimizeAway(result);
+        OptRef result = func(elements, targets[i]);
+        if(!result.has_value()) {
+            throw std::runtime_error("[testBinarySearch for " + std::string(func_name) + "] result is empty, expected " + 
+                std::to_string(targets[i]));
+        }
+        doNotOptimizeAway(result.value());
+        if(result != targets[i]) {
+            throw std::runtime_error("[testBinarySearch for " + std::string(func_name) + "] result is wrong. result is " + 
+                std::to_string(result.value()) + ", expected " + std::to_string(targets[i]));
+        }
     }
     auto start_time = std::chrono::high_resolution_clock::now();
     for(int32_t i = 0; i < TestTimes; i++) {
-        result = func(elements, targets[i]);
-        doNotOptimizeAway(result);
+        OptRef result = func(elements, targets[i]);
+        doNotOptimizeAway(result.value());
     }
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time);
@@ -54,11 +65,15 @@ int main(int argc, char **argv) {
     std::uniform_int_distribution<int32_t> dist(0, UpperBound * 2 - 1);
 
     for(int32_t input_param : input_params) {
+        std::uniform_int_distribution<int32_t> dist2(0, input_param - 1);
         std::vector<int32_t> elements(input_param);
         std::vector<int32_t> targets(TestTimes);
         for(int32_t i = 0; i < input_param; i++) {
             elements[i] = dist(gen);
-            targets[i] = dist(gen);
+        }
+        std::sort(elements.begin(), elements.end());
+        for(int32_t i = 0; i < TestTimes; i++) {
+            targets[i] = elements[dist2(gen)];
         }
         input_param2elements.emplace(input_param, ElementsBlock{std::move(elements), std::move(targets)});
     }
