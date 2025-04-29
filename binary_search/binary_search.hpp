@@ -137,19 +137,20 @@ OptRef<const int32_t> binary_search_opt4_prefetch(const VecType<Aligned> & eleme
     Therefore the transformation is well-formed.
     It's really clever!
  */
-void recursive_transformation(auto & result, auto & elements, int32_t & i, int32_t k) {
+void recursive_eytzinger_transformation_helper(auto & result, auto & elements, 
+        int32_t & original_sequential_index, int32_t k) {
     if(k <= elements.size()) {
-        recursive_transformation(result, elements, i, 2 * k);
-        result[k] = elements[i++];
-        recursive_transformation(result, elements, i, 2 * k + 1);
+        recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
+        result[k] = elements[original_sequential_index++];
+        recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k + 1);
     }
 }
 
 auto eytzinger_transformation(const auto & elements) {
     std::remove_cvref_t<decltype(elements)> result(elements.size() + 1);
     // the result array in 1-indexed for performance consideration
-    int32_t i = 0;
-    recursive_transformation(result, elements, i, 1);
+    int32_t original_sequential_index = 0;
+    recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 1);
     return result;
 }
 

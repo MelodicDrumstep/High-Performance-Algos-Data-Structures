@@ -3,7 +3,7 @@
 #include <iostream>
 #include <functional>
 
-#include "binary_search.hpp"
+#include "B_tree.hpp"
 #include "test_utils.hpp"
 
 constexpr int32_t UpperBound = 100;

@@ -17,3 +17,5 @@ Currently, this repository contains these parts:
 + matrix multiplication
 
 + binary search
+
++ static B tree / static B+ tree
