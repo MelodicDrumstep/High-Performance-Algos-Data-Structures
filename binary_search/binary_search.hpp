@@ -6,24 +6,26 @@
 #include <iostream>
 #include <functional>
 #include <optional>
+#include <concepts>
+#include <type_traits>
 
 #include "aligned_allocator.hpp"
 
 // Use the aligned allocator for better performance with SIMD
 using AlignedVector = std::vector<int32_t, AlignedAllocator<int32_t>>;
 
+template <bool Aligned>
+using VecType = std::conditional_t<Aligned, AlignedVector, std::vector<int32_t>>;
+
+// template <typename T>
+// concept VecT = std::is_same_v<std::vector<int32_t>, T> || std::is_same_v<AlignedVector, T>;
+
 template <typename T>
 using OptRef = std::optional<std::reference_wrapper<T>>;
 
-OptRef<const int32_t> binary_search_baseline(const std::vector<int32_t> & elements, int32_t target) {
-    // // DEBUGING
-    // std::cout << "[binary_search_baseline] DEBUGING\n";
-    // std::cout << "printing elements array\n";
-    // for(auto element : elements) {
-    //     std::cout << element << " ";
-    // }
-    // std::cout << "\ntarget is " << target << "\n";
-    // // DEBUGING
+template <bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_baseline(const VecType<Aligned> & elements, int32_t target) {
     int l = 0, r = elements.size() - 1;
     while (l <= r) {
         int m = (l + r) / 2;
@@ -40,7 +42,9 @@ OptRef<const int32_t> binary_search_baseline(const std::vector<int32_t> & elemen
     return std::nullopt;
 }
 
-OptRef<const int32_t> binary_search_std(const std::vector<int32_t> & elements, int32_t target) {
+template <bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_std(const VecType<Aligned> & elements, int32_t target) {
     auto it = std::lower_bound(elements.begin(), elements.end(), target);
     if(it == elements.end()) {
         return std::nullopt;
@@ -48,7 +52,9 @@ OptRef<const int32_t> binary_search_std(const std::vector<int32_t> & elements, i
     return *it;
 }
 
-OptRef<const int32_t> binary_search_opt1_branchless(const std::vector<int32_t> & elements, int32_t target) {
+template <bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_opt1_branchless(const VecType<Aligned> & elements, int32_t target) {
     const int32_t * base = elements.data();
     int32_t len = elements.size();
     while (len > 1) {
@@ -67,7 +73,9 @@ OptRef<const int32_t> binary_search_opt1_branchless(const std::vector<int32_t> &
     return *base;
 }
 
-OptRef<const int32_t> binary_search_opt2_branchless2(const std::vector<int32_t> & elements, int32_t target) {
+template <bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_opt2_branchless2(const VecType<Aligned> & elements, int32_t target) {
     const int32_t * base = elements.data();
     int32_t len = elements.size();
     while (len > 1) {
@@ -83,7 +91,9 @@ OptRef<const int32_t> binary_search_opt2_branchless2(const std::vector<int32_t> 
     return *base;
 }
 
-OptRef<const int32_t> binary_search_opt3_branchless3(const std::vector<int32_t> & elements, int32_t target) {
+template <bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_opt3_branchless3(const VecType<Aligned> & elements, int32_t target) {
     const int32_t * base = elements.data();
     int32_t len = elements.size();
     while (len > 1) {
@@ -97,7 +107,9 @@ OptRef<const int32_t> binary_search_opt3_branchless3(const std::vector<int32_t> 
     return *base;
 }
 
-OptRef<const int32_t> binary_search_opt4_prefetch(const std::vector<int32_t> & elements, int32_t target) {
+template <bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_opt4_prefetch(const VecType<Aligned> & elements, int32_t target) {
     const int32_t * base = elements.data();
     int32_t len = elements.size();
     while (len > 1) {
@@ -125,7 +137,7 @@ OptRef<const int32_t> binary_search_opt4_prefetch(const std::vector<int32_t> & e
     Therefore the transformation is well-formed.
     It's really clever!
  */
-void recursive_transformation(std::vector<int32_t> & result, const std::vector<int32_t> & elements, int32_t & i, int32_t k) {
+void recursive_transformation(auto & result, auto & elements, int32_t & i, int32_t k) {
     if(k <= elements.size()) {
         recursive_transformation(result, elements, i, 2 * k);
         result[k] = elements[i++];
@@ -133,8 +145,8 @@ void recursive_transformation(std::vector<int32_t> & result, const std::vector<i
     }
 }
 
-std::vector<int32_t> eytzinger_transformation(const std::vector<int32_t> & elements) {
-    std::vector<int32_t> result(elements.size() + 1);
+auto eytzinger_transformation(const auto & elements) {
+    std::remove_cvref_t<decltype(elements)> result(elements.size() + 1);
     // the result array in 1-indexed for performance consideration
     int32_t i = 0;
     recursive_transformation(result, elements, i, 1);
@@ -144,15 +156,9 @@ std::vector<int32_t> eytzinger_transformation(const std::vector<int32_t> & eleme
 /**
  * @param elements_eytzinger Assume this array is 1-indexed.
  */
-OptRef<const int32_t> binary_search_opt5_eytzinger(const std::vector<int32_t> & elements_eytzinger, int32_t target) {
-    // // DEBUGING
-    // std::cout << "[binary_search_opt5_eytzinger] DEBUGING\n";
-    // std::cout << "printing elements array\n";
-    // for(auto element : elements_eytzinger) {
-    //     std::cout << element << " ";
-    // }
-    // std::cout << "\ntarget is " << target << "\n";
-    // // DEBUGING
+template <bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_opt5_eytzinger(const VecType<Aligned> & elements_eytzinger, int32_t target) {
     int32_t k = 1;
     while(k < elements_eytzinger.size()) {
         if(elements_eytzinger[k] == target) {
@@ -170,7 +176,9 @@ OptRef<const int32_t> binary_search_opt5_eytzinger(const std::vector<int32_t> & 
 /**
  * @param elements_eytzinger Assume this array is 1-indexed.
  */
-OptRef<const int32_t> binary_search_opt6_eytzinger_branchless(const std::vector<int32_t> & elements_eytzinger, int32_t target) {
+template <bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_opt6_eytzinger_branchless(const VecType<Aligned> & elements_eytzinger, int32_t target) {
     int32_t k = 1;
     while(k < elements_eytzinger.size()) {
         // avoid branch. But also leads to a problem:
@@ -199,13 +207,39 @@ OptRef<const int32_t> binary_search_opt6_eytzinger_branchless(const std::vector<
 /**
  * @param elements_eytzinger Assume this array is 1-indexed.
  */
-template <int32_t PrefetchStrideInElements>
-OptRef<const int32_t> binary_search_opt7_eytzinger_prefetch(const std::vector<int32_t> & elements_eytzinger, int32_t target) {
+template <int32_t PrefetchStrideInElements, bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_opt7_eytzinger_prefetch(const VecType<Aligned> & elements_eytzinger, int32_t target) {
     int32_t k = 1;
     while(k < elements_eytzinger.size()) {
         __builtin_prefetch(elements_eytzinger.data() + k * PrefetchStrideInElements * sizeof(int32_t));
         k = 2 * k + (elements_eytzinger[k] < target);
     }
+    k >>= __builtin_ffs(~k);
+    if(elements_eytzinger[k] != target) {
+        return std::nullopt;
+    }
+    return elements_eytzinger[k];
+}
+
+/**
+ * @param elements_eytzinger Assume this array is 1-indexed.
+ */
+template <int32_t PrefetchStrideInElements, bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_opt8_branch_removal(const VecType<Aligned> & elements_eytzinger, int32_t target) {
+    int32_t iters = std::__lg(elements_eytzinger.size());
+    int32_t k = 1;
+    for(int32_t i = 0; i < iters; i++) {
+        __builtin_prefetch(elements_eytzinger.data() + k * PrefetchStrideInElements * sizeof(int32_t));
+        k = 2 * k + (elements_eytzinger[k] < target);
+    }
+    // We remove the last round in the loop
+    // and use a "cmove" like operation
+    // because the last round is more possible to lead to branch miss
+    int32_t val = (k < elements_eytzinger.size() ? elements_eytzinger[k] : 0);
+    k = 2 * k + (val < target);
+
     k >>= __builtin_ffs(~k);
     if(elements_eytzinger[k] != target) {
         return std::nullopt;
