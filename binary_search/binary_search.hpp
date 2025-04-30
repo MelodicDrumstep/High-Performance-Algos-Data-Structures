@@ -210,7 +210,28 @@ OptRef<const int32_t> binary_search_opt6_eytzinger_branchless(const VecType<Alig
  */
 template <int32_t PrefetchStrideInElements, bool Aligned>
 __attribute__((noinline))
-OptRef<const int32_t> binary_search_opt7_eytzinger_prefetch(const VecType<Aligned> & elements_eytzinger, int32_t target) {
+OptRef<const int32_t> binary_search_opt7_eytzinger_prefetch1(const VecType<Aligned> & elements_eytzinger, int32_t target) {
+    int32_t k = 1;
+    while(k < elements_eytzinger.size()) {
+        __builtin_prefetch(elements_eytzinger.data() + k * PrefetchStrideInElements * sizeof(int32_t));
+        if(elements_eytzinger[k] == target) {
+            return elements_eytzinger[k];
+        }
+        if(elements_eytzinger[k] < target) {
+            k = 2 * k + 1;
+        } else {
+            k = 2 * k;
+        }
+    }
+    return std::nullopt;
+}
+
+/**
+ * @param elements_eytzinger Assume this array is 1-indexed.
+ */
+template <int32_t PrefetchStrideInElements, bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_opt8_eytzinger_prefetch2(const VecType<Aligned> & elements_eytzinger, int32_t target) {
     int32_t k = 1;
     while(k < elements_eytzinger.size()) {
         __builtin_prefetch(elements_eytzinger.data() + k * PrefetchStrideInElements * sizeof(int32_t));
@@ -228,7 +249,7 @@ OptRef<const int32_t> binary_search_opt7_eytzinger_prefetch(const VecType<Aligne
  */
 template <int32_t PrefetchStrideInElements, bool Aligned>
 __attribute__((noinline))
-OptRef<const int32_t> binary_search_opt8_branch_removal(const VecType<Aligned> & elements_eytzinger, int32_t target) {
+OptRef<const int32_t> binary_search_opt9_branch_removal(const VecType<Aligned> & elements_eytzinger, int32_t target) {
     int32_t iters = std::__lg(elements_eytzinger.size());
     int32_t k = 1;
     for(int32_t i = 0; i < iters; i++) {

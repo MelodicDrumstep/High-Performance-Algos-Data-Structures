@@ -15,7 +15,13 @@ from matplotlib.ticker import ScalarFormatter
 DISTINCT_COLORS = [
     'b', 'g', 'r', 'c', 'm', 'y', 'k', 'orange',
     'purple', 'brown', 'indigo', 'teal', 'violet',
-    'olive', 'turquoise', 'chocolate', 'gold', 'salmon'
+    'olive', 'turquoise', 'chocolate', 'gold', 'salmon',
+    'darkgreen', 'darkblue', 'darkred', 'darkcyan', 'darkmagenta',
+    'darkyellow', 'darkgray', 'lightgreen', 'lightblue', 'lightcoral',
+    'lightcyan', 'lightpink', 'lightsalmon', 'lightseagreen', 'lightskyblue',
+    'lightslategray', 'lightsteelblue', 'lime', 'maroon', 'mediumaquamarine',
+    'mediumblue', 'mediumorchid', 'mediumpurple', 'mediumseagreen', 'mediumslateblue',
+    'mediumspringgreen', 'mediumturquoise', 'mediumvioletred', 'midnightblue', 'navy'
 ]
 
 def load_data(file_path):

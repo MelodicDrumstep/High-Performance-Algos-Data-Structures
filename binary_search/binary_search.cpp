@@ -127,8 +127,9 @@ int main(int argc, char **argv) {
     launchFuncTest(binary_search_opt4_prefetch<false>, binary_search_opt4_prefetch);
     launchFuncTestTransform(binary_search_opt5_eytzinger<false>, binary_search_opt5_eytzinger);
     launchFuncTestTransform(binary_search_opt6_eytzinger_branchless<false>, binary_search_opt6_eytzinger_branchless);
-    launchFuncTestTransform((binary_search_opt7_eytzinger_prefetch<4, false>), binary_search_opt7_eytzinger_prefetch);
-    launchFuncTestTransform((binary_search_opt8_branch_removal<8, false>), binary_search_opt8_branch_removal);
+    launchFuncTestTransform((binary_search_opt7_eytzinger_prefetch1<4, false>), binary_search_opt7_eytzinger_prefetch1);
+    launchFuncTestTransform((binary_search_opt8_eytzinger_prefetch2<4, false>), binary_search_opt8_eytzinger_prefetch2);
+    launchFuncTestTransform((binary_search_opt9_branch_removal<8, false>), binary_search_opt9_branch_removal);
 
     launchFuncTestAligned(binary_search_baseline<true>, binary_search_baseline_aligned);
     launchFuncTestAligned(binary_search_std<true>, binary_search_std_aligned);
@@ -138,8 +139,9 @@ int main(int argc, char **argv) {
     launchFuncTestAligned(binary_search_opt4_prefetch<true>, binary_search_opt4_prefetch_aligned);
     launchFuncTestTransformAligned(binary_search_opt5_eytzinger<true>, binary_search_opt5_eytzinger_aligned);
     launchFuncTestTransformAligned(binary_search_opt6_eytzinger_branchless<true>, binary_search_opt6_eytzinger_branchless_aligned);
-    launchFuncTestTransformAligned((binary_search_opt7_eytzinger_prefetch<4, true>), binary_search_opt7_eytzinger_prefetch_aligned);
-    launchFuncTestTransformAligned((binary_search_opt8_branch_removal<8, true>), binary_search_opt8_branch_removal_aligned);
+    launchFuncTestTransformAligned((binary_search_opt7_eytzinger_prefetch1<4, true>), binary_search_opt7_eytzinger_prefetch1_aligned);
+    launchFuncTestTransformAligned((binary_search_opt8_eytzinger_prefetch2<4, true>), binary_search_opt8_eytzinger_prefetch2_aligned);
+    launchFuncTestTransformAligned((binary_search_opt9_branch_removal<8, true>), binary_search_opt9_branch_removal_aligned);
 
     test_manager.dump();
 }
