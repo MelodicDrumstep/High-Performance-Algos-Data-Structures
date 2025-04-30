@@ -8,6 +8,9 @@
 
 constexpr int32_t UpperBound = 100;
 
+constexpr int32_t WarmupTimes = 20000;
+constexpr int32_t TestTimes = 10000000;
+
 template <bool Aligned = false>
 struct ElementsBlock {
     VecType<Aligned> elements;

@@ -57,45 +57,95 @@ As we can see in the graph, the gap between the aligned version and the unaligne
 
 Test result data is located at [binary_search_result.json](./binary_search_result.json).
 
+## Profiling
+
+### Profiling Results
+
++ Branch Miss Rate
+
+<img src="../images/binary_search_profile_branch.png" alt="BS Result" width="850" height="auto">
+
++ Cache Miss Rate
+
+<img src="../images/binary_search_profile_cache_miss.png" alt="BS Result" width="850" height="auto">
+
++ l1 DCache Miss Rate
+
+<img src="../images/binary_search_profile_L1_cache_miss.png" alt="BS Result" width="850" height="auto">
+
 ### Result Analysis
 
 Based on the aligned-only test results, we can observe several key findings:
 
-1. **Baseline Performance**:
-   - The baseline implementation (`binary_search_baseline_aligned`) shows consistent performance across different array sizes, ranging from 17.69ns to 43.69ns.
-   - The performance degradation is relatively small (about 2.5x) when scaling from 10 to 100M elements.
 
-2. **Branchless Optimizations**:
-   - `binary_search_opt3_branchless3_aligned` shows the best performance among all implementations, with execution times ranging from 10.39ns to 71.98ns.
-   - The branchless approach significantly reduces branch mispredictions, especially for larger arrays.
-   - The performance improvement over baseline is most noticeable for larger arrays (up to 3x faster for 100M elements).
-
-3. **Prefetch Optimizations**:
-   - `binary_search_opt4_prefetch_aligned` and `binary_search_opt7_eytzinger_prefetch_aligned` show good performance, especially for medium-sized arrays.
-   - The prefetch optimizations help reduce cache misses, but their effectiveness diminishes for very large arrays.
-
-4. **Eytzinger Layout**:
-   - The Eytzinger-based implementations (`binary_search_opt5_eytzinger_aligned` and `binary_search_opt6_eytzinger_branchless_aligned`) show interesting behavior:
-     - They perform exceptionally well for small to medium arrays (10-10,000 elements).
-     - However, their performance degrades significantly for larger arrays, likely due to increased cache pressure.
-
-5. **Standard Library Comparison**:
-   - `binary_search_std_aligned` performs similarly to the baseline implementation for small arrays but shows better scaling for larger arrays.
-   - The standard library implementation is well-optimized but doesn't outperform our best custom implementations.
-
-6. **Performance Scaling**:
-   - Most implementations show sub-linear scaling with array size, indicating good cache utilization.
-   - The performance difference between implementations becomes more pronounced as array size increases.
-   - For very large arrays (100M elements), the performance gap between the best and worst implementations can be as much as 2x.
-
-7. **Optimal Implementation Choice**:
-   - For small arrays (<1,000 elements): `binary_search_opt3_branchless3_aligned` is the clear winner.
-   - For medium arrays (1,000-100,000 elements): `binary_search_opt4_prefetch_aligned` provides the best balance.
-   - For large arrays (>100,000 elements): `binary_search_opt3_branchless3_aligned` maintains its lead.
 
 ### Assembly Code
 
 The assembly code can be found at [Compiler Explorer](https://godbolt.org/z/zxaxK3cEz).
+
++ Baseline
+
+A lot of conditional jump!
+
+```asm
+; Function prologue - binary_search_baseline implementation
+; Inputs:
+;   rdi: vector.begin() pointer
+;   rsi: vector.end() pointer  
+;   edx: target value to search
+std::optional<std::reference_wrapper<int const>> binary_search_baseline<true>(...):
+        sub     rsi, rdi        ; Calculate vector size in bytes (end - begin)
+        mov     r8d, edx        ; Store target value in r8d (preserve across calls)
+        sar     rsi, 2          ; Convert byte size to element count (divide by 4)
+        sub     esi, 1          ; Adjust size to maximum index (n-1)
+        js      .L62            ; If size was 0 (negative index), jump to not-found
+
+        ; Initialize binary search bounds
+        xor     edx, edx        ; left = 0 (lower bound)
+        
+        ; Main binary search loop
+.L63:
+        lea     eax, [rsi+rdx]  ; mid = (left + right)...
+        sar     eax             ; ... / 2 (arithmetic shift for division)
+        movsx   rcx, eax        ; Sign-extend mid index to 64-bit
+        lea     rcx, [rdi+rcx*4] ; Calculate element address: begin + mid*4
+        
+        ; Compare current element with target
+        cmp     DWORD PTR [rcx], r8d  
+        je      .L68            ; Jump if equal (found)
+        jge     .L66            ; Jump if array[mid] > target
+        
+        ; Case: array[mid] < target
+        lea     edx, [rax+1]    ; left = mid + 1
+        cmp     edx, esi        ; Compare new left with right
+        jle     .L63            ; Continue if left <= right
+        jmp     .L62            ; Else exit (not found)
+
+        ; Not-found case
+.L62:
+        mov     BYTE PTR [rsp-16], 0 ; Store false in optional's bool flag
+        jmp     .L65            ; Jump to return sequence
+
+        ; Case: array[mid] > target
+.L66:
+        lea     esi, [rax-1]    ; right = mid - 1
+        cmp     esi, edx        ; Compare new right with left
+        jge     .L63            ; Continue if right >= left
+        jmp     .L62            ; Else exit (not found)
+
+        ; Found case
+.L68:
+        mov     QWORD PTR [rsp-24], rcx ; Store element address in optional
+        mov     BYTE PTR [rsp-16], 1    ; Store true in optional's bool flag
+        
+        ; Common return sequence
+.L65:
+        mov     rax, QWORD PTR [rsp-24] ; Load optional's stored pointer
+        mov     rdx, QWORD PTR [rsp-16] ; Load optional's bool flag
+        ret                     ; Return std::optional{ptr, flag}
+```
+
+### STD
 
 ## References
 

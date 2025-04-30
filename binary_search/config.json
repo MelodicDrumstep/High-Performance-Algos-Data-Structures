@@ -2,5 +2,6 @@
     "test_name" : "Binary Search",
     "input_params" : [10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000],
     "input_param_meaning" : "Array Size",
-    "output_file_path" : "binary_search_output.json"
+    "output_file_path" : "binary_search_output.json",
+    "perf_events" : "branches,branch-misses"
 }

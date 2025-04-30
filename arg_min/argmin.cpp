@@ -6,6 +6,8 @@
 #include "test_utils.hpp"
 
 constexpr int32_t UpperBound = 100000;
+constexpr int32_t WarmupTimes = 2000;
+constexpr int32_t TestTimes = 10000;
 
 struct ElementsBlock {
     Vector elements;

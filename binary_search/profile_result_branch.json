@@ -1,0 +1,128 @@
+{
+    "ylabel" : "Branch Miss Rate (%)",
+    "input_params": [
+        10,
+        100,
+        1000,
+        10000,
+        100000,
+        1000000,
+        10000000,
+        100000000
+    ],
+    "result": {
+        "binary_search_baseline": [
+            2.46,
+            2.51,
+            2.52,
+            2.39,
+            1.74,
+            0.6,
+            0.25,
+            0.2
+        ],
+        "binary_search_std": [
+            2.41,
+            2.47,
+            2.53,
+            2.43,
+            1.77,
+            0.59,
+            0.25,
+            0.2
+        ],
+        "binary_search_opt1_branchless": [
+            2.5,
+            2.49,
+            2.49,
+            2.44,
+            1.75,
+            0.62,
+            0.25,
+            0.2
+        ],
+        "binary_search_opt2_branchless2": [
+            2.47,
+            2.41,
+            2.58,
+            2.37,
+            1.75,
+            0.61,
+            0.25,
+            0.2
+        ],
+        "binary_search_opt3_branchless3": [
+            2.43,
+            2.54,
+            2.47,
+            2.45,
+            1.75,
+            0.59,
+            0.25,
+            0.2
+        ],
+        "binary_search_opt4_prefetch": [
+            2.44,
+            2.54,
+            2.52,
+            2.44,
+            1.74,
+            0.6,
+            0.25,
+            0.2
+        ],
+        "binary_search_opt5_eytzinger": [
+            2.41,
+            2.45,
+            2.52,
+            2.4,
+            1.74,
+            0.59,
+            0.25,
+            0.2
+        ],
+        "binary_search_opt6_eytzinger_branchless": [
+            2.46,
+            2.48,
+            2.56,
+            2.44,
+            1.77,
+            0.6,
+            0.25,
+            0.2
+        ],
+        "binary_search_opt7_eytzinger_prefetch1": [
+            2.43,
+            2.45,
+            2.49,
+            2.47,
+            1.72,
+            0.59,
+            0.25,
+            0.2
+        ],
+        "binary_search_opt8_eytzinger_prefetch2": [
+            2.42,
+            2.49,
+            2.47,
+            2.44,
+            1.8,
+            0.6,
+            0.25,
+            0.2
+        ],
+        "binary_search_opt9_branch_removal": [
+            2.47,
+            2.46,
+            2.42,
+            2.48,
+            1.73,
+            0.59,
+            0.25,
+            0.2
+        ]
+    },
+    "input_param_meaning": "Array Size",
+    "test_name": "Binary Search",
+    "unit" : "percentage"
+}

@@ -27,6 +27,11 @@ using simd_vec_256 = float __attribute__ ((vector_size(VectorSizeInBytes))); // 
 template <bool UseRestrict = false>
 using float_ptr_wrapper = std::conditional_t<UseRestrict, float * __restrict__, float *>;
 
+
+template <int32_t h, int32_t w>
+void kernel_h_w_matmul(float * a, simd_vec_256 * b, simd_vec_256 * c, 
+        int32_t x, int32_t y, int32_t l, int32_t r, int32_t n);
+
 /**
  * @brief Naive 3 layer loop implementation of matrix multiplication.
  * This is the baseline implementation with no optimizations.
@@ -120,6 +125,38 @@ void matmul_opt3_register_reuse(const float * a,
         }
     }
 }
+
+template <bool UseRestrict = false>
+ void matmul_opt4_register_reuse2(const float * a,
+                      const float * b,
+                      float_ptr_wrapper<UseRestrict> c, 
+                      int32_t n) {
+     std::memset(c, 0, n * n * sizeof(float));
+     for(int32_t i = 0; i < n; i++) {
+         for(int32_t j = 0; j < n; j += 4) {
+             float c_00 = 0.0;
+             float c_01 = 0.0;
+             float c_02 = 0.0;
+             float c_03 = 0.0;
+             for(int32_t k = 0; k < n; k++) {
+                 // we assume n is a multiple of 4, if not
+                 // padding is required
+                 float a_value = a[i * n + k];
+                 size_t b_cached_index = k * n + j;
+                 c_00 += a_value * b[b_cached_index];
+                 c_01 += a_value * b[b_cached_index + 1];
+                 c_02 += a_value * b[b_cached_index + 2];
+                 c_03 += a_value * b[b_cached_index + 3];
+             }
+ 
+             size_t c_cached_index = i * n + j;
+             c[c_cached_index] += c_00;
+             c[c_cached_index + 1] += c_01;
+             c[c_cached_index + 2] += c_02;
+             c[c_cached_index + 3] += c_03;
+         }
+     }
+ }
 
 /**
  * @brief Optimized version using matrix transposition.
@@ -285,6 +322,26 @@ void kernel_add_dot_block_4x4(int32_t m, int32_t n, int32_t k, const float * a, 
 
     #define store_back_c(row, col) \
         c[(i + row) * ldc + j + col] += c_##row##col;
+
+    #define EXPAND(...) __VA_ARGS__
+ 
+    #define LOOP_0_H(ACTION, ...) 
+    #define LOOP_1_H(ACTION, ...) ACTION(0, __VA_ARGS__) EXPAND(LOOP_0_H(ACTION, __VA_ARGS__))
+    #define LOOP_2_H(ACTION, ...) ACTION(1, __VA_ARGS__) EXPAND(LOOP_1_H(ACTION, __VA_ARGS__))
+    #define LOOP_3_H(ACTION, ...) ACTION(2, __VA_ARGS__) EXPAND(LOOP_2_H(ACTION, __VA_ARGS__))
+    #define LOOP_4_H(ACTION, ...) ACTION(3, __VA_ARGS__) EXPAND(LOOP_3_H(ACTION, __VA_ARGS__))
+
+    #define LOOP_4_4(ACTION) \
+        EXPAND(LOOP_4_H(ACTION, 0)) \
+        EXPAND(LOOP_4_H(ACTION, 1)) \
+        EXPAND(LOOP_4_H(ACTION, 2)) \
+        EXPAND(LOOP_4_H(ACTION, 3))
+
+    #define LOOP_4(ACTION) \
+        ACTION(0)\
+        ACTION(1)\
+        ACTION(2)\
+        ACTION(3)  
 
     // Process matrix in 4x4 blocks
     for(int32_t i = 0; i < n; i += 4) {

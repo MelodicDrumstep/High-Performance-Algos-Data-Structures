@@ -10,9 +10,6 @@
 
 using json = nlohmann::json;
 
-constexpr int32_t WarmupTimes = 2000;
-constexpr int32_t TestTimes = 10000;
-
 template <typename T> inline void doNotOptimizeAway(T&& datum) {
     asm volatile ("" : "+r" (datum));
 }

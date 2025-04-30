@@ -21,55 +21,23 @@ def run_perf(input_size, implementation, perf_events):
         return None
 
 def parse_perf_output(output, perf_events):
-    """Parse perf stat output to extract event counts and miss rates.
-    perf_events should be a comma-separated string containing two events:
-    the reference event and the miss event in that order."""
-    events = perf_events.split(',')
-    if len(events) != 2:
-        print(f"Error: perf_events must contain exactly 2 events, got {len(events)}")
-        return None
-        
-    ref_event = events[0]
-    miss_event = events[1]
-    
-    refs = None
-    misses = None
-    miss_rate = None
-    
-    lines = output.split('\n')
-    for line in lines:
-        # Skip empty lines
-        if not line.strip():
-            continue
-            
-        # Look for reference event
-        if ref_event + ':u' in line:
+    """
+    Parse perf stat output to extract the first percentage value (miss rate).
+    This is robust to any number formatting, event names, or suffixes.
+    It simply finds the first occurrence of 'xx.xxx %' in the output.
+    """
+    # Regex to match a percentage like '23.685 %'
+    percent_pattern = re.compile(r'([0-9]+\.[0-9]+)\s*%')
+    for line in output.split('\n'):
+        match = percent_pattern.search(line)
+        if match:
             try:
-                refs = int(re.search(r'(\d+,?\d*)', line).group(1).replace(',', ''))
-            except (AttributeError, ValueError):
+                return float(match.group(1))
+            except ValueError:
                 continue
-                
-        # Look for miss event and percentage
-        elif miss_event + ':u' in line:
-            try:
-                # Extract the raw count
-                misses = int(re.search(r'(\d+,?\d*)', line).group(1).replace(',', ''))
-                # Look for percentage in the format "#    3.61% of all branches"
-                match = re.search(r'#\s*(\d+\.\d+)%\s+of all', line)
-                if match:
-                    miss_rate = float(match.group(1))
-            except (AttributeError, ValueError):
-                continue
-    
-    if refs is None or misses is None or miss_rate is None:
-        print(f"Warning: Could not extract all values: refs={refs}, misses={misses}, rate={miss_rate}")
-        if refs is not None and misses is not None and miss_rate is None:
-            # If we have both counts but no percentage, calculate it ourselves
-            miss_rate = (misses / refs) * 100
-            return miss_rate
-        return None
-    
-    return miss_rate
+    # If no percentage found, print a warning and return None
+    print("Warning: Could not extract percentage from perf output.")
+    return None
 
 def main():
     if len(sys.argv) != 2:

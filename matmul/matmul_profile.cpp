@@ -8,6 +8,9 @@
 #include "test_utils.hpp"
 #include "aligned_allocator.hpp"
 
+constexpr int32_t WarmupTimes = 2000;
+constexpr int32_t TestTimes = 10000;
+
 template <typename Func>
 __attribute__((noinline))
 void warmup(Func&& func, const float* a, const float* b, float* c, int32_t n) {

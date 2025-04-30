@@ -11,6 +11,9 @@ from matplotlib.ticker import ScalarFormatter
 # Modified linear scale version
 # python3 plot.py input.json output.png --linear
 
+# Modified version
+# python3 plot.py input.json output.png --log-x-linear-y
+
 # Common configuration and functions
 DISTINCT_COLORS = [
     'b', 'g', 'r', 'c', 'm', 'y', 'k', 'orange',
@@ -109,11 +112,47 @@ def create_linear_scale_plot(data, input_params, result_names, result_values):
     
     return fig
 
-def plot_data(data, input_params, result_names, result_values, output_image_path, linear_scale=False):
-    """Create and save the plot using specified scale type"""
-    if linear_scale:
+def create_log_x_linear_y_plot(data, input_params, result_names, result_values):
+    """Create plot with logarithmic scale on x-axis and linear scale on y-axis
+    
+    The x-axis will display ticks in scientific notation (10^1, 10^2, etc.)
+    while the y-axis remains in linear scale.
+    """
+    fig, ax = plt.subplots(figsize=(12, 6))
+    setup_common_plot_elements(data, ax, input_params, result_names, result_values)
+    
+    # Set logarithmic scale for x-axis and linear scale for y-axis
+    ax.set_xscale('log')
+    ax.set_yscale('linear')
+    
+    # Format x-axis ticks to show scientific notation
+    ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'$10^{{{int(np.log10(x))}}}$'))
+    
+    # Auto-adjust y-axis ticks
+    ax.yaxis.set_major_locator(plt.MaxNLocator(integer=False, prune=None))
+    
+    # Add percentage sign to y-axis ticks if unit is percentage
+    if 'unit' in data and data['unit'] == 'percentage':
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1f}%'))
+    
+    return fig
+
+def plot_data(data, input_params, result_names, result_values, output_image_path, scale_type='log'):
+    """Create and save the plot using specified scale type
+    
+    Args:
+        data: Dictionary containing plot data
+        input_params: List of input parameters
+        result_names: List of result names
+        result_values: List of result values
+        output_image_path: Path to save the output image
+        scale_type: Type of scale to use ('log', 'linear', or 'log_x_linear_y')
+    """
+    if scale_type == 'linear':
         fig = create_linear_scale_plot(data, input_params, result_names, result_values)
-    else:
+    elif scale_type == 'log_x_linear_y':
+        fig = create_log_x_linear_y_plot(data, input_params, result_names, result_values)
+    else:  # default to log scale
         fig = create_log_scale_plot(data, input_params, result_names, result_values)
     
     # Adjust layout and save
@@ -121,17 +160,33 @@ def plot_data(data, input_params, result_names, result_values, output_image_path
     fig.savefig(output_image_path, bbox_inches='tight', dpi=300)
     plt.close(fig)
 
-def main(input_file, output_file, linear_scale=False):
-    """Main function to load data and generate plot"""
+def main(input_file, output_file, scale_type='log'):
+    """Main function to load data and generate plot
+    
+    Args:
+        input_file: Path to input JSON file
+        output_file: Path to save output image
+        scale_type: Type of scale to use ('log', 'linear', or 'log_x_linear_y')
+    """
     data = load_data(input_file)
-    plot_data(data, *prepare_data(data), output_file, linear_scale)
+    plot_data(data, *prepare_data(data), output_file, scale_type)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate performance comparison plots.')
     parser.add_argument("input_file", help="Path to input JSON file")
     parser.add_argument("output_file", help="Path to save output image")
     parser.add_argument("--linear", action="store_true", 
-                        help="Use linear scale with all x-axis labels (default: log scale)")
+                        help="Use linear scale with all x-axis labels")
+    parser.add_argument("--log-x-linear-y", action="store_true",
+                        help="Use logarithmic scale on x-axis and linear scale on y-axis")
     
     args = parser.parse_args()
-    main(args.input_file, args.output_file, args.linear)
+    
+    # Determine scale type based on arguments
+    scale_type = 'log'  # default
+    if args.linear:
+        scale_type = 'linear'
+    elif args.log_x_linear_y:
+        scale_type = 'log_x_linear_y'
+    
+    main(args.input_file, args.output_file, scale_type)

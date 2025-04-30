@@ -7,16 +7,14 @@
 #include <algorithm>
 
 #include "binary_search.hpp"
+#include "test_utils.hpp"
 
-constexpr int WarmupTimes = 3;
-constexpr int TestTimes = 10;
-constexpr int NumQueries = 1000;
-
-using std::cout;
-using std::endl;
+constexpr int32_t NumQueries = 2000000;
+constexpr int32_t WarmupTimes = 200000;
+constexpr int32_t TestTimes = 1000000000;
 
 void show_help() {
-    cout << "Usage: ./binary_search_profile <array_size> <implementation>\n"
+    std::cout << "Usage: ./binary_search_profile <array_size> <implementation>\n"
          << "Available implementations:\n"
          << "  baseline\n"
          << "  std\n"
@@ -29,22 +27,24 @@ void show_help() {
          << "  opt7_eytzinger_prefetch1\n"
          << "  opt8_eytzinger_prefetch2\n"
          << "  opt9_branch_removal\n"
-         << endl;
+         << std::endl;
 }
 
 template <typename Func, typename Vec>
 void warmup(Func&& func, const Vec& arr, const std::vector<int32_t>& queries) {
     for (int i = 0; i < WarmupTimes; ++i) {
-        volatile int found = 0;
+        int found = 0;
         for (auto key : queries) found += func(arr, key).has_value();
+        doNotOptimizeAway(found);
     }
 }
 
 template <typename Func, typename Vec>
 void actualTest(Func&& func, const Vec& arr, const std::vector<int32_t>& queries) {
     for (int i = 0; i < TestTimes; ++i) {
-        volatile int found = 0;
+        int found = 0;
         for (auto key : queries) found += func(arr, key).has_value();
+        doNotOptimizeAway(found);
     }
 }
 
@@ -73,11 +73,7 @@ int main(int argc, char** argv) {
     std::mt19937 gen(42);
     std::uniform_int_distribution<int32_t> dist(0, n * 2);
     for (int i = 0; i < NumQueries; ++i) {
-        if (i % 2 == 0) {
-            queries.push_back(arr[dist(gen) % n]);
-        } else {
-            queries.push_back(dist(gen) | 1);
-        }
+        queries.push_back(arr[dist(gen) % n]);
     }
 
     // Use aligned vector for aligned implementations
@@ -90,47 +86,47 @@ int main(int argc, char** argv) {
     if (impl == "baseline") {
         warmup(binary_search_baseline<false>, arr, queries);
         actualTest(binary_search_baseline<false>, arr, queries);
-        cout << "Sample result: " << binary_search_baseline<false>(arr, queries[0]).has_value() << endl;
+        // cout << "Sample result: " << binary_search_baseline<false>(arr, queries[0]).has_value() << endl;
     } else if (impl == "std") {
         warmup(binary_search_std<false>, arr, queries);
         actualTest(binary_search_std<false>, arr, queries);
-        cout << "Sample result: " << binary_search_std<false>(arr, queries[0]).has_value() << endl;
+        // cout << "Sample result: " << binary_search_std<false>(arr, queries[0]).has_value() << endl;
     } else if (impl == "opt1_branchless") {
         warmup(binary_search_opt1_branchless<false>, arr, queries);
         actualTest(binary_search_opt1_branchless<false>, arr, queries);
-        cout << "Sample result: " << binary_search_opt1_branchless<false>(arr, queries[0]).has_value() << endl;
+        // cout << "Sample result: " << binary_search_opt1_branchless<false>(arr, queries[0]).has_value() << endl;
     } else if (impl == "opt2_branchless2") {
         warmup(binary_search_opt2_branchless2<false>, arr, queries);
         actualTest(binary_search_opt2_branchless2<false>, arr, queries);
-        cout << "Sample result: " << binary_search_opt2_branchless2<false>(arr, queries[0]).has_value() << endl;
+        // cout << "Sample result: " << binary_search_opt2_branchless2<false>(arr, queries[0]).has_value() << endl;
     } else if (impl == "opt3_branchless3") {
         warmup(binary_search_opt3_branchless3<false>, arr, queries);
         actualTest(binary_search_opt3_branchless3<false>, arr, queries);
-        cout << "Sample result: " << binary_search_opt3_branchless3<false>(arr, queries[0]).has_value() << endl;
+        // cout << "Sample result: " << binary_search_opt3_branchless3<false>(arr, queries[0]).has_value() << endl;
     } else if (impl == "opt4_prefetch") {
         warmup(binary_search_opt4_prefetch<false>, arr, queries);
         actualTest(binary_search_opt4_prefetch<false>, arr, queries);
-        cout << "Sample result: " << binary_search_opt4_prefetch<false>(arr, queries[0]).has_value() << endl;
+        // cout << "Sample result: " << binary_search_opt4_prefetch<false>(arr, queries[0]).has_value() << endl;
     } else if (impl == "opt5_eytzinger") {
         warmup(binary_search_opt5_eytzinger<false>, arr_eytzinger, queries);
         actualTest(binary_search_opt5_eytzinger<false>, arr_eytzinger, queries);
-        cout << "Sample result: " << binary_search_opt5_eytzinger<false>(arr_eytzinger, queries[0]).has_value() << endl;
+        // cout << "Sample result: " << binary_search_opt5_eytzinger<false>(arr_eytzinger, queries[0]).has_value() << endl;
     } else if (impl == "opt6_eytzinger_branchless") {
         warmup(binary_search_opt6_eytzinger_branchless<false>, arr_eytzinger, queries);
         actualTest(binary_search_opt6_eytzinger_branchless<false>, arr_eytzinger, queries);
-        cout << "Sample result: " << binary_search_opt6_eytzinger_branchless<false>(arr_eytzinger, queries[0]).has_value() << endl;
+        // cout << "Sample result: " << binary_search_opt6_eytzinger_branchless<false>(arr_eytzinger, queries[0]).has_value() << endl;
     } else if (impl == "opt7_eytzinger_prefetch1") {
         warmup(binary_search_opt7_eytzinger_prefetch1<1, false>, arr_eytzinger, queries);
         actualTest(binary_search_opt7_eytzinger_prefetch1<1, false>, arr_eytzinger, queries);
-        cout << "Sample result: " << binary_search_opt7_eytzinger_prefetch1<1, false>(arr_eytzinger, queries[0]).has_value() << endl;
+        // cout << "Sample result: " << binary_search_opt7_eytzinger_prefetch1<1, false>(arr_eytzinger, queries[0]).has_value() << endl;
     } else if (impl == "opt8_eytzinger_prefetch2") {
         warmup(binary_search_opt8_eytzinger_prefetch2<1, false>, arr_eytzinger, queries);
         actualTest(binary_search_opt8_eytzinger_prefetch2<1, false>, arr_eytzinger, queries);
-        cout << "Sample result: " << binary_search_opt8_eytzinger_prefetch2<1, false>(arr_eytzinger, queries[0]).has_value() << endl;
+        // cout << "Sample result: " << binary_search_opt8_eytzinger_prefetch2<1, false>(arr_eytzinger, queries[0]).has_value() << endl;
     } else if (impl == "opt9_branch_removal") {
         warmup(binary_search_opt9_branch_removal<1, false>, arr_eytzinger, queries);
         actualTest(binary_search_opt9_branch_removal<1, false>, arr_eytzinger, queries);
-        cout << "Sample result: " << binary_search_opt9_branch_removal<1, false>(arr_eytzinger, queries[0]).has_value() << endl;
+        // cout << "Sample result: " << binary_search_opt9_branch_removal<1, false>(arr_eytzinger, queries[0]).has_value() << endl;
     } else {
         std::cerr << "Unknown implementation: " << impl << std::endl;
         show_help();
