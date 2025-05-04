@@ -62,6 +62,8 @@ def setup_common_plot_elements(data, ax, input_params, result_names, result_valu
     if 'unit' in data and data['unit'] == 'percentage':
         ylabel = data.get('ylabel')
         ax.set_ylabel(ylabel, fontsize=12)
+        # Set y-axis formatter to show three decimal places for percentage
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.3f}%'))  # Show 3 decimal places
     else:
         ax.set_ylabel(f"Execution Time ({data.get('unit', 'ns')})", fontsize=12)
     
@@ -88,6 +90,7 @@ def create_log_scale_plot(data, input_params, result_names, result_values):
     ax.set_xscale('log')
     ax.set_yscale('log')
     
+    # The y-axis percentage formatter is now set in setup_common_plot_elements
     return fig
 
 def create_linear_scale_plot(data, input_params, result_names, result_values):
@@ -106,10 +109,7 @@ def create_linear_scale_plot(data, input_params, result_names, result_values):
     # Auto-adjust y-axis ticks
     ax.yaxis.set_major_locator(plt.MaxNLocator(integer=False, prune=None))
     
-    # Add percentage sign to y-axis ticks if unit is percentage
-    if 'unit' in data and data['unit'] == 'percentage':
-        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1f}%'))
-    
+    # The y-axis percentage formatter is now set in setup_common_plot_elements
     return fig
 
 def create_log_x_linear_y_plot(data, input_params, result_names, result_values):
@@ -131,10 +131,7 @@ def create_log_x_linear_y_plot(data, input_params, result_names, result_values):
     # Auto-adjust y-axis ticks
     ax.yaxis.set_major_locator(plt.MaxNLocator(integer=False, prune=None))
     
-    # Add percentage sign to y-axis ticks if unit is percentage
-    if 'unit' in data and data['unit'] == 'percentage':
-        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1f}%'))
-    
+    # The y-axis percentage formatter is now set in setup_common_plot_elements
     return fig
 
 def plot_data(data, input_params, result_names, result_values, output_image_path, scale_type='log'):
