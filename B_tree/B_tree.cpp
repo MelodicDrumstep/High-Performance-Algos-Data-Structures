@@ -4,11 +4,18 @@
 #include <functional>
 
 #include "B_tree.hpp"
+#include "binary_search.hpp"
 #include "test_utils.hpp"
 
 constexpr int32_t UpperBound = 100;
 constexpr int32_t WarmupTimes = 2000;
 constexpr int32_t TestTimes = 10000;
+
+enum class TransformType : uint8_t {
+    None,
+    BinaryEytzinger,
+    BTreeEytzinger
+};
 
 template <bool Aligned = false>
 struct ElementsBlock {
@@ -24,14 +31,16 @@ concept ElementBlockMapT = std::is_same_v<InputParam2ElementBlockMap<false>, T>
     || std::is_same_v<InputParam2ElementBlockMap<true>, T>;
 
 // take the func_name as a parameter for debugging and correctness testing
-template <bool Transform = false, typename Func, ElementBlockMapT Map>
+template <TransformType Transform = TransformType::None, typename Func, ElementBlockMapT Map>
 double testBinarySearch(Func && func, std::string_view func_name, int32_t input_param, 
         const Map & input_param2elements) {
     auto & elements_block = input_param2elements.at(input_param);
     auto elements(elements_block.elements);
     const std::vector<int32_t> & targets = elements_block.targets;
-    if constexpr (Transform) {
+    if constexpr (Transform == TransformType::BinaryEytzinger) {
         elements = eytzinger_transformation(elements);
+    } else if constexpr (Transform == TransformType::BTreeEytzinger) {
+        elements = BTreeEytzingerTransformer().transform(elements);
     }
     for(int32_t i = 0; i < WarmupTimes; i++) {
         OptRef result = func(elements, targets[i]);
@@ -99,38 +108,21 @@ int main(int argc, char **argv) {
             input_param2elements_aligned.emplace(input_param, ElementsBlock<true>{std::move(elements), std::move(targets)});
         }
     }
-    
-
-    #define launchFuncTest(system_func_name, output_func_name) \
-        test_manager.launchTest(#output_func_name, [&input_param2elements](int32_t input_param) {   \
-            return testBinarySearch<false>(system_func_name, #output_func_name, input_param, input_param2elements);    \
-        });
-
-    #define launchFuncTestTransform(system_func_name, output_func_name) \
-    test_manager.launchTest(#output_func_name, [&input_param2elements](int32_t input_param) {   \
-        return testBinarySearch<true>(system_func_name, #output_func_name, input_param, input_param2elements);    \
-    });
 
     #define launchFuncTestAligned(system_func_name, output_func_name) \
         test_manager.launchTest(#output_func_name, [&input_param2elements_aligned](int32_t input_param) {   \
-            return testBinarySearch<false>(system_func_name, #output_func_name, input_param, input_param2elements_aligned);    \
+            return testBinarySearch<TransformType::None>(system_func_name, #output_func_name, input_param, input_param2elements_aligned);    \
         });
 
     #define launchFuncTestTransformAligned(system_func_name, output_func_name) \
-    test_manager.launchTest(#output_func_name, [&input_param2elements_aligned](int32_t input_param) {   \
-        return testBinarySearch<true>(system_func_name, #output_func_name, input_param, input_param2elements_aligned);    \
-    });
+        test_manager.launchTest(#output_func_name, [&input_param2elements_aligned](int32_t input_param) {   \
+            return testBinarySearch<TransformType::BinaryEytzinger>(system_func_name, #output_func_name, input_param, input_param2elements_aligned);    \
+        });
 
-    launchFuncTest(binary_search_baseline<false>, binary_search_baseline);
-    launchFuncTest(binary_search_std<false>, binary_search_std);
-    launchFuncTest(binary_search_opt1_branchless<false>, binary_search_opt1_branchless);
-    launchFuncTest(binary_search_opt2_branchless2<false>, binary_search_opt2_branchless2);
-    launchFuncTest(binary_search_opt3_branchless3<false>, binary_search_opt3_branchless3);
-    launchFuncTest(binary_search_opt4_prefetch<false>, binary_search_opt4_prefetch);
-    launchFuncTestTransform(binary_search_opt5_eytzinger<false>, binary_search_opt5_eytzinger);
-    launchFuncTestTransform(binary_search_opt6_eytzinger_branchless<false>, binary_search_opt6_eytzinger_branchless);
-    launchFuncTestTransform((binary_search_opt7_eytzinger_prefetch<4, false>), binary_search_opt7_eytzinger_prefetch);
-    launchFuncTestTransform((binary_search_opt8_branch_removal<8, false>), binary_search_opt8_branch_removal);
+    #define launchFuncTestTransformBTreeAligned(system_func_name, output_func_name) \
+        test_manager.launchTest(#output_func_name, [&input_param2elements_aligned](int32_t input_param) {   \
+            return testBinarySearch<TransformType::BTreeEytzinger>(system_func_name, #output_func_name, input_param, input_param2elements_aligned);    \
+        });
 
     launchFuncTestAligned(binary_search_baseline<true>, binary_search_baseline_aligned);
     launchFuncTestAligned(binary_search_std<true>, binary_search_std_aligned);
@@ -138,10 +130,14 @@ int main(int argc, char **argv) {
     launchFuncTestAligned(binary_search_opt2_branchless2<true>, binary_search_opt2_branchless2_aligned);
     launchFuncTestAligned(binary_search_opt3_branchless3<true>, binary_search_opt3_branchless3_aligned);
     launchFuncTestAligned(binary_search_opt4_prefetch<true>, binary_search_opt4_prefetch_aligned);
+    
     launchFuncTestTransformAligned(binary_search_opt5_eytzinger<true>, binary_search_opt5_eytzinger_aligned);
     launchFuncTestTransformAligned(binary_search_opt6_eytzinger_branchless<true>, binary_search_opt6_eytzinger_branchless_aligned);
-    launchFuncTestTransformAligned((binary_search_opt7_eytzinger_prefetch<4, true>), binary_search_opt7_eytzinger_prefetch_aligned);
-    launchFuncTestTransformAligned((binary_search_opt8_branch_removal<8, true>), binary_search_opt8_branch_removal_aligned);
+    launchFuncTestTransformAligned((binary_search_opt7_eytzinger_prefetch1<4, true>), binary_search_opt7_eytzinger_prefetch1_aligned);
+    launchFuncTestTransformAligned((binary_search_opt8_eytzinger_prefetch2<4, true>), binary_search_opt8_eytzinger_prefetch2_aligned);
+    launchFuncTestTransformAligned((binary_search_opt9_branch_removal<8, true>), binary_search_opt9_branch_removal_aligned);
+    
+    launchFuncTestTransformBTreeAligned(binary_search_B_tree<true>, binary_search_B_tree_aligned);
 
     test_manager.dump();
 }

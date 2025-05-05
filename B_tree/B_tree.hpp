@@ -8,7 +8,8 @@
 #include <optional>
 #include <concepts>
 #include <type_traits>
-
+#include <immintrin.h>
+#include <limits>
 #include "aligned_allocator.hpp"
 
 // Use the aligned allocator for better performance with SIMD
@@ -25,41 +26,63 @@ using OptRef = std::optional<std::reference_wrapper<T>>;
 
 constexpr static int32_t B = 16;
 
-static int32_t go(int32_t k, int32_t i) {
+static int32_t getBTreeIndex(int32_t k, int32_t i) {
     return k * (B + 1) + i + 1;
 }
 
-template <bool Aligned>
-__attribute__((noinline))
-OptRef<const int32_t> binary_search_B_tree(const VecType<Aligned> & elements, int32_t target) {
-
+static int32_t size2nblocks(int32_t size) {
+    return (size + B - 1) / B;
 }
 
 class BTreeEytzingerTransformer {
 public:
-    BTreeEytzingerTransformer(int32_t nblocks)
-        : nblocks_(nblocks) {}
-
     /**
     * @param result Logically it's a [nblocks * B] 2D array, implemented as a 1-D std::vector for performance.
     */
     void recursive_transformation_helper(auto & result, auto & elements, int32_t k) {
+        std::cout << "[recursive_transformation_helper] k: " << k << std::endl;
         if(k < nblocks_) {
             for(int32_t i = 0; i < B; i++) {
-                recursive_transformation_helper(result, elements, go(k, i));
-                result[k * B + i] = (original_sequential_index_ < elements.size() ? elements[original_sequential_index_++] : INT_MAX);
+                recursive_transformation_helper(result, elements, getBTreeIndex(k, i));
+                std::cout << "Result size: " << result.size() << std::endl;
+                std::cout << "k * B + i: " << k * B + i << std::endl;
+                result[k * B + i] = (original_sequential_index_ < elements.size() ? elements[original_sequential_index_++] : std::numeric_limits<int32_t>::max());
             }
         }
-        recursive_transformation_helper(result, elements, go(k, B));
+        recursive_transformation_helper(result, elements, getBTreeIndex(k, B));
     }
 
     auto transform(const auto & elements) {
+        nblocks_ = size2nblocks(elements.size());
         std::remove_cvref_t<decltype(elements)> result(elements.size() + 1);
-        // the result array in 1-indexed for performance consideration
-        recursive_transformation_helper(result, elements, 1, (elements.size() + B - 1) / b);
+        recursive_transformation_helper(result, elements, 0);
         return result;
     }
 private:
     int32_t nblocks_;
     int32_t original_sequential_index_ {0};
 };
+
+int32_t cmp(__m256i x_vec, const int32_t * y_ptr) {
+    __m256i y_vec = _mm256_load_si256(reinterpret_cast<const __m256i *>(y_ptr));
+    __m256i mask = _mm256_cmpgt_epi32(x_vec, y_vec);
+    return _mm256_movemask_ps(reinterpret_cast<__m256>(mask));
+}
+
+template <bool Aligned>
+__attribute__((noinline))
+OptRef<const int32_t> binary_search_B_tree(const VecType<Aligned> & elements_transformed, int32_t target) {
+    int32_t k = 0, res = std::numeric_limits<int32_t>::max();
+    __m256i x = _mm256_set1_epi32(target);
+    int32_t nblocks = size2nblocks(elements_transformed.size());
+    while(k < nblocks) {
+        int32_t mask = ~(cmp(x, &elements_transformed[k * B]) + 
+            (cmp(x, &elements_transformed[k * B + 8]) << 8));
+        int32_t i = __builtin_ffs(mask) - 1;
+        if(i < B) {
+            res = elements_transformed[k * B + i];
+        }
+        k = getBTreeIndex(k, i);
+    }
+    return res;
+}

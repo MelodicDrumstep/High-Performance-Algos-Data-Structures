@@ -1,6 +1,6 @@
 {
     "test_name" : "Static B Tree",
-    "input_params" : [5],
+    "input_params" : [32],
     "input_param_meaning" : "Array Size",
     "output_file_path" : "B_tree_output.json"
 }
