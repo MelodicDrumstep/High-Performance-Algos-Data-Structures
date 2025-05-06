@@ -1,1204 +1,3 @@
- Percent |	Source code & Disassembly of binary_search for cycles:u (16787 samples, percent: local period)
---------------------------------------------------------------------------------------------------------------
-         :
-         :
-         :
-         :            Disassembly of section .text:
-         :
-         :            0000000000405130 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]>:
-         :            _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIi16AlignedAllocatorIiEEEElNS0_5__ops15_Iter_less_iterEEvT_SA_T0_T1_.isra.0():
-         :
-         :            /// This is a helper function for the sort routine.
-         :            template<typename _RandomAccessIterator, typename _Size, typename _Compare>
-         :            _GLIBCXX20_CONSTEXPR
-         :            void
-         :            __introsort_loop(_RandomAccessIterator __first,
-    0.30 :   405130: push   %r15
-         :            _GLIBCXX20_CONSTEXPR
-         :            inline typename __normal_iterator<_Iterator, _Container>::difference_type
-         :            operator-(const __normal_iterator<_Iterator, _Container>& __lhs,
-         :            const __normal_iterator<_Iterator, _Container>& __rhs)
-         :            _GLIBCXX_NOEXCEPT
-         :            { return __lhs.base() - __rhs.base(); }
-    0.02 :   405132: mov    %rsi,%rax
-    0.00 :   405135: push   %r14
-    0.01 :   405137: push   %r13
-    0.01 :   405139: push   %r12
-    0.02 :   40513b: push   %rbp
-    0.00 :   40513c: push   %rbx
-    0.01 :   40513d: mov    %rdi,%rbx
-    0.02 :   405140: sub    %rbx,%rax
-    0.00 :   405143: sub    $0x8,%rsp
-         :            _RandomAccessIterator __last,
-         :            _Size __depth_limit, _Compare __comp)
-         :            {
-         :            while (__last - __first > int(_S_threshold))
-    0.02 :   405147: cmp    $0x40,%rax
-    0.00 :   40514b: jle    4052dc <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1ac>
-    0.01 :   405151: mov    %rdx,%r14
-         :            { return __normal_iterator(_M_current + __n); }
-    0.00 :   405154: lea    0x4(%rbx),%rbp
-         :            {
-         :            if (__depth_limit == 0)
-    0.00 :   405158: test   %rdx,%rdx
-    0.00 :   40515b: je     405301 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1d1>
-         :            { return __lhs.base() - __rhs.base(); }
-    0.01 :   405161: mov    %rsi,%rax
-         :            {
-         :            template<typename _Iterator1, typename _Iterator2>
-         :            _GLIBCXX14_CONSTEXPR
-         :            bool
-         :            operator()(_Iterator1 __it1, _Iterator2 __it2) const
-         :            { return *__it1 < *__it2; }
-    0.01 :   405164: mov    0x4(%rbx),%ecx
-    0.02 :   405167: mov    -0x4(%rsi),%edi
-         :            {
-         :            std::__partial_sort(__first, __last, __last, __comp);
-         :            return;
-         :            }
-         :            --__depth_limit;
-    0.01 :   40516a: sub    $0x1,%r14
-    0.02 :   40516e: sub    %rbx,%rax
-    0.00 :   405171: mov    %rax,%rdx
-         :            _RandomAccessIterator __mid = __first + (__last - __first) / 2;
-    0.02 :   405174: shr    $0x3f,%rax
-    0.00 :   405178: sar    $0x2,%rdx
-    0.04 :   40517c: add    %rdx,%rax
-         :            {
-         :            #if __cplusplus < 201103L
-         :            // concept requirements
-         :            __glibcxx_function_requires(_SGIAssignableConcept<_Tp>)
-         :            #endif
-         :            _Tp __tmp = _GLIBCXX_MOVE(__a);
-    0.01 :   40517f: mov    (%rbx),%edx
-    0.03 :   405181: sar    %rax
-         :            { return __normal_iterator(_M_current + __n); }
-    0.03 :   405184: lea    (%rbx,%rax,4),%r8
-    0.05 :   405188: mov    (%r8),%eax
-         :            if (__comp(__a, __b))
-    0.41 :   40518b: cmp    %eax,%ecx
-    0.00 :   40518d: jge    405220 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0xf0>
-         :            if (__comp(__b, __c))
-    0.00 :   405193: cmp    %edi,%eax
-    0.00 :   405195: jl     405248 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x118>
-         :            else if (__comp(__a, __c))
-    0.00 :   40519b: cmp    %edi,%ecx
-    0.00 :   40519d: jge    4052eb <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1bb>
-         :            __a = _GLIBCXX_MOVE(__b);
-    0.00 :   4051a3: mov    %edi,(%rbx)
-         :            __b = _GLIBCXX_MOVE(__tmp);
-    0.00 :   4051a5: mov    %edx,-0x4(%rsi)
-    0.00 :   4051a8: mov    (%rbx),%ecx
-         :            __unguarded_partition(_RandomAccessIterator __first,
-    0.00 :   4051aa: mov    %rbp,%r12
-    0.00 :   4051ad: mov    %rsi,%rax
-    4.76 :   4051b0: mov    (%r12),%edi
-    8.29 :   4051b4: mov    %r12,%r13
-         :            while (__comp(__first, __pivot))
-    0.14 :   4051b7: cmp    %ecx,%edi
-    0.00 :   4051b9: jl     405213 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0xe3>
-         :            --_M_current;
-   14.13 :   4051bb: sub    $0x4,%rax
-         :            while (__comp(__pivot, __last))
-    5.47 :   4051bf: cmp    %ecx,%edx
-    0.00 :   4051c1: jle    4051d3 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0xa3>
-    3.00 :   4051c3: nopl   0x0(%rax,%rax,1)
-    4.19 :   4051c8: mov    -0x4(%rax),%edx
-    7.58 :   4051cb: sub    $0x4,%rax
-    0.02 :   4051cf: cmp    %ecx,%edx
-    0.00 :   4051d1: jg     4051c8 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x98>
-         :            { __t < __u } -> __boolean_testable;
-         :            { __u < __t } -> __boolean_testable;
-         :            }
-         :            {
-         :            if constexpr (three_way_comparable_with<_Tp, _Up>)
-         :            return __t <=> __u;
-    8.48 :   4051d3: cmp    %r12,%rax
-    0.00 :   4051d6: ja     405208 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0xd8>
-         :            _RandomAccessIterator __cut =
-         :            std::__unguarded_partition_pivot(__first, __last, __comp);
-         :            std::__introsort_loop(__cut, __last, __depth_limit, __comp);
-    0.08 :   4051d8: mov    %r14,%rdx
-    0.05 :   4051db: mov    %r12,%rdi
-    0.00 :   4051de: callq  405130 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]>
-         :            { return __lhs.base() - __rhs.base(); }
-    0.08 :   4051e3: mov    %r12,%rax
-    0.01 :   4051e6: sub    %rbx,%rax
-         :            while (__last - __first > int(_S_threshold))
-    0.01 :   4051e9: cmp    $0x40,%rax
-    0.00 :   4051ed: jle    4052dc <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1ac>
-         :            if (__depth_limit == 0)
-    0.00 :   4051f3: test   %r14,%r14
-    0.00 :   4051f6: je     405304 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1d4>
-    0.01 :   4051fc: mov    %r12,%rsi
-    0.00 :   4051ff: jmpq   405161 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x31>
-    0.00 :   405204: nopl   0x0(%rax)
-         :            __a = _GLIBCXX_MOVE(__b);
-    5.97 :   405208: mov    %edx,(%r12)
-   12.79 :   40520c: mov    -0x4(%rax),%edx
-         :            __b = _GLIBCXX_MOVE(__tmp);
-    0.31 :   40520f: mov    %edi,(%rax)
-    0.37 :   405211: mov    (%rbx),%ecx
-   10.40 :   405213: add    $0x4,%r12
-   11.91 :   405217: jmp    4051b0 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x80>
-    0.00 :   405219: nopl   0x0(%rax)
-         :            else if (__comp(__a, __c))
-    0.08 :   405220: cmp    %edi,%ecx
-    0.00 :   405222: jge    405240 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x110>
-         :            __a = _GLIBCXX_MOVE(__b);
-    0.00 :   405224: vmovd  %ecx,%xmm1
-    0.00 :   405228: vpinsrd $0x1,%edx,%xmm1,%xmm0
-    0.00 :   40522e: vmovq  %xmm0,(%rbx)
-    0.00 :   405232: mov    -0x4(%rsi),%edx
-    0.00 :   405235: jmpq   4051aa <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x7a>
-    0.00 :   40523a: nopw   0x0(%rax,%rax,1)
-         :            else if (__comp(__b, __c))
-    0.00 :   405240: cmp    %edi,%eax
-    0.00 :   405242: jl     4051a3 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x73>
-    0.07 :   405248: mov    %eax,(%rbx)
-         :            __b = _GLIBCXX_MOVE(__tmp);
-    0.03 :   40524a: mov    %edx,(%r8)
-    0.00 :   40524d: mov    -0x4(%rsi),%edx
-    0.00 :   405250: mov    (%rbx),%ecx
-    0.32 :   405252: jmpq   4051aa <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x7a>
-    0.00 :   405257: nopw   0x0(%rax,%rax,1)
-         :            __adjust_heap(_RandomAccessIterator __first, _Distance __holeIndex,
-         :            _Distance __len, _Tp __value, _Compare __comp)
-         :            {
-         :            const _Distance __topIndex = __holeIndex;
-         :            _Distance __secondChild = __holeIndex;
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   405260: mov    %rbp,%r11
-    0.00 :   405263: mov    %rcx,%rax
-         :            __first + (__secondChild - 1)))
-         :            __secondChild--;
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __secondChild));
-         :            __holeIndex = __secondChild;
-         :            }
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   405266: test   %r13,%r13
-    0.00 :   405269: jne    4054eb <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x3bb>
-    0.00 :   40526f: sub    $0x2,%r14
-         :            _Distance __parent = (__holeIndex - 1) / 2;
-    0.00 :   405273: lea    -0x1(%rax),%rcx
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   405277: mov    %r14,%rdx
-         :            _Distance __parent = (__holeIndex - 1) / 2;
-    0.00 :   40527a: sar    %rcx
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   40527d: shr    $0x3f,%rdx
-    0.00 :   405281: add    %rdx,%r14
-    0.00 :   405284: sar    %r14
-    0.00 :   405287: cmp    %r14,%rax
-    0.00 :   40528a: jne    4052bd <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x18d>
-    0.00 :   40528c: jmpq   4054e0 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x3b0>
-    0.00 :   405291: nopl   0x0(%rax)
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __parent));
-    0.00 :   405298: mov    %edx,(%rax)
-         :            __parent = (__holeIndex - 1) / 2;
-    0.00 :   40529a: lea    -0x1(%rcx),%rdx
-    0.00 :   40529e: mov    %rdx,%rax
-    0.00 :   4052a1: shr    $0x3f,%rax
-    0.00 :   4052a5: add    %rdx,%rax
-    0.00 :   4052a8: sar    %rax
-    0.00 :   4052ab: mov    %rax,%rdx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   4052ae: mov    %rcx,%rax
-    0.00 :   4052b1: test   %rcx,%rcx
-    0.00 :   4052b4: je     405500 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x3d0>
-         :            __parent = (__holeIndex - 1) / 2;
-    0.00 :   4052ba: mov    %rdx,%rcx
-         :            { return __normal_iterator(_M_current + __n); }
-    0.00 :   4052bd: lea    (%rbx,%rcx,4),%r9
-    0.00 :   4052c1: lea    (%rbx,%rax,4),%rax
-         :
-         :            template<typename _Iterator, typename _Value>
-         :            _GLIBCXX20_CONSTEXPR
-         :            bool
-         :            operator()(_Iterator __it, _Value& __val) const
-         :            { return *__it < __val; }
-    0.00 :   4052c5: mov    (%r9),%edx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   4052c8: cmp    %edx,%esi
-    0.00 :   4052ca: jg     405298 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x168>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(__value);
-    0.00 :   4052cc: mov    %esi,(%rax)
-         :            _GLIBCXX20_CONSTEXPR
-         :            void
-         :            __sort_heap(_RandomAccessIterator __first, _RandomAccessIterator __last,
-         :            _Compare& __comp)
-         :            {
-         :            while (__last - __first > 1)
-    0.00 :   4052ce: sub    $0x4,%rdi
-    0.00 :   4052d2: cmp    $0x4,%r8
-    0.00 :   4052d6: jg     405440 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x310>
-         :            __last = __cut;
-         :            }
-         :            }
-    0.04 :   4052dc: add    $0x8,%rsp
-    0.01 :   4052e0: pop    %rbx
-    0.11 :   4052e1: pop    %rbp
-    0.00 :   4052e2: pop    %r12
-    0.06 :   4052e4: pop    %r13
-    0.04 :   4052e6: pop    %r14
-    0.07 :   4052e8: pop    %r15
-    0.00 :   4052ea: retq
-         :            __a = _GLIBCXX_MOVE(__b);
-    0.00 :   4052eb: vmovd  %ecx,%xmm2
-    0.00 :   4052ef: vpinsrd $0x1,%edx,%xmm2,%xmm0
-    0.00 :   4052f5: vmovq  %xmm0,(%rbx)
-         :            { return *__it1 < *__it2; }
-    0.00 :   4052f9: mov    -0x4(%rsi),%edx
-    0.00 :   4052fc: jmpq   4051aa <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x7a>
-         :            if (__depth_limit == 0)
-    0.00 :   405301: mov    %rsi,%r13
-         :            { return __lhs.base() - __rhs.base(); }
-    0.00 :   405304: sar    $0x2,%rax
-         :            _DistanceType __parent = (__len - 2) / 2;
-    0.00 :   405308: lea    -0x2(%rax),%rbp
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   40530c: lea    -0x1(%rax),%r9
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   405310: not    %rax
-         :            _DistanceType __parent = (__len - 2) / 2;
-    0.00 :   405313: sar    %rbp
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   405316: mov    %eax,%r10d
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   405319: sar    %r9
-    0.00 :   40531c: lea    (%rbx,%rbp,4),%r11
-         :            _DistanceType __parent = (__len - 2) / 2;
-    0.00 :   405320: mov    %rbp,%rdi
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   405323: and    $0x1,%r10d
-         :            _ValueType __value = _GLIBCXX_MOVE(*(__first + __parent));
-    0.00 :   405327: mov    (%r11),%r8d
-         :            { return __normal_iterator(_M_current + __n); }
-    0.00 :   40532a: mov    %r11,%r12
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   40532d: cmp    %r9,%rdi
-    0.00 :   405330: jge    405407 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2d7>
-    0.00 :   405336: nopw   %cs:0x0(%rax,%rax,1)
-    0.00 :   405340: mov    %rdi,%rsi
-    0.00 :   405343: nopl   0x0(%rax,%rax,1)
-         :            __secondChild = 2 * (__secondChild + 1);
-    0.00 :   405348: lea    0x1(%rsi),%rdx
-    0.00 :   40534c: lea    (%rdx,%rdx,1),%rax
-    0.00 :   405350: lea    (%rbx,%rdx,8),%r12
-         :            if (__comp(__first + __secondChild,
-    0.00 :   405354: lea    -0x1(%rax),%rcx
-    0.00 :   405358: mov    (%r12),%r15d
-    0.00 :   40535c: lea    (%rbx,%rcx,4),%r14
-    0.00 :   405360: mov    (%r14),%edx
-    0.00 :   405363: cmp    %r15d,%edx
-    0.00 :   405366: jg     405380 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x250>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __secondChild));
-    0.00 :   405368: mov    %r15d,(%rbx,%rsi,4)
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   40536c: cmp    %rax,%r9
-    0.00 :   40536f: jle    405396 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x266>
-    0.00 :   405371: mov    %rax,%rsi
-    0.00 :   405374: jmp    405348 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x218>
-    0.00 :   405376: nopw   %cs:0x0(%rax,%rax,1)
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __secondChild));
-    0.00 :   405380: mov    %edx,(%rbx,%rsi,4)
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   405383: cmp    %rcx,%r9
-    0.00 :   405386: jle    405390 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x260>
-    0.00 :   405388: mov    %rcx,%rsi
-    0.00 :   40538b: jmp    405348 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x218>
-    0.00 :   40538d: nopl   (%rax)
-    0.00 :   405390: mov    %r14,%r12
-    0.00 :   405393: mov    %rcx,%rax
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   405396: cmp    %rax,%rbp
-    0.00 :   405399: jne    4053a4 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x274>
-    0.00 :   40539b: test   %r10b,%r10b
-    0.00 :   40539e: jne    405518 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x3e8>
-         :            _Distance __parent = (__holeIndex - 1) / 2;
-    0.00 :   4053a4: lea    -0x1(%rax),%rcx
-    0.00 :   4053a8: sar    %rcx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   4053ab: cmp    %rax,%rdi
-    0.00 :   4053ae: jl     4053d9 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2a9>
-    0.00 :   4053b0: jmp    405418 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2e8>
-    0.00 :   4053b2: nopw   0x0(%rax,%rax,1)
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __parent));
-    0.00 :   4053b8: mov    %edx,(%rax)
-         :            __parent = (__holeIndex - 1) / 2;
-    0.00 :   4053ba: lea    -0x1(%rcx),%rdx
-    0.00 :   4053be: mov    %rdx,%rax
-    0.00 :   4053c1: shr    $0x3f,%rax
-    0.00 :   4053c5: add    %rdx,%rax
-    0.00 :   4053c8: sar    %rax
-    0.00 :   4053cb: mov    %rax,%rdx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   4053ce: mov    %rcx,%rax
-    0.00 :   4053d1: cmp    %rcx,%rdi
-    0.00 :   4053d4: jge    405428 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2f8>
-         :            __parent = (__holeIndex - 1) / 2;
-    0.00 :   4053d6: mov    %rdx,%rcx
-    0.00 :   4053d9: lea    (%rbx,%rcx,4),%rsi
-    0.00 :   4053dd: lea    (%rbx,%rax,4),%rax
-         :            { return *__it < __val; }
-    0.00 :   4053e1: mov    (%rsi),%edx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   4053e3: cmp    %edx,%r8d
-    0.00 :   4053e6: jg     4053b8 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x288>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(__value);
-    0.00 :   4053e8: mov    %r8d,(%rax)
-         :            if (__parent == 0)
-    0.00 :   4053eb: sub    $0x4,%r11
-    0.00 :   4053ef: test   %rdi,%rdi
-    0.00 :   4053f2: je     405437 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x307>
-         :            __parent--;
-    0.00 :   4053f4: sub    $0x1,%rdi
-         :            _ValueType __value = _GLIBCXX_MOVE(*(__first + __parent));
-    0.00 :   4053f8: mov    (%r11),%r8d
-    0.00 :   4053fb: mov    %r11,%r12
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   4053fe: cmp    %r9,%rdi
-    0.00 :   405401: jl     405340 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x210>
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   405407: cmp    %rdi,%rbp
-    0.00 :   40540a: jne    405418 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2e8>
-    0.00 :   40540c: mov    %rdi,%rax
-    0.00 :   40540f: test   %r10b,%r10b
-    0.00 :   405412: jne    405518 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x3e8>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(__value);
-    0.00 :   405418: mov    %r8d,(%r12)
-         :            if (__parent == 0)
-    0.00 :   40541c: sub    $0x4,%r11
-    0.00 :   405420: jmp    4053f4 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2c4>
-    0.00 :   405422: nopw   0x0(%rax,%rax,1)
-    0.00 :   405428: mov    %rsi,%rax
-    0.00 :   40542b: sub    $0x4,%r11
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(__value);
-    0.00 :   40542f: mov    %r8d,(%rax)
-         :            if (__parent == 0)
-    0.00 :   405432: test   %rdi,%rdi
-    0.00 :   405435: jne    4053f4 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2c4>
-         :            while (__last - __first > 1)
-    0.00 :   405437: lea    -0x4(%r13),%rdi
-    0.00 :   40543b: nopl   0x0(%rax,%rax,1)
-         :            { return __lhs.base() - __rhs.base(); }
-    0.00 :   405440: mov    %rdi,%r8
-         :            *__result = _GLIBCXX_MOVE(*__first);
-    0.00 :   405443: mov    (%rbx),%eax
-         :            _ValueType __value = _GLIBCXX_MOVE(*__result);
-    0.00 :   405445: mov    (%rdi),%esi
-    0.00 :   405447: sub    %rbx,%r8
-    0.00 :   40544a: mov    %r8,%r14
-         :            *__result = _GLIBCXX_MOVE(*__first);
-    0.00 :   40544d: mov    %eax,(%rdi)
-    0.00 :   40544f: sar    $0x2,%r14
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   405453: lea    -0x1(%r14),%rdx
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   405457: mov    %r14,%r13
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   40545a: mov    %rdx,%r12
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   40545d: and    $0x1,%r13d
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   405461: shr    $0x3f,%r12
-    0.00 :   405465: add    %rdx,%r12
-    0.00 :   405468: sar    %r12
-    0.00 :   40546b: cmp    $0x8,%r8
-    0.00 :   40546f: jle    4054c2 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x392>
-    0.00 :   405471: xor    %r9d,%r9d
-    0.00 :   405474: nopl   0x0(%rax)
-         :            __secondChild = 2 * (__secondChild + 1);
-    0.00 :   405478: lea    0x1(%r9),%rdx
-    0.00 :   40547c: lea    (%rdx,%rdx,1),%rax
-         :            { return __normal_iterator(_M_current + __n); }
-    0.00 :   405480: lea    (%rbx,%rdx,8),%r11
-         :            if (__comp(__first + __secondChild,
-    0.00 :   405484: lea    -0x1(%rax),%rcx
-         :            { return *__it1 < *__it2; }
-    0.00 :   405488: mov    (%r11),%r10d
-    0.00 :   40548b: lea    (%rbx,%rcx,4),%rbp
-    0.00 :   40548f: mov    0x0(%rbp),%edx
-    0.00 :   405492: cmp    %r10d,%edx
-    0.00 :   405495: jg     4054b0 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x380>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __secondChild));
-    0.00 :   405497: mov    %r10d,(%rbx,%r9,4)
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   40549b: cmp    %rax,%r12
-    0.00 :   40549e: jle    405266 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x136>
-    0.00 :   4054a4: mov    %rax,%r9
-    0.00 :   4054a7: jmp    405478 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x348>
-    0.00 :   4054a9: nopl   0x0(%rax)
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __secondChild));
-    0.00 :   4054b0: mov    %edx,(%rbx,%r9,4)
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   4054b4: cmp    %rcx,%r12
-    0.00 :   4054b7: jle    405260 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x130>
-    0.00 :   4054bd: mov    %rcx,%r9
-    0.00 :   4054c0: jmp    405478 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x348>
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   4054c2: mov    %rbx,%rax
-    0.00 :   4054c5: test   %r13,%r13
-    0.00 :   4054c8: jne    4052cc <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x19c>
-    0.00 :   4054ce: cmp    $0x2,%rdx
-    0.00 :   4054d2: ja     4052cc <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x19c>
-    0.00 :   4054d8: mov    %rbx,%r11
-    0.00 :   4054db: xor    %eax,%eax
-    0.00 :   4054dd: nopl   (%rax)
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first
-    0.00 :   4054e0: lea    0x1(%rax,%rax,1),%rax
-    0.00 :   4054e5: mov    (%rbx,%rax,4),%edx
-    0.00 :   4054e8: mov    %edx,(%r11)
-         :            _Distance __parent = (__holeIndex - 1) / 2;
-    0.00 :   4054eb: lea    -0x1(%rax),%rcx
-    0.00 :   4054ef: sar    %rcx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   4054f2: jmpq   4052bd <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x18d>
-    0.00 :   4054f7: nopw   0x0(%rax,%rax,1)
-    0.00 :   405500: mov    %r9,%rax
-         :            while (__last - __first > 1)
-    0.00 :   405503: sub    $0x4,%rdi
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(__value);
-    0.00 :   405507: mov    %esi,(%rax)
-         :            while (__last - __first > 1)
-    0.00 :   405509: cmp    $0x4,%r8
-    0.00 :   40550d: jg     405440 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x310>
-    0.00 :   405513: jmpq   4052dc <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1ac>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first
-    0.00 :   405518: lea    0x1(%rax,%rax,1),%rax
-    0.00 :   40551d: lea    (%rbx,%rax,4),%rdx
-    0.00 :   405521: mov    (%rdx),%ecx
-    0.00 :   405523: mov    %ecx,(%r12)
-    0.00 :   405527: mov    %rdx,%r12
-    0.00 :   40552a: jmpq   4053a4 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, AlignedAllocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x274>
- Percent |	Source code & Disassembly of binary_search for cycles:u (16365 samples, percent: local period)
---------------------------------------------------------------------------------------------------------------
-         :
-         :
-         :
-         :            Disassembly of section .text:
-         :
-         :            0000000000404d30 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]>:
-         :            _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEElNS0_5__ops15_Iter_less_iterEEvT_S9_T0_T1_.isra.0():
-         :
-         :            /// This is a helper function for the sort routine.
-         :            template<typename _RandomAccessIterator, typename _Size, typename _Compare>
-         :            _GLIBCXX20_CONSTEXPR
-         :            void
-         :            __introsort_loop(_RandomAccessIterator __first,
-    0.32 :   404d30: push   %r15
-         :            _GLIBCXX20_CONSTEXPR
-         :            inline typename __normal_iterator<_Iterator, _Container>::difference_type
-         :            operator-(const __normal_iterator<_Iterator, _Container>& __lhs,
-         :            const __normal_iterator<_Iterator, _Container>& __rhs)
-         :            _GLIBCXX_NOEXCEPT
-         :            { return __lhs.base() - __rhs.base(); }
-    0.02 :   404d32: mov    %rsi,%rax
-    0.00 :   404d35: push   %r14
-    0.01 :   404d37: push   %r13
-    0.01 :   404d39: push   %r12
-    0.02 :   404d3b: push   %rbp
-    0.00 :   404d3c: push   %rbx
-    0.03 :   404d3d: mov    %rdi,%rbx
-    0.02 :   404d40: sub    %rbx,%rax
-    0.01 :   404d43: sub    $0x8,%rsp
-         :            _RandomAccessIterator __last,
-         :            _Size __depth_limit, _Compare __comp)
-         :            {
-         :            while (__last - __first > int(_S_threshold))
-    0.01 :   404d47: cmp    $0x40,%rax
-    0.00 :   404d4b: jle    404edc <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1ac>
-    0.00 :   404d51: mov    %rdx,%r14
-         :            { return __normal_iterator(_M_current + __n); }
-    0.00 :   404d54: lea    0x4(%rbx),%rbp
-         :            {
-         :            if (__depth_limit == 0)
-    0.00 :   404d58: test   %rdx,%rdx
-    0.00 :   404d5b: je     404f01 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1d1>
-         :            { return __lhs.base() - __rhs.base(); }
-    0.04 :   404d61: mov    %rsi,%rax
-         :            {
-         :            template<typename _Iterator1, typename _Iterator2>
-         :            _GLIBCXX14_CONSTEXPR
-         :            bool
-         :            operator()(_Iterator1 __it1, _Iterator2 __it2) const
-         :            { return *__it1 < *__it2; }
-    0.01 :   404d64: mov    0x4(%rbx),%ecx
-    0.04 :   404d67: mov    -0x4(%rsi),%edi
-         :            {
-         :            std::__partial_sort(__first, __last, __last, __comp);
-         :            return;
-         :            }
-         :            --__depth_limit;
-    0.04 :   404d6a: sub    $0x1,%r14
-    0.01 :   404d6e: sub    %rbx,%rax
-    0.00 :   404d71: mov    %rax,%rdx
-         :            _RandomAccessIterator __mid = __first + (__last - __first) / 2;
-    0.00 :   404d74: shr    $0x3f,%rax
-    0.00 :   404d78: sar    $0x2,%rdx
-    0.01 :   404d7c: add    %rdx,%rax
-         :            {
-         :            #if __cplusplus < 201103L
-         :            // concept requirements
-         :            __glibcxx_function_requires(_SGIAssignableConcept<_Tp>)
-         :            #endif
-         :            _Tp __tmp = _GLIBCXX_MOVE(__a);
-    0.01 :   404d7f: mov    (%rbx),%edx
-    0.02 :   404d81: sar    %rax
-         :            { return __normal_iterator(_M_current + __n); }
-    0.01 :   404d84: lea    (%rbx,%rax,4),%r8
-    0.04 :   404d88: mov    (%r8),%eax
-         :            if (__comp(__a, __b))
-    0.26 :   404d8b: cmp    %eax,%ecx
-    0.00 :   404d8d: jge    404e20 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0xf0>
-         :            if (__comp(__b, __c))
-    0.00 :   404d93: cmp    %edi,%eax
-    0.00 :   404d95: jl     404e48 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x118>
-         :            else if (__comp(__a, __c))
-    0.00 :   404d9b: cmp    %edi,%ecx
-    0.00 :   404d9d: jge    404eeb <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1bb>
-         :            __a = _GLIBCXX_MOVE(__b);
-    0.00 :   404da3: mov    %edi,(%rbx)
-         :            __b = _GLIBCXX_MOVE(__tmp);
-    0.00 :   404da5: mov    %edx,-0x4(%rsi)
-    0.00 :   404da8: mov    (%rbx),%ecx
-         :            __unguarded_partition(_RandomAccessIterator __first,
-    0.00 :   404daa: mov    %rbp,%r12
-    0.00 :   404dad: mov    %rsi,%rax
-    5.08 :   404db0: mov    (%r12),%edi
-    7.45 :   404db4: mov    %r12,%r13
-         :            while (__comp(__first, __pivot))
-    0.12 :   404db7: cmp    %ecx,%edi
-    0.00 :   404db9: jl     404e13 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0xe3>
-         :            --_M_current;
-   13.76 :   404dbb: sub    $0x4,%rax
-         :            while (__comp(__pivot, __last))
-    5.13 :   404dbf: cmp    %ecx,%edx
-    0.00 :   404dc1: jle    404dd3 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0xa3>
-    2.71 :   404dc3: nopl   0x0(%rax,%rax,1)
-    4.44 :   404dc8: mov    -0x4(%rax),%edx
-    7.55 :   404dcb: sub    $0x4,%rax
-    0.04 :   404dcf: cmp    %ecx,%edx
-    0.00 :   404dd1: jg     404dc8 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x98>
-         :            { __t < __u } -> __boolean_testable;
-         :            { __u < __t } -> __boolean_testable;
-         :            }
-         :            {
-         :            if constexpr (three_way_comparable_with<_Tp, _Up>)
-         :            return __t <=> __u;
-    8.99 :   404dd3: cmp    %r12,%rax
-    0.00 :   404dd6: ja     404e08 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0xd8>
-         :            _RandomAccessIterator __cut =
-         :            std::__unguarded_partition_pivot(__first, __last, __comp);
-         :            std::__introsort_loop(__cut, __last, __depth_limit, __comp);
-    0.07 :   404dd8: mov    %r14,%rdx
-    0.07 :   404ddb: mov    %r12,%rdi
-    0.00 :   404dde: callq  404d30 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]>
-         :            { return __lhs.base() - __rhs.base(); }
-    0.07 :   404de3: mov    %r12,%rax
-    0.01 :   404de6: sub    %rbx,%rax
-         :            while (__last - __first > int(_S_threshold))
-    0.04 :   404de9: cmp    $0x40,%rax
-    0.00 :   404ded: jle    404edc <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1ac>
-         :            if (__depth_limit == 0)
-    0.01 :   404df3: test   %r14,%r14
-    0.00 :   404df6: je     404f04 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1d4>
-    0.00 :   404dfc: mov    %r12,%rsi
-    0.00 :   404dff: jmpq   404d61 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x31>
-    0.00 :   404e04: nopl   0x0(%rax)
-         :            __a = _GLIBCXX_MOVE(__b);
-    6.46 :   404e08: mov    %edx,(%r12)
-   13.02 :   404e0c: mov    -0x4(%rax),%edx
-         :            __b = _GLIBCXX_MOVE(__tmp);
-    0.37 :   404e0f: mov    %edi,(%rax)
-    0.33 :   404e11: mov    (%rbx),%ecx
-   10.36 :   404e13: add    $0x4,%r12
-   12.17 :   404e17: jmp    404db0 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x80>
-    0.00 :   404e19: nopl   0x0(%rax)
-         :            else if (__comp(__a, __c))
-    0.10 :   404e20: cmp    %edi,%ecx
-    0.00 :   404e22: jge    404e40 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x110>
-         :            __a = _GLIBCXX_MOVE(__b);
-    0.00 :   404e24: vmovd  %ecx,%xmm1
-    0.00 :   404e28: vpinsrd $0x1,%edx,%xmm1,%xmm0
-    0.00 :   404e2e: vmovq  %xmm0,(%rbx)
-    0.00 :   404e32: mov    -0x4(%rsi),%edx
-    0.00 :   404e35: jmpq   404daa <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x7a>
-    0.00 :   404e3a: nopw   0x0(%rax,%rax,1)
-         :            else if (__comp(__b, __c))
-    0.00 :   404e40: cmp    %edi,%eax
-    0.00 :   404e42: jl     404da3 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x73>
-    0.07 :   404e48: mov    %eax,(%rbx)
-         :            __b = _GLIBCXX_MOVE(__tmp);
-    0.01 :   404e4a: mov    %edx,(%r8)
-    0.00 :   404e4d: mov    -0x4(%rsi),%edx
-    0.00 :   404e50: mov    (%rbx),%ecx
-    0.35 :   404e52: jmpq   404daa <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x7a>
-    0.00 :   404e57: nopw   0x0(%rax,%rax,1)
-         :            __adjust_heap(_RandomAccessIterator __first, _Distance __holeIndex,
-         :            _Distance __len, _Tp __value, _Compare __comp)
-         :            {
-         :            const _Distance __topIndex = __holeIndex;
-         :            _Distance __secondChild = __holeIndex;
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   404e60: mov    %rbp,%r11
-    0.00 :   404e63: mov    %rcx,%rax
-         :            __first + (__secondChild - 1)))
-         :            __secondChild--;
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __secondChild));
-         :            __holeIndex = __secondChild;
-         :            }
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   404e66: test   %r13,%r13
-    0.00 :   404e69: jne    4050eb <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x3bb>
-    0.00 :   404e6f: sub    $0x2,%r14
-         :            _Distance __parent = (__holeIndex - 1) / 2;
-    0.00 :   404e73: lea    -0x1(%rax),%rcx
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   404e77: mov    %r14,%rdx
-         :            _Distance __parent = (__holeIndex - 1) / 2;
-    0.00 :   404e7a: sar    %rcx
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   404e7d: shr    $0x3f,%rdx
-    0.00 :   404e81: add    %rdx,%r14
-    0.00 :   404e84: sar    %r14
-    0.00 :   404e87: cmp    %r14,%rax
-    0.00 :   404e8a: jne    404ebd <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x18d>
-    0.00 :   404e8c: jmpq   4050e0 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x3b0>
-    0.00 :   404e91: nopl   0x0(%rax)
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __parent));
-    0.00 :   404e98: mov    %edx,(%rax)
-         :            __parent = (__holeIndex - 1) / 2;
-    0.00 :   404e9a: lea    -0x1(%rcx),%rdx
-    0.00 :   404e9e: mov    %rdx,%rax
-    0.00 :   404ea1: shr    $0x3f,%rax
-    0.00 :   404ea5: add    %rdx,%rax
-    0.00 :   404ea8: sar    %rax
-    0.00 :   404eab: mov    %rax,%rdx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   404eae: mov    %rcx,%rax
-    0.00 :   404eb1: test   %rcx,%rcx
-    0.00 :   404eb4: je     405100 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x3d0>
-         :            __parent = (__holeIndex - 1) / 2;
-    0.00 :   404eba: mov    %rdx,%rcx
-         :            { return __normal_iterator(_M_current + __n); }
-    0.00 :   404ebd: lea    (%rbx,%rcx,4),%r9
-    0.00 :   404ec1: lea    (%rbx,%rax,4),%rax
-         :
-         :            template<typename _Iterator, typename _Value>
-         :            _GLIBCXX20_CONSTEXPR
-         :            bool
-         :            operator()(_Iterator __it, _Value& __val) const
-         :            { return *__it < __val; }
-    0.00 :   404ec5: mov    (%r9),%edx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   404ec8: cmp    %edx,%esi
-    0.00 :   404eca: jg     404e98 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x168>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(__value);
-    0.00 :   404ecc: mov    %esi,(%rax)
-         :            _GLIBCXX20_CONSTEXPR
-         :            void
-         :            __sort_heap(_RandomAccessIterator __first, _RandomAccessIterator __last,
-         :            _Compare& __comp)
-         :            {
-         :            while (__last - __first > 1)
-    0.00 :   404ece: sub    $0x4,%rdi
-    0.00 :   404ed2: cmp    $0x4,%r8
-    0.00 :   404ed6: jg     405040 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x310>
-         :            __last = __cut;
-         :            }
-         :            }
-    0.03 :   404edc: add    $0x8,%rsp
-    0.01 :   404ee0: pop    %rbx
-    0.09 :   404ee1: pop    %rbp
-    0.01 :   404ee2: pop    %r12
-    0.02 :   404ee4: pop    %r13
-    0.03 :   404ee6: pop    %r14
-    0.04 :   404ee8: pop    %r15
-    0.01 :   404eea: retq
-         :            __a = _GLIBCXX_MOVE(__b);
-    0.00 :   404eeb: vmovd  %ecx,%xmm2
-    0.00 :   404eef: vpinsrd $0x1,%edx,%xmm2,%xmm0
-    0.00 :   404ef5: vmovq  %xmm0,(%rbx)
-         :            { return *__it1 < *__it2; }
-    0.00 :   404ef9: mov    -0x4(%rsi),%edx
-    0.00 :   404efc: jmpq   404daa <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x7a>
-         :            if (__depth_limit == 0)
-    0.00 :   404f01: mov    %rsi,%r13
-         :            { return __lhs.base() - __rhs.base(); }
-    0.00 :   404f04: sar    $0x2,%rax
-         :            _DistanceType __parent = (__len - 2) / 2;
-    0.00 :   404f08: lea    -0x2(%rax),%rbp
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   404f0c: lea    -0x1(%rax),%r9
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   404f10: not    %rax
-         :            _DistanceType __parent = (__len - 2) / 2;
-    0.00 :   404f13: sar    %rbp
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   404f16: mov    %eax,%r10d
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   404f19: sar    %r9
-    0.00 :   404f1c: lea    (%rbx,%rbp,4),%r11
-         :            _DistanceType __parent = (__len - 2) / 2;
-    0.00 :   404f20: mov    %rbp,%rdi
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   404f23: and    $0x1,%r10d
-         :            _ValueType __value = _GLIBCXX_MOVE(*(__first + __parent));
-    0.00 :   404f27: mov    (%r11),%r8d
-         :            { return __normal_iterator(_M_current + __n); }
-    0.00 :   404f2a: mov    %r11,%r12
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   404f2d: cmp    %r9,%rdi
-    0.00 :   404f30: jge    405007 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2d7>
-    0.00 :   404f36: nopw   %cs:0x0(%rax,%rax,1)
-    0.00 :   404f40: mov    %rdi,%rsi
-    0.00 :   404f43: nopl   0x0(%rax,%rax,1)
-         :            __secondChild = 2 * (__secondChild + 1);
-    0.00 :   404f48: lea    0x1(%rsi),%rdx
-    0.00 :   404f4c: lea    (%rdx,%rdx,1),%rax
-    0.00 :   404f50: lea    (%rbx,%rdx,8),%r12
-         :            if (__comp(__first + __secondChild,
-    0.00 :   404f54: lea    -0x1(%rax),%rcx
-    0.00 :   404f58: mov    (%r12),%r15d
-    0.00 :   404f5c: lea    (%rbx,%rcx,4),%r14
-    0.00 :   404f60: mov    (%r14),%edx
-    0.00 :   404f63: cmp    %r15d,%edx
-    0.00 :   404f66: jg     404f80 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x250>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __secondChild));
-    0.00 :   404f68: mov    %r15d,(%rbx,%rsi,4)
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   404f6c: cmp    %rax,%r9
-    0.00 :   404f6f: jle    404f96 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x266>
-    0.00 :   404f71: mov    %rax,%rsi
-    0.00 :   404f74: jmp    404f48 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x218>
-    0.00 :   404f76: nopw   %cs:0x0(%rax,%rax,1)
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __secondChild));
-    0.00 :   404f80: mov    %edx,(%rbx,%rsi,4)
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   404f83: cmp    %rcx,%r9
-    0.00 :   404f86: jle    404f90 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x260>
-    0.00 :   404f88: mov    %rcx,%rsi
-    0.00 :   404f8b: jmp    404f48 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x218>
-    0.00 :   404f8d: nopl   (%rax)
-    0.00 :   404f90: mov    %r14,%r12
-    0.00 :   404f93: mov    %rcx,%rax
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   404f96: cmp    %rax,%rbp
-    0.00 :   404f99: jne    404fa4 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x274>
-    0.00 :   404f9b: test   %r10b,%r10b
-    0.00 :   404f9e: jne    405118 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x3e8>
-         :            _Distance __parent = (__holeIndex - 1) / 2;
-    0.00 :   404fa4: lea    -0x1(%rax),%rcx
-    0.00 :   404fa8: sar    %rcx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   404fab: cmp    %rax,%rdi
-    0.00 :   404fae: jl     404fd9 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2a9>
-    0.00 :   404fb0: jmp    405018 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2e8>
-    0.00 :   404fb2: nopw   0x0(%rax,%rax,1)
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __parent));
-    0.00 :   404fb8: mov    %edx,(%rax)
-         :            __parent = (__holeIndex - 1) / 2;
-    0.00 :   404fba: lea    -0x1(%rcx),%rdx
-    0.00 :   404fbe: mov    %rdx,%rax
-    0.00 :   404fc1: shr    $0x3f,%rax
-    0.00 :   404fc5: add    %rdx,%rax
-    0.00 :   404fc8: sar    %rax
-    0.00 :   404fcb: mov    %rax,%rdx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   404fce: mov    %rcx,%rax
-    0.00 :   404fd1: cmp    %rcx,%rdi
-    0.00 :   404fd4: jge    405028 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2f8>
-         :            __parent = (__holeIndex - 1) / 2;
-    0.00 :   404fd6: mov    %rdx,%rcx
-    0.00 :   404fd9: lea    (%rbx,%rcx,4),%rsi
-    0.00 :   404fdd: lea    (%rbx,%rax,4),%rax
-         :            { return *__it < __val; }
-    0.00 :   404fe1: mov    (%rsi),%edx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   404fe3: cmp    %edx,%r8d
-    0.00 :   404fe6: jg     404fb8 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x288>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(__value);
-    0.00 :   404fe8: mov    %r8d,(%rax)
-         :            if (__parent == 0)
-    0.00 :   404feb: sub    $0x4,%r11
-    0.00 :   404fef: test   %rdi,%rdi
-    0.00 :   404ff2: je     405037 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x307>
-         :            __parent--;
-    0.00 :   404ff4: sub    $0x1,%rdi
-         :            _ValueType __value = _GLIBCXX_MOVE(*(__first + __parent));
-    0.00 :   404ff8: mov    (%r11),%r8d
-    0.00 :   404ffb: mov    %r11,%r12
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   404ffe: cmp    %r9,%rdi
-    0.00 :   405001: jl     404f40 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x210>
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   405007: cmp    %rdi,%rbp
-    0.00 :   40500a: jne    405018 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2e8>
-    0.00 :   40500c: mov    %rdi,%rax
-    0.00 :   40500f: test   %r10b,%r10b
-    0.00 :   405012: jne    405118 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x3e8>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(__value);
-    0.00 :   405018: mov    %r8d,(%r12)
-         :            if (__parent == 0)
-    0.00 :   40501c: sub    $0x4,%r11
-    0.00 :   405020: jmp    404ff4 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2c4>
-    0.00 :   405022: nopw   0x0(%rax,%rax,1)
-    0.00 :   405028: mov    %rsi,%rax
-    0.00 :   40502b: sub    $0x4,%r11
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(__value);
-    0.00 :   40502f: mov    %r8d,(%rax)
-         :            if (__parent == 0)
-    0.00 :   405032: test   %rdi,%rdi
-    0.00 :   405035: jne    404ff4 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x2c4>
-         :            while (__last - __first > 1)
-    0.00 :   405037: lea    -0x4(%r13),%rdi
-    0.00 :   40503b: nopl   0x0(%rax,%rax,1)
-         :            { return __lhs.base() - __rhs.base(); }
-    0.00 :   405040: mov    %rdi,%r8
-         :            *__result = _GLIBCXX_MOVE(*__first);
-    0.00 :   405043: mov    (%rbx),%eax
-         :            _ValueType __value = _GLIBCXX_MOVE(*__result);
-    0.00 :   405045: mov    (%rdi),%esi
-    0.00 :   405047: sub    %rbx,%r8
-    0.00 :   40504a: mov    %r8,%r14
-         :            *__result = _GLIBCXX_MOVE(*__first);
-    0.00 :   40504d: mov    %eax,(%rdi)
-    0.00 :   40504f: sar    $0x2,%r14
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   405053: lea    -0x1(%r14),%rdx
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   405057: mov    %r14,%r13
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   40505a: mov    %rdx,%r12
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   40505d: and    $0x1,%r13d
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   405061: shr    $0x3f,%r12
-    0.00 :   405065: add    %rdx,%r12
-    0.00 :   405068: sar    %r12
-    0.00 :   40506b: cmp    $0x8,%r8
-    0.00 :   40506f: jle    4050c2 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x392>
-    0.00 :   405071: xor    %r9d,%r9d
-    0.00 :   405074: nopl   0x0(%rax)
-         :            __secondChild = 2 * (__secondChild + 1);
-    0.00 :   405078: lea    0x1(%r9),%rdx
-    0.00 :   40507c: lea    (%rdx,%rdx,1),%rax
-         :            { return __normal_iterator(_M_current + __n); }
-    0.00 :   405080: lea    (%rbx,%rdx,8),%r11
-         :            if (__comp(__first + __secondChild,
-    0.00 :   405084: lea    -0x1(%rax),%rcx
-         :            { return *__it1 < *__it2; }
-    0.00 :   405088: mov    (%r11),%r10d
-    0.00 :   40508b: lea    (%rbx,%rcx,4),%rbp
-    0.00 :   40508f: mov    0x0(%rbp),%edx
-    0.00 :   405092: cmp    %r10d,%edx
-    0.00 :   405095: jg     4050b0 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x380>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __secondChild));
-    0.00 :   405097: mov    %r10d,(%rbx,%r9,4)
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   40509b: cmp    %rax,%r12
-    0.00 :   40509e: jle    404e66 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x136>
-    0.00 :   4050a4: mov    %rax,%r9
-    0.00 :   4050a7: jmp    405078 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x348>
-    0.00 :   4050a9: nopl   0x0(%rax)
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __secondChild));
-    0.00 :   4050b0: mov    %edx,(%rbx,%r9,4)
-         :            while (__secondChild < (__len - 1) / 2)
-    0.00 :   4050b4: cmp    %rcx,%r12
-    0.00 :   4050b7: jle    404e60 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x130>
-    0.00 :   4050bd: mov    %rcx,%r9
-    0.00 :   4050c0: jmp    405078 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x348>
-         :            if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
-    0.00 :   4050c2: mov    %rbx,%rax
-    0.00 :   4050c5: test   %r13,%r13
-    0.00 :   4050c8: jne    404ecc <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x19c>
-    0.00 :   4050ce: cmp    $0x2,%rdx
-    0.00 :   4050d2: ja     404ecc <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x19c>
-    0.00 :   4050d8: mov    %rbx,%r11
-    0.00 :   4050db: xor    %eax,%eax
-    0.00 :   4050dd: nopl   (%rax)
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first
-    0.00 :   4050e0: lea    0x1(%rax,%rax,1),%rax
-    0.00 :   4050e5: mov    (%rbx,%rax,4),%edx
-    0.00 :   4050e8: mov    %edx,(%r11)
-         :            _Distance __parent = (__holeIndex - 1) / 2;
-    0.00 :   4050eb: lea    -0x1(%rax),%rcx
-    0.00 :   4050ef: sar    %rcx
-         :            while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
-    0.00 :   4050f2: jmpq   404ebd <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x18d>
-    0.00 :   4050f7: nopw   0x0(%rax,%rax,1)
-    0.00 :   405100: mov    %r9,%rax
-         :            while (__last - __first > 1)
-    0.00 :   405103: sub    $0x4,%rdi
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(__value);
-    0.00 :   405107: mov    %esi,(%rax)
-         :            while (__last - __first > 1)
-    0.00 :   405109: cmp    $0x4,%r8
-    0.00 :   40510d: jg     405040 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x310>
-    0.00 :   405113: jmpq   404edc <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x1ac>
-         :            *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first
-    0.00 :   405118: lea    0x1(%rax,%rax,1),%rax
-    0.00 :   40511d: lea    (%rbx,%rax,4),%rdx
-    0.00 :   405121: mov    (%rdx),%ecx
-    0.00 :   405123: mov    %ecx,(%r12)
-    0.00 :   405127: mov    %rdx,%r12
-    0.00 :   40512a: jmpq   404fa4 <void std::__introsort_loop<__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter>(__gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >, long, __gnu_cxx::__ops::_Iter_less_iter) [clone .isra.0]+0x274>
- Percent |	Source code & Disassembly of binary_search for cycles:u (5233 samples, percent: local period)
--------------------------------------------------------------------------------------------------------------
-         :
-         :
-         :
-         :            Disassembly of section .text:
-         :
-         :            0000000000405b30 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]>:
-         :            _ZNSt24uniform_int_distributionIiEclISt23mersenne_twister_engineImLm32ELm624ELm397ELm31ELm2567483615ELm11ELm4294967295ELm7ELm2636928640ELm15ELm4022730752ELm18ELm1812433253EEEEiRT_RKNS0_10param_typeE.isra.0():
-         :            };
-         :
-         :            template<typename _IntType>
-         :            template<typename _UniformRandomNumberGenerator>
-         :            typename uniform_int_distribution<_IntType>::result_type
-         :            uniform_int_distribution<_IntType>::
-   10.85 :   405b30: push   %r14
-    0.00 :   405b32: push   %r13
-    0.00 :   405b34: push   %r12
-    0.00 :   405b36: mov    %rdi,%r12
-    0.21 :   405b39: push   %rbp
-    0.02 :   405b3a: push   %rbx
-    0.00 :   405b3b: mov    %rsi,%rbx
-    0.00 :   405b3e: sub    $0x10,%rsp
-         :            { return _M_a; }
-    5.14 :   405b42: movslq (%rsi),%rax
-         :
-         :            const __uctype __urngmin = __urng.min();
-         :            const __uctype __urngmax = __urng.max();
-         :            const __uctype __urngrange = __urngmax - __urngmin;
-         :            const __uctype __urange
-         :            = __uctype(__param.b()) - __uctype(__param.a());
-    0.00 :   405b45: movslq 0x4(%rsi),%r13
-         :            { return _M_a; }
-    0.00 :   405b49: mov    %rax,%rdx
-         :            const __uctype __urange
-    0.11 :   405b4c: sub    %rax,%r13
-         :
-         :            __uctype __ret;
-         :
-         :            if (__urngrange > __urange)
-    0.00 :   405b4f: mov    $0xfffffffe,%eax
-    0.00 :   405b54: cmp    %rax,%r13
-    0.00 :   405b57: ja     405bf0 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0xc0>
-         :            {
-         :            // downscaling
-         :            const __uctype __uerange = __urange + 1; // __urange can be zero
-    0.00 :   405b5d: add    $0x1,%r13
-         :            const __uctype __scaling = __urngrange / __uerange;
-    4.54 :   405b61: add    $0x1,%rax
-    0.02 :   405b65: xor    %edx,%edx
-         :            mersenne_twister_engine<_UIntType, __w, __n, __m, __r, __a, __u, __d,
-         :            __s, __b, __t, __c, __l, __f>::
-         :            operator()()
-         :            {
-         :            // Reload the vector - cost is O(n) amortized over n calls.
-         :            if (_M_p >= state_size)
-    0.00 :   405b67: mov    0x1380(%rdi),%rcx
-    0.06 :   405b6e: div    %r13
-         :            const __uctype __past = __uerange * __scaling;
-   13.00 :   405b71: imul   %rax,%r13
-         :            const __uctype __scaling = __urngrange / __uerange;
-    3.00 :   405b75: mov    %rax,%rbp
-    0.00 :   405b78: jmp    405bcf <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0x9f>
-    0.00 :   405b7a: nopw   0x0(%rax,%rax,1)
-         :            _M_gen_rand();
-         :
-         :            // Calculate o(x(i)).
-         :            result_type __z = _M_x[_M_p++];
-    0.10 :   405b80: lea    0x1(%rax),%rcx
-    0.00 :   405b84: mov    (%r12,%rax,8),%rax
-    0.02 :   405b88: mov    %rcx,0x1380(%r12)
-         :            __z ^= (__z >> __u) & __d;
-    2.18 :   405b90: mov    %rax,%rdx
-    3.06 :   405b93: shr    $0xb,%rdx
-    0.00 :   405b97: mov    %edx,%edx
-    0.00 :   405b99: xor    %rdx,%rax
-         :            __z ^= (__z << __s) & __b;
-    0.02 :   405b9c: mov    %rax,%rdx
-    0.08 :   405b9f: shl    $0x7,%rdx
-    0.00 :   405ba3: and    $0x9d2c5680,%edx
-    0.00 :   405ba9: xor    %rdx,%rax
-         :            __z ^= (__z << __t) & __c;
-    2.43 :   405bac: mov    %rax,%rdx
-    3.05 :   405baf: shl    $0xf,%rdx
-    0.00 :   405bb3: and    $0xefc60000,%edx
-    0.02 :   405bb9: xor    %rdx,%rax
-         :            __z ^= (__z >> __l);
-    0.02 :   405bbc: mov    %rax,%rdx
-    0.15 :   405bbf: shr    $0x12,%rdx
-    0.02 :   405bc3: xor    %rdx,%rax
-         :            do
-         :            __ret = __uctype(__urng()) - __urngmin;
-         :            while (__ret >= __past);
-    0.04 :   405bc6: cmp    %rax,%r13
-    0.00 :   405bc9: ja     405ca0 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0x170>
-         :            mersenne_twister_engine<_UIntType, __w, __n, __m, __r, __a, __u, __d,
-    0.11 :   405bcf: mov    %rcx,%rax
-         :            if (_M_p >= state_size)
-    0.00 :   405bd2: cmp    $0x26f,%rcx
-    0.00 :   405bd9: jbe    405b80 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0x50>
-         :            _M_gen_rand();
-    0.00 :   405bdb: mov    %r12,%rdi
-    0.00 :   405bde: callq  40cfa0 <std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>::_M_gen_rand()>
-         :            result_type __z = _M_x[_M_p++];
-    0.02 :   405be3: mov    0x1380(%r12),%rax
-    0.00 :   405beb: jmp    405b80 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0x50>
-    0.00 :   405bed: nopl   (%rax)
-         :            __ret /= __scaling;
-         :            }
-         :            else if (__urngrange < __urange)
-    0.00 :   405bf0: mov    $0xffffffff,%eax
-    0.00 :   405bf5: cmp    %rax,%r13
-    0.00 :   405bf8: je     405cd8 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0x1a8>
-    0.00 :   405bfe: mov    0x1f3eb(%rip),%r14        # 424ff0 <std::_Sp_make_shared_tag::_S_ti()::__tag+0x20>
-         :            __uctype __tmp; // wraparound control
-         :            do
-         :            {
-         :            const __uctype __uerngrange = __urngrange + 1;
-         :            __tmp = (__uerngrange * operator()
-         :            (__urng, param_type(0, __urange / __uerngrange)));
-    0.00 :   405c05: lea    0x8(%rsp),%rsi
-    0.00 :   405c0a: mov    %r12,%rdi
-         :            : _M_a(__a), _M_b(__b)
-    0.00 :   405c0d: mov    %r14,0x8(%rsp)
-         :            (__urng, param_type(0, __urange / __uerngrange)));
-    0.00 :   405c12: callq  405b30 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]>
-         :            __tmp = (__uerngrange * operator()
-    0.00 :   405c17: mov    %rax,%rbp
-         :            if (_M_p >= state_size)
-    0.00 :   405c1a: mov    0x1380(%r12),%rax
-    0.00 :   405c22: shl    $0x20,%rbp
-    0.00 :   405c26: cmp    $0x26f,%rax
-    0.00 :   405c2c: ja     405cc0 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0x190>
-         :            result_type __z = _M_x[_M_p++];
-    0.00 :   405c32: lea    0x1(%rax),%rdx
-    0.00 :   405c36: mov    (%r12,%rax,8),%rax
-    0.00 :   405c3a: mov    %rdx,0x1380(%r12)
-         :            __z ^= (__z >> __u) & __d;
-    0.00 :   405c42: mov    %rax,%rdx
-    0.00 :   405c45: shr    $0xb,%rdx
-    0.00 :   405c49: mov    %edx,%edx
-    0.00 :   405c4b: xor    %rdx,%rax
-         :            __z ^= (__z << __s) & __b;
-    0.00 :   405c4e: mov    %rax,%rdx
-    0.00 :   405c51: shl    $0x7,%rdx
-    0.00 :   405c55: and    $0x9d2c5680,%edx
-    0.00 :   405c5b: xor    %rdx,%rax
-         :            __z ^= (__z << __t) & __c;
-    0.00 :   405c5e: mov    %rax,%rdx
-    0.00 :   405c61: shl    $0xf,%rdx
-    0.00 :   405c65: and    $0xefc60000,%edx
-    0.00 :   405c6b: xor    %rdx,%rax
-         :            __z ^= (__z >> __l);
-    0.00 :   405c6e: mov    %rax,%rdx
-    0.00 :   405c71: shr    $0x12,%rdx
-    0.00 :   405c75: xor    %rdx,%rax
-    0.00 :   405c78: xor    %edx,%edx
-    0.00 :   405c7a: add    %rbp,%rax
-    0.00 :   405c7d: setb   %dl
-         :            __ret = __tmp + (__uctype(__urng()) - __urngmin);
-         :            }
-         :            while (__ret > __urange || __ret < __tmp);
-    0.00 :   405c80: cmp    %rax,%r13
-    0.00 :   405c83: jb     405c05 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0xd5>
-    0.00 :   405c85: test   %rdx,%rdx
-    0.00 :   405c88: jne    405c05 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0xd5>
-         :            { return _M_a; }
-    0.00 :   405c8e: mov    (%rbx),%edx
-         :            }
-         :            else
-         :            __ret = __uctype(__urng()) - __urngmin;
-         :
-         :            return __ret + __param.a();
-         :            }
-    0.00 :   405c90: add    $0x10,%rsp
-    0.00 :   405c94: pop    %rbx
-    0.00 :   405c95: pop    %rbp
-         :            return __ret + __param.a();
-    0.00 :   405c96: add    %edx,%eax
-         :            }
-    0.00 :   405c98: pop    %r12
-    0.00 :   405c9a: pop    %r13
-    0.00 :   405c9c: pop    %r14
-    0.00 :   405c9e: retq
-    0.00 :   405c9f: nop
-         :            __ret /= __scaling;
-    2.22 :   405ca0: xor    %edx,%edx
-    2.72 :   405ca2: div    %rbp
-         :            { return _M_a; }
-   40.72 :   405ca5: mov    (%rbx),%edx
-         :            }
-    0.02 :   405ca7: add    $0x10,%rsp
-    0.00 :   405cab: pop    %rbx
-    0.10 :   405cac: pop    %rbp
-    0.59 :   405cad: pop    %r12
-    0.00 :   405caf: pop    %r13
-    0.77 :   405cb1: pop    %r14
-         :            return __ret + __param.a();
-    0.10 :   405cb3: add    %edx,%eax
-         :            }
-    4.50 :   405cb5: retq
-    0.00 :   405cb6: nopw   %cs:0x0(%rax,%rax,1)
-         :            _M_gen_rand();
-    0.00 :   405cc0: mov    %r12,%rdi
-    0.00 :   405cc3: callq  40cfa0 <std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>::_M_gen_rand()>
-         :            result_type __z = _M_x[_M_p++];
-    0.00 :   405cc8: mov    0x1380(%r12),%rax
-    0.00 :   405cd0: jmpq   405c32 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0x102>
-    0.00 :   405cd5: nopl   (%rax)
-         :            if (_M_p >= state_size)
-    0.00 :   405cd8: mov    0x1380(%rdi),%rax
-    0.00 :   405cdf: cmp    $0x26f,%rax
-    0.00 :   405ce5: ja     405d3c <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0x20c>
-         :            result_type __z = _M_x[_M_p++];
-    0.00 :   405ce7: lea    0x1(%rax),%rcx
-    0.00 :   405ceb: mov    (%r12,%rax,8),%rax
-    0.00 :   405cef: mov    %rcx,0x1380(%r12)
-    0.00 :   405cf7: add    $0x10,%rsp
-         :            __z ^= (__z >> __u) & __d;
-    0.00 :   405cfb: mov    %rax,%rcx
-    0.00 :   405cfe: pop    %rbx
-    0.00 :   405cff: shr    $0xb,%rcx
-    0.00 :   405d03: mov    %ecx,%ecx
-    0.00 :   405d05: xor    %rcx,%rax
-         :            __z ^= (__z << __s) & __b;
-    0.00 :   405d08: mov    %rax,%rcx
-    0.00 :   405d0b: shl    $0x7,%rcx
-    0.00 :   405d0f: and    $0x9d2c5680,%ecx
-    0.00 :   405d15: xor    %rcx,%rax
-         :            __z ^= (__z << __t) & __c;
-    0.00 :   405d18: mov    %rax,%rbp
-    0.00 :   405d1b: shl    $0xf,%rbp
-    0.00 :   405d1f: and    $0xefc60000,%ebp
-    0.00 :   405d25: xor    %rbp,%rax
-         :            __z ^= (__z >> __l);
-    0.00 :   405d28: mov    %rax,%rbp
-    0.00 :   405d2b: shr    $0x12,%rbp
-    0.00 :   405d2f: xor    %rbp,%rax
-    0.00 :   405d32: pop    %rbp
-    0.00 :   405d33: pop    %r12
-         :            return __ret + __param.a();
-    0.00 :   405d35: add    %edx,%eax
-         :            }
-    0.00 :   405d37: pop    %r13
-    0.00 :   405d39: pop    %r14
-    0.00 :   405d3b: retq
-         :            _M_gen_rand();
-    0.00 :   405d3c: callq  40cfa0 <std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>::_M_gen_rand()>
-         :            result_type __z = _M_x[_M_p++];
-    0.00 :   405d41: mov    0x1380(%r12),%rax
-         :            { return _M_a; }
-    0.00 :   405d49: mov    (%rbx),%edx
-    0.00 :   405d4b: jmp    405ce7 <int std::uniform_int_distribution<int>::operator()<std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul> >(std::mersenne_twister_engine<unsigned long, 32ul, 624ul, 397ul, 31ul, 2567483615ul, 11ul, 4294967295ul, 7ul, 2636928640ul, 15ul, 4022730752ul, 18ul, 1812433253ul>&, std::uniform_int_distribution<int>::param_type const&) [clone .isra.0]+0x1b7>
- Percent |	Source code & Disassembly of binary_search for cycles:u (4876 samples, percent: local period)
--------------------------------------------------------------------------------------------------------------
          :
          :
          :
@@ -1342,359 +141,6 @@
     7.95 :   4067d3: sub    %edx,%eax
     0.08 :   4067d5: jmp    4067a7 <std::optional<std::reference_wrapper<int const> > binary_search_opt1_branchless<true>(std::conditional<true, std::vector<int, AlignedAllocator<int> >, std::vector<int, std::allocator<int> > >::type const&, int)+0x37>
  Percent |	Source code & Disassembly of binary_search for cycles:u (4708 samples, percent: local period)
--------------------------------------------------------------------------------------------------------------
-         :
-         :
-         :
-         :            Disassembly of section .text:
-         :
-         :            0000000000407d00 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)>:
-         :            _Z41recursive_eytzinger_transformation_helperISt6vectorIi16AlignedAllocatorIiEEKS3_EvRT_RT0_Rii():
-         :            we can conlude that, for each node "result[k]", it's larger
-         :            than the left sub-tree and smaller than the right sub-tree.
-         :            Therefore the transformation is well-formed.
-         :            It's really clever!
-         :            */
-         :            void recursive_eytzinger_transformation_helper(auto & result, auto & elements,
-    1.57 :   407d00: push   %r15
-    0.00 :   407d02: mov    %rsi,%r10
-    0.00 :   407d05: mov    %rdi,%r8
-    0.09 :   407d08: mov    %rdx,%r11
-    0.06 :   407d0b: push   %r14
-    0.00 :   407d0d: movslq %ecx,%rsi
-    0.06 :   407d10: push   %r13
-    0.02 :   407d12: push   %r12
-    0.89 :   407d14: push   %rbp
-    0.00 :   407d15: push   %rbx
-    0.00 :   407d16: sub    $0x68,%rsp
-         :
-         :            // [23.2.4.2] capacity
-         :            /**  Returns the number of elements in the %vector.  */
-         :            size_type
-         :            size() const _GLIBCXX_NOEXCEPT
-         :            { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-    0.28 :   407d1a: mov    0x8(%r10),%r9
-    0.00 :   407d1e: mov    (%r10),%rdi
-         :            int32_t & original_sequential_index, int32_t k) {
-         :            if(k <= elements.size()) {
-    0.02 :   407d21: mov    %rsi,0x10(%rsp)
-    0.02 :   407d26: mov    %r9,%rdx
-    0.75 :   407d29: sub    %rdi,%rdx
-    0.00 :   407d2c: sar    $0x2,%rdx
-    0.00 :   407d30: cmp    %rdx,%rsi
-    0.00 :   407d33: ja     408034 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x334>
-    0.02 :   407d39: mov    %r10,0x28(%rsp)
-    0.02 :   407d3e: mov    %rsi,%rax
-    0.00 :   407d41: mov    %r9,%r10
-    0.00 :   407d44: mov    %r11,%r9
-    0.00 :   407d47: mov    %r8,%r11
-    0.45 :   407d4a: mov    %r10,%rdx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.09 :   407d4d: add    %eax,%eax
-    0.06 :   407d4f: sub    %rdi,%rdx
-         :            if(k <= elements.size()) {
-    0.51 :   407d52: movslq %eax,%rsi
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.02 :   407d55: mov    %eax,0x30(%rsp)
-    0.02 :   407d59: sar    $0x2,%rdx
-         :            if(k <= elements.size()) {
-    0.00 :   407d5d: mov    %rsi,0x20(%rsp)
-    0.30 :   407d62: cmp    %rsi,%rdx
-    0.00 :   407d65: jb     408088 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x388>
-    0.17 :   407d6b: mov    %r11,%rsi
-    0.00 :   407d6e: mov    %r10,%r11
-    0.02 :   407d71: mov    %rsi,%r10
-    0.38 :   407d74: mov    %r11,%rdx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.15 :   407d77: add    %eax,%eax
-    0.00 :   407d79: sub    %rdi,%rdx
-         :            if(k <= elements.size()) {
-    1.00 :   407d7c: movslq %eax,%rbx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.02 :   407d7f: mov    %eax,0x34(%rsp)
-    0.34 :   407d83: sar    $0x2,%rdx
-         :            if(k <= elements.size()) {
-    0.00 :   407d87: mov    %rbx,0x8(%rsp)
-    0.04 :   407d8c: cmp    %rbx,%rdx
-    0.00 :   407d8f: jb     408080 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x380>
-    0.28 :   407d95: mov    %r11,%r8
-    0.00 :   407d98: mov    %r10,%r11
-    0.00 :   407d9b: mov    %r8,%rdx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.43 :   407d9e: add    %eax,%eax
-    0.04 :   407da0: sub    %rdi,%rdx
-         :            if(k <= elements.size()) {
-    0.98 :   407da3: movslq %eax,%rsi
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.02 :   407da6: mov    %eax,0x38(%rsp)
-    0.06 :   407daa: sar    $0x2,%rdx
-         :            if(k <= elements.size()) {
-    0.24 :   407dae: mov    %rsi,0x18(%rsp)
-    0.02 :   407db3: cmp    %rdx,%rsi
-    0.00 :   407db6: ja     408078 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x378>
-    0.00 :   407dbc: mov    %r9,%r12
-    0.23 :   407dbf: mov    %r8,%rdx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.02 :   407dc2: lea    (%rax,%rax,1),%ebx
-    0.62 :   407dc5: sub    %rdi,%rdx
-         :            if(k <= elements.size()) {
-    0.92 :   407dc8: movslq %ebx,%r10
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.04 :   407dcb: mov    %ebx,0x3c(%rsp)
-    0.09 :   407dcf: sar    $0x2,%rdx
-         :            if(k <= elements.size()) {
-    0.02 :   407dd3: cmp    %rdx,%r10
-    0.00 :   407dd6: ja     408070 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x370>
-    0.00 :   407ddc: mov    %r10,%r15
-    0.11 :   407ddf: mov    %r8,%rdx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.00 :   407de2: lea    (%rbx,%rbx,1),%r10d
-    0.38 :   407de6: sub    %rdi,%rdx
-         :            if(k <= elements.size()) {
-    0.53 :   407de9: movslq %r10d,%r13
-    0.00 :   407dec: sar    $0x2,%rdx
-    0.04 :   407df0: cmp    %rdx,%r13
-    0.00 :   407df3: ja     408068 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x368>
-    0.51 :   407df9: mov    %r10d,0x4(%rsp)
-    0.02 :   407dfe: mov    %r10d,%ebp
-    0.06 :   407e01: mov    %r13,%r9
-    0.00 :   407e04: mov    %r8,%rdx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.15 :   407e07: add    %ebp,%ebp
-    0.43 :   407e09: sub    %rdi,%rdx
-         :            if(k <= elements.size()) {
-    0.00 :   407e0c: movslq %ebp,%r10
-    0.04 :   407e0f: sar    $0x2,%rdx
-    0.38 :   407e13: cmp    %rdx,%r10
-    0.00 :   407e16: ja     408043 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x343>
-    0.26 :   407e1c: mov    %ebp,%r13d
-    0.02 :   407e1f: mov    %r8,%rdx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.00 :   407e22: lea    0x0(%r13,%r13,1),%eax
-    0.06 :   407e27: sub    %rdi,%rdx
-         :            if(k <= elements.size()) {
-    0.13 :   407e2a: movslq %eax,%r14
-    0.06 :   407e2d: sar    $0x2,%rdx
-    0.02 :   407e31: cmp    %rdx,%r14
-    0.00 :   407e34: ja     408050 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x350>
-    0.28 :   407e3a: mov    %eax,%ebx
-    0.21 :   407e3c: mov    %r8,%rdx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.02 :   407e3f: add    %ebx,%ebx
-    0.00 :   407e41: sub    %rdi,%rdx
-         :            if(k <= elements.size()) {
-    0.04 :   407e44: movslq %ebx,%r13
-    0.04 :   407e47: sar    $0x2,%rdx
-    0.00 :   407e4b: cmp    %rdx,%r13
-    0.00 :   407e4e: ja     408060 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x360>
-    0.15 :   407e54: mov    %ebx,%ecx
-    0.13 :   407e56: mov    %ebx,%r8d
-    0.02 :   407e59: mov    %r13,%rbx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k);
-    0.06 :   407e5c: lea    (%rcx,%rcx,1),%r13d
-    0.00 :   407e60: mov    0x28(%rsp),%rsi
-    0.02 :   407e65: mov    %r11,%rdi
-    0.34 :   407e68: mov    %r12,%rdx
-    0.04 :   407e6b: mov    %r13d,%ecx
-    0.58 :   407e6e: mov    %r10,0x58(%rsp)
-    0.47 :   407e73: mov    %r9,0x50(%rsp)
-    0.26 :   407e78: mov    %r8d,0x4c(%rsp)
-    0.23 :   407e7d: mov    %eax,0x48(%rsp)
-    0.31 :   407e81: mov    %r11,0x40(%rsp)
-    0.60 :   407e86: callq  407d00 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)>
-         :            */
-         :            const_reference
-         :            operator[](size_type __n) const _GLIBCXX_NOEXCEPT
-         :            {
-         :            __glibcxx_requires_subscript(__n);
-         :            return *(this->_M_impl._M_start + __n);
-    0.04 :   407e8b: mov    0x28(%rsp),%rax
-         :            result[k] = elements[original_sequential_index++];
-    0.02 :   407e90: movslq (%r12),%rdx
-         :            return *(this->_M_impl._M_start + __n);
-    0.56 :   407e94: mov    0x40(%rsp),%r11
-         :            if(k <= elements.size()) {
-    0.04 :   407e99: mov    0x4c(%rsp),%r8d
-         :            return *(this->_M_impl._M_start + __n);
-    0.47 :   407e9e: mov    (%rax),%rdi
-         :            result[k] = elements[original_sequential_index++];
-    0.12 :   407ea1: lea    0x1(%rdx),%ecx
-         :            if(k <= elements.size()) {
-    0.02 :   407ea4: mov    0x50(%rsp),%r9
-         :            return *(this->_M_impl._M_start + __n);
-    0.00 :   407ea9: mov    (%r11),%rsi
-    0.20 :   407eac: mov    0x58(%rsp),%r10
-         :            result[k] = elements[original_sequential_index++];
-    0.00 :   407eb1: mov    %ecx,(%r12)
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k + 1);
-    0.36 :   407eb5: lea    0x1(%r13),%ecx
-         :            result[k] = elements[original_sequential_index++];
-    0.02 :   407eb9: mov    (%rdi,%rdx,4),%edx
-         :            { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-    2.02 :   407ebc: mov    0x8(%rax),%r13
-         :            if(k <= elements.size()) {
-    0.00 :   407ec0: mov    0x48(%rsp),%eax
-         :            result[k] = elements[original_sequential_index++];
-    0.06 :   407ec4: mov    %edx,(%rsi,%rbx,4)
-    0.97 :   407ec7: mov    %r13,%rdx
-         :            if(k <= elements.size()) {
-    0.00 :   407eca: movslq %ecx,%rbx
-    0.00 :   407ecd: sub    %rdi,%rdx
-    0.02 :   407ed0: sar    $0x2,%rdx
-    0.00 :   407ed4: cmp    %rdx,%rbx
-    0.00 :   407ed7: jbe    407e5c <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x15c>
-    0.25 :   407ed9: mov    %r8d,%ebx
-    0.00 :   407edc: mov    %r13,%r8
-         :            result[k] = elements[original_sequential_index++];
-    0.11 :   407edf: movslq (%r12),%rcx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k + 1);
-    0.21 :   407ee3: add    $0x1,%ebx
-         :            result[k] = elements[original_sequential_index++];
-    0.40 :   407ee6: lea    0x1(%rcx),%r13d
-    0.39 :   407eea: mov    %r13d,(%r12)
-    0.47 :   407eee: mov    (%rdi,%rcx,4),%ecx
-    2.05 :   407ef1: mov    %ecx,(%rsi,%r14,4)
-         :            if(k <= elements.size()) {
-    1.69 :   407ef5: movslq %ebx,%r14
-    0.00 :   407ef8: cmp    %rdx,%r14
-    0.00 :   407efb: jbe    407e3c <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x13c>
-         :            result[k] = elements[original_sequential_index++];
-    0.11 :   407f01: movslq (%r12),%rcx
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k + 1);
-    0.30 :   407f05: lea    0x1(%rax),%r13d
-         :            result[k] = elements[original_sequential_index++];
-    0.51 :   407f09: lea    0x1(%rcx),%ebx
-    0.35 :   407f0c: mov    %ebx,(%r12)
-    0.64 :   407f10: mov    (%rdi,%rcx,4),%ecx
-    3.49 :   407f13: mov    %ecx,(%rsi,%r10,4)
-         :            if(k <= elements.size()) {
-    1.96 :   407f17: movslq %r13d,%r10
-    0.00 :   407f1a: cmp    %rdx,%r10
-    0.00 :   407f1d: jbe    407e1f <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x11f>
-         :            result[k] = elements[original_sequential_index++];
-    0.02 :   407f23: movslq (%r12),%rax
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k + 1);
-    0.43 :   407f27: add    $0x1,%ebp
-         :            result[k] = elements[original_sequential_index++];
-    0.68 :   407f2a: lea    0x1(%rax),%ecx
-    0.16 :   407f2d: mov    %ecx,(%r12)
-    1.07 :   407f31: mov    (%rdi,%rax,4),%eax
-    4.51 :   407f34: mov    %eax,(%rsi,%r9,4)
-         :            if(k <= elements.size()) {
-    3.02 :   407f38: movslq %ebp,%r9
-    0.04 :   407f3b: cmp    %rdx,%r9
-    0.00 :   407f3e: jbe    407e04 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x104>
-    0.02 :   407f44: mov    0x4(%rsp),%r10d
-         :            result[k] = elements[original_sequential_index++];
-    0.09 :   407f49: movslq (%r12),%rax
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k + 1);
-    0.77 :   407f4d: lea    0x1(%r10),%ebx
-         :            result[k] = elements[original_sequential_index++];
-    0.64 :   407f51: lea    0x1(%rax),%ecx
-    0.49 :   407f54: mov    %ecx,(%r12)
-    0.96 :   407f58: mov    (%rdi,%rax,4),%eax
-    5.45 :   407f5b: mov    %eax,(%rsi,%r15,4)
-         :            if(k <= elements.size()) {
-    3.28 :   407f5f: movslq %ebx,%r15
-    0.02 :   407f62: cmp    %rdx,%r15
-    0.00 :   407f65: jbe    407ddf <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0xdf>
-         :            result[k] = elements[original_sequential_index++];
-    0.15 :   407f6b: movslq (%r12),%rax
-    0.68 :   407f6f: mov    0x18(%rsp),%rbx
-    1.52 :   407f74: lea    0x1(%rax),%ecx
-    0.45 :   407f77: mov    %ecx,(%r12)
-    1.18 :   407f7b: mov    (%rdi,%rax,4),%eax
-    5.36 :   407f7e: mov    %eax,(%rsi,%rbx,4)
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k + 1);
-    3.33 :   407f81: mov    0x3c(%rsp),%eax
-    0.09 :   407f85: add    $0x1,%eax
-         :            if(k <= elements.size()) {
-    0.02 :   407f88: movslq %eax,%rcx
-    0.04 :   407f8b: mov    %rcx,0x18(%rsp)
-    0.30 :   407f90: cmp    %rdx,%rcx
-    0.00 :   407f93: jbe    407dbf <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0xbf>
-    0.06 :   407f99: mov    %r12,%r9
-         :            result[k] = elements[original_sequential_index++];
-    0.19 :   407f9c: movslq (%r9),%rax
-    0.73 :   407f9f: lea    0x1(%rax),%ecx
-    0.64 :   407fa2: mov    %ecx,(%r9)
-    1.15 :   407fa5: mov    0x8(%rsp),%rcx
-    0.09 :   407faa: mov    (%rdi,%rax,4),%eax
-    4.25 :   407fad: mov    %eax,(%rsi,%rcx,4)
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k + 1);
-    2.75 :   407fb0: mov    0x38(%rsp),%eax
-    0.11 :   407fb4: add    $0x1,%eax
-         :            if(k <= elements.size()) {
-    0.09 :   407fb7: movslq %eax,%rbx
-    0.13 :   407fba: mov    %rbx,0x8(%rsp)
-    0.00 :   407fbf: cmp    %rdx,%rbx
-    0.00 :   407fc2: jbe    407d9b <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x9b>
-    0.00 :   407fc8: mov    %r11,%r10
-    0.02 :   407fcb: mov    %r8,%r11
-    0.02 :   407fce: mov    %rsi,%r8
-         :            result[k] = elements[original_sequential_index++];
-    0.45 :   407fd1: movslq (%r9),%rax
-    0.41 :   407fd4: mov    0x20(%rsp),%rsi
-    0.36 :   407fd9: lea    0x1(%rax),%ecx
-    0.49 :   407fdc: mov    %ecx,(%r9)
-    1.00 :   407fdf: mov    (%rdi,%rax,4),%eax
-    3.31 :   407fe2: mov    %eax,(%r8,%rsi,4)
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k + 1);
-    2.22 :   407fe6: mov    0x34(%rsp),%eax
-    0.00 :   407fea: add    $0x1,%eax
-         :            if(k <= elements.size()) {
-    0.02 :   407fed: movslq %eax,%rsi
-    0.00 :   407ff0: mov    %rsi,0x20(%rsp)
-    0.00 :   407ff5: cmp    %rdx,%rsi
-    0.00 :   407ff8: jbe    407d74 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x74>
-    0.09 :   407ffe: mov    %r10,%rax
-    0.02 :   408001: mov    %r11,%r10
-    0.04 :   408004: mov    %rax,%r11
-         :            result[k] = elements[original_sequential_index++];
-    0.38 :   408007: movslq (%r9),%rax
-    0.23 :   40800a: mov    0x10(%rsp),%rbx
-    0.14 :   40800f: lea    0x1(%rax),%ecx
-    0.26 :   408012: mov    %ecx,(%r9)
-    0.70 :   408015: mov    (%rdi,%rax,4),%eax
-    2.86 :   408018: mov    %eax,(%r8,%rbx,4)
-         :            recursive_eytzinger_transformation_helper(result, elements, original_sequential_index, 2 * k + 1);
-    1.51 :   40801c: mov    0x30(%rsp),%eax
-    0.02 :   408020: add    $0x1,%eax
-         :            if(k <= elements.size()) {
-    0.04 :   408023: movslq %eax,%rcx
-    0.00 :   408026: mov    %rcx,0x10(%rsp)
-    0.04 :   40802b: cmp    %rdx,%rcx
-    0.00 :   40802e: jbe    407d4a <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x4a>
-         :            }
-         :            }
-    0.02 :   408034: add    $0x68,%rsp
-    0.02 :   408038: pop    %rbx
-    0.15 :   408039: pop    %rbp
-    0.44 :   40803a: pop    %r12
-    0.04 :   40803c: pop    %r13
-    0.38 :   40803e: pop    %r14
-    0.04 :   408040: pop    %r15
-    0.00 :   408042: retq
-         :            return *(this->_M_impl._M_start + __n);
-    0.60 :   408043: mov    (%r11),%rsi
-    0.11 :   408046: jmpq   407f23 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x223>
-    0.00 :   40804b: nopl   0x0(%rax,%rax,1)
-    0.46 :   408050: mov    (%r11),%rsi
-    0.17 :   408053: jmpq   407f01 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x201>
-    0.00 :   408058: nopl   0x0(%rax,%rax,1)
-    0.28 :   408060: mov    (%r11),%rsi
-    0.21 :   408063: jmpq   407edf <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x1df>
-    0.58 :   408068: mov    (%r11),%rsi
-    0.02 :   40806b: jmpq   407f49 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x249>
-    0.00 :   408070: mov    (%r11),%rsi
-    0.04 :   408073: jmpq   407f6b <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x26b>
-    0.02 :   408078: mov    (%r11),%rsi
-    0.23 :   40807b: jmpq   407f9c <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x29c>
-    0.06 :   408080: mov    (%r10),%r8
-    0.02 :   408083: jmpq   407fd1 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x2d1>
-    0.19 :   408088: mov    (%r11),%r8
-    0.02 :   40808b: jmpq   408007 <void recursive_eytzinger_transformation_helper<std::vector<int, AlignedAllocator<int> >, std::vector<int, AlignedAllocator<int> > const>(std::vector<int, AlignedAllocator<int> >&, std::vector<int, AlignedAllocator<int> > const&, int&, int)+0x307>
- Percent |	Source code & Disassembly of binary_search for cycles:u (4512 samples, percent: local period)
 -------------------------------------------------------------------------------------------------------------
          :
          :
@@ -2084,3 +530,162 @@
     6.22 :   406c98: leaveq
     0.00 :   406c99: retq
  Percent |	Source code & Disassembly of binary_search for cycles:u (2905 samples, percent: local period)
+ ------------------------------------------------------------------------------------------------------------
+         :
+         :
+         :
+         :            Disassembly of section .text:
+         :
+         :            00000000004068c0 <std::optional<std::reference_wrapper<int const> > binary_search_opt5_eytzinger<true>(std::conditional<true, std::vector<int, AlignedAllocator<int> >, std::vector<int, std::allocator<int> > >::type const&, int)>:
+         :            _Z28binary_search_opt5_eytzingerILb1EESt8optionalISt17reference_wrapperIKiEERKNSt11conditionalIXT_ESt6vectorIi16AlignedAllocatorIiEES6_IiSaIiEEE4typeEi():
+         :            /**
+         :            * @param elements_eytzinger Assume this array is 1-indexed.
+         :            */
+         :            template <bool Aligned>
+         :            __attribute__((noinline))
+         :            OptRef<const int32_t> binary_search_opt5_eytzinger(const VecType<Aligned> & elements_eytzinger, int32_t target) {
+    3.12 :   4068c0: push   %rbp
+    0.00 :   4068c1: mov    %rdi,%rax
+    0.00 :   4068c4: mov    %rsp,%rbp
+    0.00 :   4068c7: and    $0xffffffffffffffe0,%rsp
+         :
+         :            // [23.2.4.2] capacity
+         :            /**  Returns the number of elements in the %vector.  */
+         :            size_type
+         :            size() const _GLIBCXX_NOEXCEPT
+         :            { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+    0.00 :   4068cb: mov    (%rdi),%rdi
+    0.00 :   4068ce: mov    0x8(%rax),%rcx
+    0.00 :   4068d2: sub    %rdi,%rcx
+    1.73 :   4068d5: mov    %rcx,%r8
+    0.00 :   4068d8: sar    $0x2,%r8
+         :            int32_t k = 1;
+         :            while(k < elements_eytzinger.size()) {
+    0.00 :   4068dc: cmp    $0x4,%rcx
+    0.00 :   4068e0: jbe    406928 <std::optional<std::reference_wrapper<int const> > binary_search_opt5_eytzinger<true>(std::conditional<true, std::vector<int, AlignedAllocator<int> >, std::vector<int, std::allocator<int> > >::type const&, int)+0x68>
+    0.00 :   4068e2: mov    $0x1,%edx
+    0.00 :   4068e7: mov    $0x1,%eax
+    0.00 :   4068ec: jmp    406901 <std::optional<std::reference_wrapper<int const> > binary_search_opt5_eytzinger<true>(std::conditional<true, std::vector<int, AlignedAllocator<int> >, std::vector<int, std::allocator<int> > >::type const&, int)+0x41>
+    0.00 :   4068ee: xchg   %ax,%ax
+         :            if(elements_eytzinger[k] == target) {
+         :            return elements_eytzinger[k];
+         :            }
+         :            if(elements_eytzinger[k] < target) {
+         :            k = 2 * k + 1;
+    5.20 :   4068f0: setl   %al
+    5.31 :   4068f3: movzbl %al,%eax
+    4.51 :   4068f6: lea    (%rax,%rdx,2),%edx
+         :            while(k < elements_eytzinger.size()) {
+    3.35 :   4068f9: movslq %edx,%rax
+    2.42 :   4068fc: cmp    %r8,%rax
+    0.00 :   4068ff: jae    406928 <std::optional<std::reference_wrapper<int const> > binary_search_opt5_eytzinger<true>(std::conditional<true, std::vector<int, AlignedAllocator<int> >, std::vector<int, std::allocator<int> > >::type const&, int)+0x68>
+         :            */
+         :            const_reference
+         :            operator[](size_type __n) const _GLIBCXX_NOEXCEPT
+         :            {
+         :            __glibcxx_requires_subscript(__n);
+         :            return *(this->_M_impl._M_start + __n);
+    3.81 :   406901: lea    (%rdi,%rax,4),%rcx
+         :            if(elements_eytzinger[k] == target) {
+    0.00 :   406905: mov    (%rcx),%eax
+   28.29 :   406907: cmp    %esi,%eax
+    0.00 :   406909: jne    4068f0 <std::optional<std::reference_wrapper<int const> > binary_search_opt5_eytzinger<true>(std::conditional<true, std::vector<int, AlignedAllocator<int> >, std::vector<int, std::allocator<int> > >::type const&, int)+0x30>
+         :            return elements_eytzinger[k];
+    6.12 :   40690b: mov    %rcx,-0x10(%rsp)
+         :            } else {
+         :            k = 2 * k;
+         :            }
+         :            }
+         :            return std::nullopt;
+         :            }
+    8.31 :   406910: mov    -0x10(%rsp),%rax
+         :            return elements_eytzinger[k];
+    2.31 :   406915: movb   $0x1,-0x8(%rsp)
+         :            }
+    0.35 :   40691a: mov    -0x8(%rsp),%rdx
+   25.18 :   40691f: leaveq
+    0.00 :   406920: retq
+    0.00 :   406921: nopl   0x0(%rax)
+         :            return std::nullopt;
+    0.00 :   406928: movb   $0x0,-0x8(%rsp)
+         :            }
+    0.00 :   40692d: mov    -0x10(%rsp),%rax
+    0.00 :   406932: mov    -0x8(%rsp),%rdx
+    0.00 :   406937: leaveq
+    0.00 :   406938: retq
+ Percent |	Source code & Disassembly of binary_search for cycles:u (801 samples, percent: local period)
+------------------------------------------------------------------------------------------------------------
+         :
+         :
+         :
+         :            Disassembly of section .text:
+         :
+         :            0000000000406850 <std::optional<std::reference_wrapper<int const> > binary_search_opt3_branchless3<true>(std::conditional<true, std::vector<int, AlignedAllocator<int> >, std::vector<int, std::allocator<int> > >::type const&, int)>:
+         :            _Z30binary_search_opt3_branchless3ILb1EESt8optionalISt17reference_wrapperIKiEERKNSt11conditionalIXT_ESt6vectorIi16AlignedAllocatorIiEES6_IiSaIiEEE4typeEi():
+         :            return *base;
+         :            }
+         :
+         :            template <bool Aligned>
+         :            __attribute__((noinline))
+         :            OptRef<const int32_t> binary_search_opt3_branchless3(const VecType<Aligned> & elements, int32_t target) {
+    1.75 :   406850: push   %rbp
+    0.00 :   406851: mov    %rdi,%rax
+    0.00 :   406854: mov    %esi,%edi
+    0.00 :   406856: mov    %rsp,%rbp
+    0.00 :   406859: and    $0xffffffffffffffe0,%rsp
+         :            data() _GLIBCXX_NOEXCEPT
+         :            { return _M_data_ptr(this->_M_impl._M_start); }
+         :
+         :            const _Tp*
+         :            data() const _GLIBCXX_NOEXCEPT
+         :            { return _M_data_ptr(this->_M_impl._M_start); }
+    0.00 :   40685d: mov    (%rax),%rsi
+         :            { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+    0.00 :   406860: mov    0x8(%rax),%rdx
+    1.87 :   406864: sub    %rsi,%rdx
+    0.00 :   406867: sar    $0x2,%rdx
+         :            const int32_t * base = elements.data();
+         :            int32_t len = elements.size();
+         :            while (len > 1) {
+    0.00 :   40686b: cmp    $0x1,%edx
+    0.00 :   40686e: jle    406897 <std::optional<std::reference_wrapper<int const> > binary_search_opt3_branchless3<true>(std::conditional<true, std::vector<int, AlignedAllocator<int> >, std::vector<int, std::allocator<int> > >::type const&, int)+0x47>
+    0.00 :   406870: mov    %edx,%eax
+         :            int32_t half = len / 2;
+         :            base += (*(base + half - 1) < target) * half;
+    0.00 :   406872: xor    %r8d,%r8d
+    0.00 :   406875: nopl   (%rax)
+         :            int32_t half = len / 2;
+    2.00 :   406878: mov    %eax,%edx
+    3.75 :   40687a: sar    %edx
+         :            base += (*(base + half - 1) < target) * half;
+    3.99 :   40687c: movslq %edx,%rcx
+    4.87 :   40687f: cmp    %edi,-0x4(%rsi,%rcx,4)
+   20.60 :   406883: mov    %r8d,%ecx
+    1.00 :   406886: cmovl  %edx,%ecx
+         :            len -= half;
+    7.12 :   406889: sub    %edx,%eax
+         :            base += (*(base + half - 1) < target) * half;
+    1.50 :   40688b: movslq %ecx,%rcx
+    5.24 :   40688e: lea    (%rsi,%rcx,4),%rsi
+         :            while (len > 1) {
+    8.61 :   406892: cmp    $0x1,%eax
+    0.00 :   406895: jg     406878 <std::optional<std::reference_wrapper<int const> > binary_search_opt3_branchless3<true>(std::conditional<true, std::vector<int, AlignedAllocator<int> >, std::vector<int, std::allocator<int> > >::type const&, int)+0x28>
+         :            }
+         :            if (*base != target) {
+         :            return std::nullopt;
+    0.00 :   406897: xor    %eax,%eax
+         :            if (*base != target) {
+    0.00 :   406899: cmp    %edi,(%rsi)
+    0.00 :   40689b: jne    4068a7 <std::optional<std::reference_wrapper<int const> > binary_search_opt3_branchless3<true>(std::conditional<true, std::vector<int, AlignedAllocator<int> >, std::vector<int, std::allocator<int> > >::type const&, int)+0x57>
+         :            }
+         :            return *base;
+   11.11 :   40689d: mov    %rsi,-0x10(%rsp)
+    0.00 :   4068a2: mov    $0x1,%eax
+    0.00 :   4068a7: mov    %al,-0x8(%rsp)
+         :            }
+    0.00 :   4068ab: mov    -0x10(%rsp),%rax
+    1.62 :   4068b0: mov    -0x8(%rsp),%rdx
+   24.97 :   4068b5: leaveq
+    0.00 :   4068b6: retq
+ Percent |	Source code & Disassembly of binary_search for cycles:u (490 samples, percent: local period)
+------------------------------------------------------------------------------------------------------------

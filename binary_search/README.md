@@ -77,30 +77,34 @@ Test result data is located at [binary_search_result.json](./binary_search_resul
 
 ### Result Analysis
 
-Based on the aligned-only test results, we can observe several key findings:
+Based on the aligned-only test results and performance profiling data, we can observe several key findings:
 
 1. **Branchless Optimization Impact**:
-   - The branchless implementation (opt3_branchless3) shows significant performance improvements across all array sizes
+   - The branchless implementation (opt3_branchless3) shows significant performance improvements for small and medium input cases
    - Branch miss rate drops to near 0% for opt3_branchless3, confirming the effectiveness of branch elimination
    - Performance improvement is most pronounced for small arrays (10-1000 elements), with up to 3x speedup
    - The branchless approach maintains consistent performance even for large arrays
+   - Assembly analysis shows the compiler successfully generates `cmov` instructions for opt3_branchless3, which is crucial for its performance. And to my surprise, it didn't do that for opt1 and opt2
 
 2. **Eytzinger Layout Benefits**:
    - Eytzinger layout (opt5_eytzinger) shows excellent performance characteristics
    - Very low L1 cache miss rates (consistently below 0.5%) across all array sizes
    - Performance remains stable regardless of array size, showing good scalability
    - The layout transformation improves spatial locality, reducing cache misses
+   - Assembly analysis shows efficient memory access patterns with minimal branching
+   - The `setl` instruction usage in opt5_eytzinger (28.29% of cycles) indicates efficient branchless comparison
+   - The high percentage (54.14%) on `xor %eax,%eax` in opt8_eytzinger_prefetch2 indicates potential pipeline stalls due to memory access patterns
 
 3. **Prefetch Optimization Analysis**:
    - Prefetch optimizations (opt4_prefetch) show mixed results
    - While L1 cache miss rates are reduced, the overhead of prefetch instructions can impact performance
-   - The benefit of prefetching diminishes as array size increases
-   - Prefetch stride tuning is crucial for optimal performance
+   - The benefit of software prefetching diminishes as array size increases
+   - Assembly analysis shows prefetch instructions taking significant cycles (25.05% in opt4_prefetch)
+   - The high percentage on prefetch instructions suggests potential memory bandwidth limitations
+   - Actually software prefetching does not yield too much benifits for our cases
 
 4. **Memory Alignment Impact**:
    - Memory alignment shows consistent but small performance improvements
-   - The gap between aligned and unaligned versions remains relatively constant
-   - Alignment benefits are more pronounced in branchless implementations
    - Cache line alignment helps reduce memory access latency
 
 5. **Performance Scaling**:
@@ -108,24 +112,18 @@ Based on the aligned-only test results, we can observe several key findings:
    - Branchless implementations maintain better scaling characteristics
    - Eytzinger layout shows the most consistent performance across different sizes
    - Standard library implementation (std) shows good performance but less optimal scaling
+   - Assembly analysis reveals efficient instruction scheduling in the Eytzinger layout
 
 6. **Cache Behavior**:
    - L1 cache miss rates vary significantly between implementations
    - Eytzinger layout shows the best cache utilization
    - Branchless implementations show higher cache miss rates for large arrays
    - Prefetch optimizations help reduce cache misses but with performance trade-offs
+   - Assembly analysis shows efficient memory access patterns in cache-friendly implementations
 
 7. **Optimal Implementation Choice**:
-   - For small arrays (<1000 elements): opt3_branchless3 is optimal
-   - For medium arrays (1000-100000 elements): opt5_eytzinger performs best
-   - For large arrays (>100000 elements): opt7_eytzinger_prefetch1 shows good balance
-   - The choice depends on specific use case and array size characteristics
-
-8. **Compiler Optimization Insights**:
-   - The assembly code analysis shows significant differences in instruction scheduling
-   - Branchless implementations generate more efficient machine code
-   - Eytzinger layout enables better instruction pipelining
-   - Compiler optimizations work best with branchless and cache-friendly layouts
+   - For small arrays (<1000 elements): opt3_branchless3 is optimal due to efficient branchless execution
+   - For medium and large arrays (>1000 elements): opt5_eytzinger performs best with its cache-friendly layout
 
 ### Assembly Code
 
