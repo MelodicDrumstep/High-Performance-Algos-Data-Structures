@@ -328,7 +328,7 @@ std::optional<std::reference_wrapper<int const>> binary_search_opt2_branchless2<
 
 This version performs better than the baseline for small input cases, and it performs worse for larger input cases. 
 
-NOTE: Only for this version the compiler generates `cmov` instruction! i.e. the compiler failed to generate `cmov` for branchless opt1 and opt2. And this version outperformes the former two versions greatly.
+NOTE: Only for this version the compiler generates `cmov` instruction! i.e. the compiler failed to generate `cmov` for branchless opt1 and opt2. And this version outperforms the former two versions greatly.
 
 ```asm
 ; Branchless binary search (opt3)
@@ -375,7 +375,7 @@ std::optional<std::reference_wrapper<int const>> binary_search_opt3_branchless3<
 
 This version performs slightly worse than opt3.
 
-NOTE: There's hardware instructions for prefetch!
+NOTE: There's hardware instructions for prefetch! The compiler just generates `prefetch0` instruction for that purpose.
 
 ```asm
 ; Branchless binary search with prefetch (opt4)
@@ -423,7 +423,7 @@ std::optional<std::reference_wrapper<int const>> binary_search_opt4_prefetch<tru
 
 + opt5 eytzinger
 
-It performs much better than the baseline due to less cache misses. 
+It performs much better than the baseline due to less cache misses. Actually this version is the best binary search implementation in all of my tested versions.
 
 ```asm
 ; Eytzinger layout binary search (opt5)
@@ -465,6 +465,8 @@ std::optional<std::reference_wrapper<int const>> binary_search_opt5_eytzinger<tr
 ```
 
 + opt6 eytzinger branchless
+
+This version performs better than opt5 (raw eytzinger) for small input cases; while it performs worse than opt5 for larger ones. And the compiler generates `cmov` instruction for this version.
 
 ```asm
 ; Eytzinger layout branchless binary search (opt6)
@@ -516,6 +518,10 @@ std::optional<std::reference_wrapper<int const>> binary_search_opt6_eytzinger_br
 ```
 
 + opt7 eytzinger prefetch
+
+The performance of this version is close to and maybe a little bit worse than opt5 (raw eytzinger). As we can see, the compiler use `cmov` instruction and generates `prefetch0` instruction.
+
+As we can see, complex logic of last branch removal has been encoded in the assemly code.
 
 ```asm
 ; Eytzinger layout binary search with prefetch (opt7)
@@ -570,7 +576,11 @@ std::optional<std::reference_wrapper<int const>> binary_search_opt7_eytzinger_pr
         jmp     .L12                    ; jump to return sequence
 ```
 
-+ opt8 eytzinger branch removal
++ opt9 eytzinger branch removal
+
+The performance for this version is close to opt6(eytzinger branchless). And it performs better than opt5 (raw eytzinger) for small input cases; while it performs worse than opt5 for larger ones.
+
+As we can see, complex logic of last branch removal has been encoded in the assemly code.
 
 ```asm
 ; Eytzinger layout binary search with branch removal (opt8)
