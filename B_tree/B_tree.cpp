@@ -50,6 +50,11 @@ double testBinarySearch(Func && func, std::string_view func_name, int32_t input_
         }
         doNotOptimizeAway(result.value());
         if(result != targets[i]) {
+            std::cout << "Elements array: ";
+            for(int32_t element : elements) {
+                std::cout << element << " ";
+            }
+            std::cout << std::endl;
             throw std::runtime_error("[testBinarySearch for " + std::string(func_name) + "] result is wrong. result is " + 
                 std::to_string(result.value()) + ", expected " + std::to_string(targets[i]));
         }
