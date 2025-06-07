@@ -5,61 +5,232 @@
 #include <functional>
 #include <memory>
 #include <utility>
+#include <optional>
+
+namespace hpds {
+// hpds is for High-Performance Data Structures
 
 template <typename K, typename V, 
           typename Hash = std::hash<K>,
+          std::size_t InitCapacity = 256,
           typename KeyEqual = std::equal_to<K>,
           typename Allocator = std::allocator<std::pair<const K, V>>>
+requires ((InitCapacity > 0) && ((InitCapacity & (InitCapacity - 1)) == 0))
 class FlatHashMap {
-    using value_type = std::pair<const K, V>;
-    // Follow the naming convention of STL containers
-    // Therefore it's not named as "ValueType"
-    // using IteratorT = ;
 public:
-    FlatHashMap();
-    FlatHashMap(const FlatHashMap & other);
-    FlatHashMap(FlatHashMap && other) noexcept;
-    // template <typename InputIterator>
-    // FlatHashMap(InputIterator first, InputIterator last);
+    struct ElementT {
+        bool is_valid = false;
+        std::pair<K, V> pair;
+    };
+    
+    friend class IteratorT;
+
+    class IteratorT {
+    public:
+        friend class FlatHashMap;
+        IteratorT(std::pair<K, V> * pair = nullptr) : pair_ptr_(pair) {}
+        IteratorT(const IteratorT & other) = default;
+
+        bool operator== (const IteratorT & other) {
+            return (pair_ptr_ == other.pair_ptr_);
+        }
+
+        std::pair<K, V> & operator*() {
+            return *pair_ptr_;
+        }
+        std::pair<K, V> * operator->() {
+            return pair_ptr_;
+        }
+
+    private:
+        bool & getValidFlagField() {
+            return *(reinterpret_cast<bool *>(pair_ptr_ - sizeof(bool)));
+        }
+        std::pair<K, V> * pair_ptr_;
+    };
+
+    FlatHashMap() : elements_(InitCapacity), capacity_(InitCapacity) {}
+    FlatHashMap(const FlatHashMap & other) = default;
+    FlatHashMap(FlatHashMap && other) noexcept = default;
 
     bool empty() const noexcept;
     std::size_t size() const noexcept;
     std::size_t capacity() const noexcept;
 
-    const Pair & at(const K & key) const;
-    Pair & operator[](const K & key);
+    const std::pair<const K, V> & at(const K & key) const;
+    std::pair<const K, V> & operator[](const K & key);
 
-    std::pair<IteratorT, bool> insert(const value_type & pair);
-    std::pair<IteratorT, bool> insert(value_tyupe && pair);
-
-    // template <typename Pair>
-    // std::pair<IteratorT, bool> insert(Pair && pair);
-    
-    // IteratorT insert(ConstIterator hint, const value_type & pair);
-    // IteratorT insert(ConstIterator hint, value_type && pair);
-
-    // template <typename Pair>
-    // IteratorT insert(ConstIterator hint, Pair && pair);
-
-    // template <typename InputIt>
-    // void insert(InputIt first, InputIt last);
-
-    // void insert(std::initializer_list<value_type> ilist);
+    std::pair<IteratorT, bool> insert(const std::pair<const K, V> & pair);
+    // std::pair<IteratorT, bool> insert(value_tyupe && pair);
 
     std::size_t erase(const K & key);
-    IteratorT erase(ConstIterator position);
+    // IteratorT erase(ConstIterator position);
 
     void clear() noexcept;
 
     IteratorT find(const K & key);
-    ConstIteratorT find(const K & key) const;
+    // ConstIteratorT find(const K & key) const;
 
-    std::size_t count(const K & key) const;
+    // std::size_t count(const K & key) const noexcept;
 
-    float load_factor() const noexcept;
-    void set_max_load_factor(float max_load_factor);
+    IteratorT end() const {
+        return IteratorT(nullptr);
+    }
 
-    void rehash(std::size_t num_buckets);
+    float load_factor() const noexcept {
+        return (size_ * 1.0f) / capacity_;
+    }
+    void set_max_load_factor(float max_load_factor) {
+        max_load_factor_ = max_load_factor;
+    }
 
+    // void rehash(std::size_t num_buckets);
 private:
+    void expand_and_rehash();
+
+    using ContainerT = std::vector<ElementT>;
+
+    ContainerT elements_;
+    std::size_t size_{0}; // TODO: Test use std::size_t or std::ssize_t here
+    std::size_t capacity_;
+    float max_load_factor_{0.6};
 };
+
+template <typename K, typename V, 
+          typename Hash,
+          std::size_t InitCapacity,
+          typename KeyEqual,
+          typename Allocator>
+bool FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::empty() const noexcept {
+    return size_ == 0;
+}
+
+template <typename K, typename V, 
+          typename Hash,
+          std::size_t InitCapacity,
+          typename KeyEqual,
+          typename Allocator>
+std::size_t FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::size() const noexcept {
+    return size_;
+}
+
+template <typename K, typename V, 
+          typename Hash,
+          std::size_t InitCapacity,
+          typename KeyEqual,
+          typename Allocator>
+std::size_t FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::capacity() const noexcept {
+    return capacity_;
+}
+
+template <typename K, typename V, 
+          typename Hash,
+          std::size_t InitCapacity,
+          typename KeyEqual,
+          typename Allocator>
+const std::pair<const K, V> & FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::at(const K & key) const {
+    std::size_t pos = Hash()(key) % capacity_;
+    do {
+        auto & element = elements_.at(pos);
+        if((!element.is_valid) || element.pair.first == key) {
+            break;
+        }
+        pos = (pos + 1) % capacity_;
+        // make sure capacity_ is a power of 2 to optimize this
+    } while (true);
+    return elements_.at(pos).pair;
+}
+
+template <typename K, typename V,
+          typename Hash,
+          std::size_t InitCapacity,
+          typename KeyEqual,
+          typename Allocator>
+std::pair<const K, V> & FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::operator[](const K & key) {
+    if(load_factor() > max_load_factor_) {
+        expand_and_rehash();
+    }
+    std::size_t pos = Hash()(key) % capacity_;
+    do {
+        auto & element = elements_[pos];
+        if((!element.is_valid) || element.pair.first == key) {
+            break;
+        }
+        pos = (pos + 1) % capacity_;
+    } while (true);
+    return elements_[pos].pair;
+}
+
+template <typename K, typename V,
+          typename Hash,
+          std::size_t InitCapacity,
+          typename KeyEqual,
+          typename Allocator>
+auto FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::find(const K & key) -> IteratorT {
+    std::size_t pos = Hash()(key) % capacity_;
+    do {
+        auto & element = elements_[pos];
+        if(!element.is_valid) {
+            return end();
+        }
+        if(element.pair.first == key) {
+            return IteratorT(&element.pair);
+        }
+        pos = (pos + 1) % capacity_;
+    } while (true);
+    throw std::runtime_error("[FlatHashMap::find] not expected entry point");
+}
+
+template <typename K, typename V,
+          typename Hash,
+          std::size_t InitCapacity,
+          typename KeyEqual,
+          typename Allocator>
+auto FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::insert(const std::pair<const K, V> & pair) -> std::pair<IteratorT, bool> {
+    IteratorT it = find(pair.first);
+    if(it != end()) {
+        return {it, false};
+    }
+    if(load_factor() > max_load_factor_) {
+        expand_and_rehash();
+    }
+    it.getValidFlagField() = true;
+    it -> first = pair.first;
+    it -> second = pair.second;
+    size_++;
+    return {it, true};
+}
+
+template <typename K, typename V,
+          typename Hash,
+          std::size_t InitCapacity,
+          typename KeyEqual,
+          typename Allocator>
+std::size_t FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::erase(const K & key) {
+    IteratorT it = find(key);
+    if(it == end()) {
+        return 0;
+    }
+    it.getValidFlagField() = false;
+    size_--;
+    return 1;
+}
+
+template <typename K, typename V,
+          typename Hash,
+          std::size_t InitCapacity,
+          typename KeyEqual,
+          typename Allocator>
+void FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::expand_and_rehash() {
+    ContainerT new_elements(elements_.size() * 2);
+    capacity_ *= 2;
+    for(auto & element : elements_) {
+        if(element.is_valid) {
+            std::size_t new_pos = Hash()(element.pair.first) % capacity_;
+            new_elements[new_pos] = element;
+        }
+    }
+    elements_ = std::move(new_elements);
+}
+
+}
