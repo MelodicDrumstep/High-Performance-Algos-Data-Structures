@@ -7,6 +7,8 @@
 #include <utility>
 #include <optional>
 
+#define DEBUG_FHM
+
 namespace hpds {
 // hpds is for High-Performance Data Structures
 
@@ -187,18 +189,35 @@ template <typename K, typename V,
           typename KeyEqual,
           typename Allocator>
 auto FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::insert(const std::pair<const K, V> & pair) -> std::pair<IteratorT, bool> {
-    IteratorT it = find(pair.first);
-    if(it != end()) {
-        return {it, false};
-    }
+    const K key = pair.first;
+    std::size_t pos = Hash()(key) % capacity_;
+    do {
+        auto & element = elements_.at(pos);
+        if(element.pair.first == key) {
+            return {IteratorT(&element.pair), false};
+        }
+        if(!element.is_valid) {
+            break;
+        }
+        pos = (pos + 1) % capacity_;
+        // make sure capacity_ is a power of 2 to optimize this
+    } while (true);
+
     if(load_factor() > max_load_factor_) {
+        // #ifdef DEBUG_FHM
+        //     std::cout << "size is " << size_ << "capacity is " << capacity_ << std::endl;
+        //     std::cout << "[insert] load_factor() > max_load_factor_" << std::endl;
+        // #endif
         expand_and_rehash();
     }
-    it.getValidFlagField() = true;
-    it -> first = pair.first;
-    it -> second = pair.second;
+
+    // #ifdef DEBUG_FHM
+    //     std::cout << "[insert] Setting" << std::endl;
+    // #endif
+
+    elements_[pos] = {true, {pair.first, pair.second}};
     size_++;
-    return {it, true};
+    return {IteratorT(&(elements_[pos].pair)), true};
 }
 
 template <typename K, typename V,
