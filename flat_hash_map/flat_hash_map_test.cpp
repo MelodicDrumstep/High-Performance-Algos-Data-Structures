@@ -6,6 +6,8 @@
 
 using namespace hpds;
 
+#define DEBUG_FHM_TEST
+
 // Basic functionality tests
 TEST(FlatHashMapTest, BasicOperations) {
     FlatHashMap<int, std::string> map;
@@ -49,7 +51,7 @@ TEST(FlatHashMapTest, BasicOperations) {
 
 // Comparison test with std::unordered_map
 TEST(FlatHashMapTest, ComparisonWithStdUnorderedMap) {
-    FlatHashMap<int, int> fhm;
+    FlatHashMap<int, int, 256> fhm;
     std::unordered_map<int, int> std_map;
     
     // Random number generator
@@ -61,9 +63,22 @@ TEST(FlatHashMapTest, ComparisonWithStdUnorderedMap) {
     for (int i = 0; i < 1000; ++i) {
         int key = dis(gen);
         int value = dis(gen);
-        
+
+        // #ifdef DEBUG_FHM_TEST
+        // std::cout << "Insertion test. Before insertion. key is " << key << ", value is " << value << "\n";
+        // std::cout << "fhm key existence : " << (fhm.find(key) != fhm.end()) << "\n";
+        // std::cout << "std_map key existence : " << (std_map.find(key) != std_map.end()) << "\n";
+        // std::cout << "fhm size is " << fhm.size() << std::endl;
+        // std::cout << "fhm capacity is " << fhm.get_capacity() << std::endl;
+        // #endif
+
         fhm[key] = value;
         std_map[key] = value;
+
+        // #ifdef DEBUG_FHM_TEST
+        // std::cout << "Insertion test. After insertion. fhm size is " << fhm.size() << std::endl;
+        // std::cout << "fhm capacity is " << fhm.get_capacity() << std::endl;
+        // #endif
         
         // Verify consistency after each insertion
         EXPECT_EQ(fhm.size(), std_map.size());
