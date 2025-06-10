@@ -6,6 +6,8 @@
 #include <memory>
 #include <utility>
 #include <optional>
+#include <cassert>
+#include <cstddef>
 
 #define DEBUG_FHM
 
@@ -33,7 +35,7 @@ public:
         IteratorT(std::pair<K, V> * pair = nullptr) : pair_ptr_(pair) {}
         IteratorT(const IteratorT & other) = default;
 
-        bool operator== (const IteratorT & other) {
+        bool operator== (const IteratorT & other) const {
             return (pair_ptr_ == other.pair_ptr_);
         }
 
@@ -46,7 +48,10 @@ public:
 
     private:
         bool & getValidFlagField() {
-            return *(reinterpret_cast<bool *>(pair_ptr_ - sizeof(bool)));
+            // A fatal bug happened here, here's the reason for the bug
+            // 1. I don't consider struct alignment rule
+            // 2. I don't convert pair_ptr to uint8_t * before pointer arithmatic
+            return *(reinterpret_cast<bool *>(reinterpret_cast<uint8_t *>(pair_ptr_) - offsetof(ElementT, pair)));
         }
         std::pair<K, V> * pair_ptr_;
     };
@@ -59,8 +64,8 @@ public:
     std::size_t size() const noexcept;
     std::size_t capacity() const noexcept;
 
-    const std::pair<const K, V> & at(const K & key) const;
-    std::pair<const K, V> & operator[](const K & key);
+    const V & at(const K & key) const;
+    V & operator[](const K & key);
 
     std::pair<IteratorT, bool> insert(const std::pair<const K, V> & pair);
     // std::pair<IteratorT, bool> insert(value_tyupe && pair);
@@ -68,7 +73,7 @@ public:
     std::size_t erase(const K & key);
     // IteratorT erase(ConstIterator position);
 
-    void clear() noexcept;
+    void clear();
 
     IteratorT find(const K & key);
     // ConstIteratorT find(const K & key) const;
@@ -130,17 +135,20 @@ template <typename K, typename V,
           std::size_t InitCapacity,
           typename KeyEqual,
           typename Allocator>
-const std::pair<const K, V> & FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::at(const K & key) const {
+const V & FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::at(const K & key) const {
     std::size_t pos = Hash()(key) % capacity_;
     do {
         auto & element = elements_.at(pos);
-        if((!element.is_valid) || element.pair.first == key) {
+        if((!element.is_valid)) {
+            throw std::out_of_range("[FlatHashMap::at] key is not found");
+        }
+        if(element.pair.first == key) {
             break;
         }
         pos = (pos + 1) % capacity_;
         // make sure capacity_ is a power of 2 to optimize this
     } while (true);
-    return elements_.at(pos).pair;
+    return elements_.at(pos).pair.second;
 }
 
 template <typename K, typename V,
@@ -148,19 +156,29 @@ template <typename K, typename V,
           std::size_t InitCapacity,
           typename KeyEqual,
           typename Allocator>
-std::pair<const K, V> & FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::operator[](const K & key) {
+V & FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::operator[](const K & key) {
     if(load_factor() > max_load_factor_) {
         expand_and_rehash();
     }
     std::size_t pos = Hash()(key) % capacity_;
     do {
         auto & element = elements_[pos];
-        if((!element.is_valid) || element.pair.first == key) {
+        if((!element.is_valid)) {
+            // How does the statement "map[k] = v" automatically update the size of the hashmap?
+            // We can define the semantic of operator[] in a smart way.
+            // If map[k] does not exists, we insert a dump element and increment the size.
+            // And we return the dump element.
+            element.is_valid = true;
+            element.pair.first = key;
+            size_++;
+            break;
+        }
+        else if(element.pair.first == key) {
             break;
         }
         pos = (pos + 1) % capacity_;
     } while (true);
-    return elements_[pos].pair;
+    return elements_[pos].pair.second;
 }
 
 template <typename K, typename V,
@@ -230,6 +248,13 @@ std::size_t FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::erase(co
     if(it == end()) {
         return 0;
     }
+
+    #ifdef DEBUG_FHM
+    std::cout << "[FlatHashMap::erase] reinterpret_cast<uint8_t>(it.getValidFlagField()) is " <<
+        static_cast<int32_t>(it.getValidFlagField()) << std::endl;
+    #endif
+
+    // assert(static_cast<uint8_t>(it.getValidFlagField()) == 0x1);
     it.getValidFlagField() = false;
     size_--;
     return 1;
@@ -250,6 +275,18 @@ void FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::expand_and_reha
         }
     }
     elements_ = std::move(new_elements);
+}
+
+template <typename K, typename V,
+          typename Hash,
+          std::size_t InitCapacity,
+          typename KeyEqual,
+          typename Allocator>
+void FlatHashMap<K, V, Hash, InitCapacity, KeyEqual, Allocator>::clear() {
+    capacity_ = InitCapacity;
+    elements_.clear();
+    elements_.resize(InitCapacity);
+    size_ = 0;
 }
 
 }
