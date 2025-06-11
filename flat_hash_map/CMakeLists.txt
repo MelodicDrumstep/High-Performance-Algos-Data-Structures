@@ -19,15 +19,6 @@ FetchContent_MakeAvailable(googletest)
 
 add_subdirectory(../utils ${CMAKE_BINARY_DIR}/utils)
 
-# Main executable
-add_executable(flat_hash_map flat_hash_map.cpp flat_hash_map.hpp)
-
-target_include_directories(flat_hash_map PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-target_link_libraries(flat_hash_map PRIVATE utils)
-
 # Test executable
 add_executable(flat_hash_map_test flat_hash_map_test.cpp)
 
