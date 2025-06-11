@@ -9,7 +9,7 @@
 #include <cassert>
 #include <cstddef>
 
-//#define DEBUG_FHM
+#define DEBUG_FHM
 
 namespace hpds {
 // hpds is for High-Performance Data Structures
@@ -33,6 +33,11 @@ public:
             is_valid = valid;
             pos = p;
             pair = std::pair<K, V>(key, value);
+        }
+
+        friend std::ostream & operator<<(std::ostream & cout, const ElementT & element) {
+            return (cout << "{ is_valid : " << element.is_valid << ", pos : " 
+                << element.pos << ", key : " << element.pair.first << ", value : " << element.pair.second << "\n");
         }
     };
         
@@ -162,14 +167,6 @@ const V & FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::at(const
             #endif
             // DEBUGING
             if((element.pos == start_pos) && (element.pair.first == key)) {
-                // DBEUGING
-                #ifdef DEBUG_FHM
-                if(key == 195) {
-                    std::cout << "[FlatHashMapV1::at] key is 195. find the element at pos " << pos << "\n";
-                }
-                #endif
-                // DEBUGING
-
                 break;
             }
         }
@@ -196,6 +193,12 @@ V & FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](con
     std::size_t pos = Hash()(key) % capacity_;
     std::size_t start_pos = pos;
 
+    // DEBUGING
+    #ifdef DEBUG_FHM
+    std::cout << "[FlatHashMap::operator[]] key is " << key << ", start_pos is " << start_pos << "\n";
+    #endif
+    // DEBUGING
+
     // NOTE: In this naive implementation, I cannot just iterate through the element
     // from position "pos", and insert a dump element if we encounter an invalid element.
     // This is because such thing can happen: 
@@ -213,6 +216,13 @@ V & FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](con
 
     do {
         auto & element = elements_[pos];
+
+        // DEBUGING
+        #ifdef DEBUG_FHM
+        std::cout << "[FlatHashMap::operator[]] pos is " << pos << ", and element is " << element << "\n";
+        #endif
+        // DEBUGING
+
         if((!element.is_valid)) {
             // How does the statement "map[k] = v" automatically update the size of the hashmap?
             // We can define the semantic of operator[] in a smart way.
@@ -226,26 +236,9 @@ V & FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](con
             // element.pair.second = 1;
             // // DEBUGING
             size_++;
-
-            // DBEUGING
-            #ifdef DEBUG_FHM
-            if(key == 195) {
-                std::cout << "[FlatHashMapV1::operator[]] key is 195. Insert dump element at pos " << pos << "\n";
-            }
-            #endif
-            // DEBUGING
-
             break;
         }
         else if((element.pos == start_pos) && (element.pair.first == key)) {
-            // DBEUGING
-            #ifdef DEBUG_FHM
-            if(key == 195) {
-                std::cout << "[FlatHashMapV1::operator[]] key is 195. The key already exists.\n";
-            }
-            #endif
-            // DEBUGING
-
             break;
         }
         pos = (pos + 1) % capacity_;
@@ -265,14 +258,6 @@ auto FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::find(const K 
     do {
         auto & element = elements_[pos];
         if((element.is_valid) && (element.pos == start_pos) && (element.pair.first == key)) {
-            // DBEUGING
-            #ifdef DEBUG_FHM
-            if(key == 195) {
-                std::cout << "[FlatHashMapV1::find] key is 195. element at pos " << pos << " is what we want to find. Break\n";
-            }
-            #endif
-            // DEBUGING
-        
             return IteratorT(&element.pair);
         }
         pos = (pos + 1) % capacity_;
@@ -295,7 +280,7 @@ auto FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::insert(const 
         expand_and_rehash();
     }
 
-    const K key = pair.first;
+    const K & key = pair.first;
     std::size_t pos = Hash()(key) % capacity_;
     do {
         auto & element = elements_.at(pos);
@@ -355,31 +340,14 @@ void FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::expand_and_re
     capacity_ *= 2;
     for(auto & element : elements_) {
         if(element.is_valid) {
-            // DBEUGING
-            #ifdef DEBUG_FHM
-            if(element.pair.first == 195) {
-                std::cout << "[FlatHashMapV1::expand_and_rehash] key is 195\n";
-            }
-            #endif
-            // DEBUGING
-
             std::size_t new_pos = Hash()(element.pair.first) % capacity_;
+            std::size_t new_start_pos = new_pos;
             while(true) {
                 // Don't forget to apply linear probe when resizing
                 auto & new_element = new_elements[new_pos];
                 if(!new_element.is_valid) {
                     new_element = element;
-
-                    // DBEUGING
-                    #ifdef DEBUG_FHM
-                    if(element.pair.first == 195) {
-                        std::cout << "[FlatHashMapV1::expand_and_rehash] Find position. size is " << size_ <<
-                            ", capacity is " << capacity_ << ", pos is " << new_pos << ", new_element.is_valid is " << 
-                            new_element.is_valid << std::endl;
-                    }
-                    #endif
-                    // DEBUGING
-
+                    new_element.pos = new_start_pos;
                     break;
                 }
                 new_pos = (new_pos + 1) % capacity_;

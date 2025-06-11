@@ -153,14 +153,6 @@ const V & FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::at(const
             #endif
             // DEBUGING
             if(element.pair.first == key) {
-                // DBEUGING
-                #ifdef DEBUG_FHM
-                if(key == 195) {
-                    std::cout << "[FlatHashMapV0::at] key is 195. find the element at pos " << pos << "\n";
-                }
-                #endif
-                // DEBUGING
-
                 break;
             }
         }
@@ -216,26 +208,9 @@ V & FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](con
             // element.pair.second = 1;
             // // DEBUGING
             size_++;
-
-            // DBEUGING
-            #ifdef DEBUG_FHM
-            if(key == 195) {
-                std::cout << "[FlatHashMapV0::operator[]] key is 195. Insert dump element at pos " << pos << "\n";
-            }
-            #endif
-            // DEBUGING
-
             break;
         }
         else if(element.pair.first == key) {
-            // DBEUGING
-            #ifdef DEBUG_FHM
-            if(key == 195) {
-                std::cout << "[FlatHashMapV0::operator[]] key is 195. The key already exists.\n";
-            }
-            #endif
-            // DEBUGING
-
             break;
         }
         pos = (pos + 1) % capacity_;
@@ -254,14 +229,6 @@ auto FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::find(const K 
     do {
         auto & element = elements_[pos];
         if((element.is_valid) && (element.pair.first == key)) {
-            // DBEUGING
-            #ifdef DEBUG_FHM
-            if(key == 195) {
-                std::cout << "[FlatHashMapV0::find] key is 195. element at pos " << pos << " is what we want to find. Break\n";
-            }
-            #endif
-            // DEBUGING
-        
             return IteratorT(&element.pair);
         }
         pos = (pos + 1) % capacity_;
@@ -284,7 +251,7 @@ auto FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::insert(const 
         expand_and_rehash();
     }
 
-    const K key = pair.first;
+    const K & key = pair.first;
     std::size_t pos = Hash()(key) % capacity_;
     do {
         auto & element = elements_.at(pos);
@@ -344,32 +311,12 @@ void FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::expand_and_re
     capacity_ *= 2;
     for(auto & element : elements_) {
         if(element.is_valid) {
-
-            // DBEUGING
-            #ifdef DEBUG_FHM
-            if(element.pair.first == 195) {
-                std::cout << "[FlatHashMapV0::expand_and_rehash] key is 195\n";
-            }
-            #endif
-            // DEBUGING
-
             std::size_t new_pos = Hash()(element.pair.first) % capacity_;
             while(true) {
                 // Don't forget to apply linear probe when resizing
                 auto & new_element = new_elements[new_pos];
                 if(!new_element.is_valid) {
                     new_element = element;
-
-                    // DBEUGING
-                    #ifdef DEBUG_FHM
-                    if(element.pair.first == 195) {
-                        std::cout << "[FlatHashMapV0::expand_and_rehash] Find position. size is " << size_ <<
-                            ", capacity is " << capacity_ << ", pos is " << new_pos << ", new_element.is_valid is " << 
-                            new_element.is_valid << std::endl;
-                    }
-                    #endif
-                    // DEBUGING
-
                     break;
                 }
                 new_pos = (new_pos + 1) % capacity_;
