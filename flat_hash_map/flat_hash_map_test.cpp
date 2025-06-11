@@ -10,7 +10,7 @@ using namespace hpds;
 
 // Basic functionality tests
 TEST(FlatHashMapTest, BasicOperations) {
-    FlatHashMap<int, std::string> map;
+    FlatHashMapV0<int, std::string> map;
     
     // Test empty and size
     EXPECT_TRUE(map.empty());
@@ -51,7 +51,7 @@ TEST(FlatHashMapTest, BasicOperations) {
 
 // Test with string keys
 TEST(FlatHashMapTest, StringKeys) {
-    FlatHashMap<std::string, int> fhm;
+    FlatHashMapV0<std::string, int> fhm;
     std::unordered_map<std::string, int> std_map;
     
     // Insert some string keys
@@ -72,7 +72,7 @@ TEST(FlatHashMapTest, StringKeys) {
 }
 
 TEST(FlatHashMapTest, DuplicateInsertion) {
-    FlatHashMap<int, std::string> map;
+    FlatHashMapV0<int, std::string> map;
     
     auto [it1, inserted1] = map.insert({1, "one"});
     EXPECT_TRUE(inserted1);
@@ -84,7 +84,7 @@ TEST(FlatHashMapTest, DuplicateInsertion) {
 }
 
 TEST(FlatHashMapTest, IteratorBehavior) {
-    FlatHashMap<int, std::string> map;
+    FlatHashMapV0<int, std::string> map;
     map[1] = "one";
     map[2] = "two";
     map[3] = "three";
@@ -99,7 +99,7 @@ TEST(FlatHashMapTest, IteratorBehavior) {
 }
 
 TEST(FlatHashMapTest, ClearBehavior) {
-    FlatHashMap<int, std::string> map;
+    FlatHashMapV0<int, std::string> map;
     map[1] = "one";
     map[2] = "two";
 
@@ -120,7 +120,7 @@ TEST(FlatHashMapTest, CustomHashFunction) {
         }
     };
 
-    FlatHashMap<int, std::string, 16, ModHash> map;
+    FlatHashMapV0<int, std::string, 16, ModHash> map;
     map[15] = "fifteen";
     map[25] = "twenty-five";  // Same hash as 15
 
@@ -132,7 +132,7 @@ TEST(FlatHashMapTest, CustomHashFunction) {
 }
 
 TEST(FlatHashMapTest, RehashAndLoadFactor) {
-    FlatHashMap<int, std::string, 4> map;
+    FlatHashMapV0<int, std::string, 4> map;
     map.set_max_load_factor(0.25);  // Force early rehash
 
     map[1] = "a";
@@ -146,7 +146,7 @@ TEST(FlatHashMapTest, RehashAndLoadFactor) {
 }
 
 TEST(FlatHashMapTest, StressInsertions) {
-    FlatHashMap<int, int> map;
+    FlatHashMapV0<int, int> map;
     constexpr int N = 10000;
 
     for (int i = 0; i < N; ++i) {
@@ -161,8 +161,8 @@ TEST(FlatHashMapTest, StressInsertions) {
 }
 
 TEST(FlatHashMapTest, AtConstCorrectness) {
-    const FlatHashMap<int, std::string> map_const = [] {
-        FlatHashMap<int, std::string> temp;
+    const FlatHashMapV0<int, std::string> map_const = [] {
+        FlatHashMapV0<int, std::string> temp;
         temp.insert({42, "answer"});
         return temp;
     }();
@@ -173,7 +173,7 @@ TEST(FlatHashMapTest, AtConstCorrectness) {
 
 // Comparison test with std::unordered_map
 TEST(FlatHashMapTest, ComparisonWithStdUnorderedMap) {
-    FlatHashMap<int, int, 256> fhm;
+    FlatHashMapV0<int, int, 256> fhm;
     std::unordered_map<int, int> std_map;
     
     // Random number generator
@@ -220,7 +220,7 @@ TEST(FlatHashMapTest, ComparisonWithStdUnorderedMap) {
 }
 
 TEST(FlatHashMapTest, RandomFuzzAgainstUnorderedMap) {
-    FlatHashMap<int, std::string> flat_map;
+    FlatHashMapV0<int, std::string> flat_map;
     std::unordered_map<int, std::string> std_map;
 
     constexpr int num_operations = 1000;
@@ -261,9 +261,9 @@ TEST(FlatHashMapTest, RandomFuzzAgainstUnorderedMap) {
             auto std_it = std_map.find(key);
 
             if (flat_it == flat_map.end()) {
-                EXPECT_EQ(std_it, std_map.end()) << "FlatHashMap miss, but std::unordered_map hit for key " << key;
+                EXPECT_EQ(std_it, std_map.end()) << "FlatHashMapV0 miss, but std::unordered_map hit for key " << key;
             } else {
-                EXPECT_NE(std_it, std_map.end()) << "FlatHashMap hit, but std::unordered_map miss for key " << key;
+                EXPECT_NE(std_it, std_map.end()) << "FlatHashMapV0 hit, but std::unordered_map miss for key " << key;
                 EXPECT_EQ(flat_it->second, std_it->second) << "Value mismatch for key " << key;
             }
         }

@@ -4,7 +4,7 @@
 using namespace hpds;
 
 int main() {
-    FlatHashMap<int32_t, int32_t> hashmap;
+    FlatHashMapV0<int32_t, int32_t> hashmap;
     hashmap.insert(std::pair<int32_t, int32_t>{1, 0});
     std::cout << "size is " << hashmap.size() << std::endl;
 
