@@ -10,6 +10,7 @@
 #include <cstddef>
 
 // #define DEBUG_FHM
+// #define PRINT_FHM_CMP_POS
 
 namespace hpds {
 // hpds is for High-Performance Data Structures
@@ -18,6 +19,14 @@ namespace hpds {
  * @brief Store original hashing position in element node. Use the field to accelerate
  * key comparison procedure. (If the key is a heavy-to-compare type like std::string, 
  * this implementation outperforms FlatHashMapV0 significantly.)
+ * 
+ * @tparam ValidAndPosStructType
+ *  The hashing position information and the valid bit will be stored together using bitfield.
+ *  And this type determines the size of bytes we use. For example, if we use uint16_t, then we will
+ *  store a 15-bit hashing position. This information will be used to accelerate "find position" process,
+ *  and the more bits we used, the lower the chance for false positive comparison. However, it will also
+ *  take more space and less effecient to cache. Benchmarks need to be done to decide this parameter.
+ *  And we can specialize this parameter for different key / value types or different expected capacity ranges. 
  */
 template <typename ValidAndPosStructType,
           typename K, typename V,
@@ -49,6 +58,20 @@ public:
         }
 
         bool compare_pos(std::size_t start_pos) const {
+            // DEBUGING
+            #ifdef PRINT_FHM_CMP_POS
+            static uint64_t cnt = 0;
+            bool result = (pos == (static_cast<ValidAndPosStructType>(start_pos) 
+                & (~(1 << (sizeof(ValidAndPosStructType) * 8 - 1)))));
+            if(result) {
+                cnt++;
+                if(cnt % 100 == 0) {
+                    std::cout << "[FlatHashMapV1::compare_pos] cnt is " << cnt << std::endl;
+                }
+            }
+            #endif
+            // DEBUGING
+
             return (pos == (static_cast<ValidAndPosStructType>(start_pos) 
                 & (~(1 << (sizeof(ValidAndPosStructType) * 8 - 1)))));
             // magic mask
