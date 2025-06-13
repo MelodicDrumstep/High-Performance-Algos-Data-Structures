@@ -17,7 +17,7 @@ namespace hpds {
 template <typename K, typename V,
           std::size_t InitCapacity = 256,
           typename Hash = std::hash<K>,
-          typename KeyEqual = std::equal_to<K>,
+          typename KeyEqual = std::equal_to<K>, // for simplicity I ignore this template parameter temporarily
           typename Allocator = std::allocator<std::pair<const K, V>>>
 requires ((InitCapacity > 0) && ((InitCapacity & (InitCapacity - 1)) == 0))
 class FlatHashMapV0 {

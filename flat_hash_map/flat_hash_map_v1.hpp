@@ -14,22 +14,30 @@
 namespace hpds {
 // hpds is for High-Performance Data Structures
 
-template <typename K, typename V,
+/** 
+ * @brief Store original hashing position in element node. Use the field to accelerate
+ * key comparison procedure. (If the key is a heavy-to-compare type like std::string, 
+ * this implementation outperforms FlatHashMapV0 significantly.)
+ */
+template <typename ValidAndPosStructType,
+          typename K, typename V,
           std::size_t InitCapacity = 256,
           typename Hash = std::hash<K>,
           typename KeyEqual = std::equal_to<K>,
           typename Allocator = std::allocator<std::pair<const K, V>>>
-requires ((InitCapacity > 0) && ((InitCapacity & (InitCapacity - 1)) == 0))
+requires ((std::is_same_v<ValidAndPosStructType,uint8_t> || (std::is_same_v<ValidAndPosStructType, uint16_t>)
+     || (std::is_same_v<ValidAndPosStructType, uint32_t>))
+    && (InitCapacity > 0) && ((InitCapacity & (InitCapacity - 1)) == 0))
 class FlatHashMapV1 {
 public:
     // Keep struct alignment padding in mind
     struct ElementT {
-        uint32_t is_valid : 1;
-        uint32_t pos : 31;
+        ValidAndPosStructType is_valid : 1;
+        ValidAndPosStructType pos : (sizeof(ValidAndPosStructType) * 8 - 1);
         std::pair<K, V> pair;
 
         ElementT() : is_valid(0), pos(0) {}
-        void set(uint32_t valid, uint32_t p, const K& key, const V& value) {
+        void set(bool valid, ValidAndPosStructType p, const K& key, const V& value) {
             is_valid = valid;
             pos = p;
             pair = std::pair<K, V>(key, value);
@@ -38,6 +46,15 @@ public:
         friend std::ostream & operator<<(std::ostream & cout, const ElementT & element) {
             return (cout << "{ is_valid : " << element.is_valid << ", pos : " 
                 << element.pos << ", key : " << element.pair.first << ", value : " << element.pair.second << " }\n");
+        }
+
+        bool compare_pos(std::size_t start_pos) const {
+            return (pos == (static_cast<ValidAndPosStructType>(start_pos) 
+                & (~(1 << (sizeof(ValidAndPosStructType) * 8 - 1)))));
+            // magic mask
+            // for ValidAndPosStructType == uint8_t, sizeof is 1
+            // 1 << (sizeof(ValidAndPosStructType) * 8 - 1) is 10000000
+            // (~(1 << (sizeof(ValidAndPosStructType) * 8 - 1))) is 01111111
         }
     };
         
@@ -122,39 +139,43 @@ private:
     float max_load_factor_{0.6};
 };
 
-template <typename K, typename V,
+template <typename ValidAndPosStructType,
+          typename K, typename V,
           std::size_t InitCapacity,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-bool FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::empty() const noexcept {
+bool FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEqual, Allocator>::empty() const noexcept {
     return size_ == 0;
 }
 
-template <typename K, typename V,
+template <typename ValidAndPosStructType,
+          typename K, typename V,
           std::size_t InitCapacity,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-std::size_t FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::size() const noexcept {
+std::size_t FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEqual, Allocator>::size() const noexcept {
     return size_;
 }
 
-template <typename K, typename V,
+template <typename ValidAndPosStructType,
+          typename K, typename V,
           std::size_t InitCapacity,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-std::size_t FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::capacity() const noexcept {
+std::size_t FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEqual, Allocator>::capacity() const noexcept {
     return capacity_;
 }
 
-template <typename K, typename V,
+template <typename ValidAndPosStructType,
+          typename K, typename V,
           std::size_t InitCapacity,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-const V & FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::at(const K & key) const {
+const V & FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEqual, Allocator>::at(const K & key) const {
     std::size_t pos = Hash()(key) % capacity_;
     std::size_t start_pos = pos;
     std::size_t cnt = 0;
@@ -166,7 +187,7 @@ const V & FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::at(const
             std::cout << "[FlatHashMapV1::at] key " << key << " is not found. pos is " << pos << std::endl;
             #endif
             // DEBUGING
-            if((element.pos == start_pos) && (element.pair.first == key)) {
+            if(element.compare_pos(start_pos) && (element.pair.first == key)) {
                 break;
             }
         }
@@ -181,12 +202,13 @@ const V & FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::at(const
     return elements_.at(pos).pair.second;
 }
 
-template <typename K, typename V,
+template <typename ValidAndPosStructType,
+          typename K, typename V,
           std::size_t InitCapacity,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-V & FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](const K & key) {
+V & FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](const K & key) {
     if(load_factor() > max_load_factor_) {
         expand_and_rehash();
     }
@@ -239,7 +261,7 @@ V & FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](con
             size_++;
             break;
         }
-        else if((element.pos == start_pos) && (element.pair.first == key)) {
+        else if(element.compare_pos(start_pos) && (element.pair.first == key)) {
             break;
         }
         pos = (pos + 1) % capacity_;
@@ -247,18 +269,19 @@ V & FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](con
     return elements_[pos].pair.second;
 }
 
-template <typename K, typename V,
+template <typename ValidAndPosStructType,
+          typename K, typename V,
           std::size_t InitCapacity,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-auto FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::find(const K & key) -> IteratorT {
+auto FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEqual, Allocator>::find(const K & key) -> IteratorT {
     std::size_t pos = Hash()(key) % capacity_;
     std::size_t start_pos = pos;
     std::size_t cnt = 0;
     do {
         auto & element = elements_[pos];
-        if((element.is_valid) && (element.pos == start_pos) && (element.pair.first == key)) {
+        if((element.is_valid) && element.compare_pos(start_pos) && (element.pair.first == key)) {
             return IteratorT(&element.pair);
         }
         pos = (pos + 1) % capacity_;
@@ -267,12 +290,13 @@ auto FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::find(const K 
     return end();
 }
 
-template <typename K, typename V,
+template <typename ValidAndPosStructType,
+          typename K, typename V,
           std::size_t InitCapacity,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-auto FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::insert(const std::pair<const K, V> & pair) -> std::pair<IteratorT, bool> {
+auto FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEqual, Allocator>::insert(const std::pair<const K, V> & pair) -> std::pair<IteratorT, bool> {
     if(load_factor() > max_load_factor_) {
         // #ifdef DEBUG_FHM
         //     std::cout << "size is " << size_ << "capacity is " << capacity_ << std::endl;
@@ -305,12 +329,13 @@ auto FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::insert(const 
     return {IteratorT(&(elements_[pos].pair)), true};
 }
 
-template <typename K, typename V,
+template <typename ValidAndPosStructType,
+          typename K, typename V,
           std::size_t InitCapacity,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-std::size_t FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::erase(const K & key) {
+std::size_t FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEqual, Allocator>::erase(const K & key) {
     IteratorT it = find(key);
     if(it == end()) {
         return 0;
@@ -332,12 +357,13 @@ std::size_t FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::erase(
     return 1;
 }
 
-template <typename K, typename V,
+template <typename ValidAndPosStructType,
+          typename K, typename V,
           std::size_t InitCapacity,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-void FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::expand_and_rehash() {
+void FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEqual, Allocator>::expand_and_rehash() {
     ContainerT new_elements(elements_.size() * 2);
     capacity_ *= 2;
     for(auto & element : elements_) {
@@ -359,16 +385,38 @@ void FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::expand_and_re
     elements_ = std::move(new_elements);
 }
 
-template <typename K, typename V,
+template <typename ValidAndPosStructType,
+          typename K, typename V,
           std::size_t InitCapacity,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-void FlatHashMapV1<K, V, InitCapacity, Hash, KeyEqual, Allocator>::clear() {
+void FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEqual, Allocator>::clear() {
     capacity_ = InitCapacity;
     elements_.clear();
     elements_.resize(InitCapacity);
     size_ = 0;
 }
+
+template <typename K, typename V,
+          std::size_t InitCapacity = 256,
+          typename Hash = std::hash<K>,
+          typename KeyEqual = std::equal_to<K>,
+          typename Allocator = std::allocator<std::pair<const K, V>>>
+using FlatHashMapV1a = FlatHashMapV1<uint8_t, K, V, InitCapacity, Hash, KeyEqual, Allocator>;
+
+template <typename K, typename V,
+          std::size_t InitCapacity = 256,
+          typename Hash = std::hash<K>,
+          typename KeyEqual = std::equal_to<K>,
+          typename Allocator = std::allocator<std::pair<const K, V>>>
+using FlatHashMapV1b = FlatHashMapV1<uint16_t, K, V, InitCapacity, Hash, KeyEqual, Allocator>;
+
+template <typename K, typename V,
+          std::size_t InitCapacity = 256,
+          typename Hash = std::hash<K>,
+          typename KeyEqual = std::equal_to<K>,
+          typename Allocator = std::allocator<std::pair<const K, V>>>
+using FlatHashMapV1c = FlatHashMapV1<uint32_t, K, V, InitCapacity, Hash, KeyEqual, Allocator>;
 
 }

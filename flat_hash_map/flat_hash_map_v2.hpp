@@ -22,22 +22,32 @@ template <typename K, typename V,
 requires ((InitCapacity > 0) && ((InitCapacity & (InitCapacity - 1)) == 0))
 class FlatHashMapV2 {
 public:
-    // Keep struct alignment padding in mind
-    struct ElementT {
+    struct MetaT {
         uint32_t is_valid : 1;
         uint32_t pos : 31;
-        std::pair<K, V> pair;
 
-        ElementT() : is_valid(0), pos(0) {}
-        void set(uint32_t valid, uint32_t p, const K& key, const V& value) {
+        MetaT() : is_valid(0), pos(0) {}
+
+        void set(bool valid, uint32_t p) {
             is_valid = valid;
             pos = p;
+        }
+
+        friend std::ostream & operator<<(std::ostream & cout, const ElementT & element) {
+            return (cout << "{ is_valid : " << is_valid << ", pos : " << pos  <<  " }\n");
+        }
+    };
+
+    // Keep struct alignment padding in mind
+    struct ElementT {
+        std::pair<K, V> pair;
+
+        void set(const K& key, const V& value) {
             pair = std::pair<K, V>(key, value);
         }
 
         friend std::ostream & operator<<(std::ostream & cout, const ElementT & element) {
-            return (cout << "{ is_valid : " << element.is_valid << ", pos : " 
-                << element.pos << ", key : " << element.pair.first << ", value : " << element.pair.second << " }\n");
+            return (cout << "{ key : " << element.pair.first << ", value : " << element.pair.second << " }\n");
         }
     };
         
