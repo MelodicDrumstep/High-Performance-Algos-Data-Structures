@@ -19,3 +19,7 @@ Currently, this repository contains these parts:
 + binary search
 
 + static B tree / static B+ tree
+
++ flat hash map
+
++ stable vector

@@ -31,6 +31,17 @@ target_link_libraries(flat_hash_map_test PRIVATE
     utils
 )
 
+# Test executable
+add_executable(benchmark benchmark.cpp)
+
+target_include_directories(benchmark PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(benchmark PRIVATE 
+    utils
+)
+
 # Enable testing
 enable_testing()
 add_test(NAME flat_hash_map_test COMMAND flat_hash_map_test)
