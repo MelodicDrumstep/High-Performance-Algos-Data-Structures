@@ -10,15 +10,6 @@ endif()
 
 add_subdirectory(../utils ${CMAKE_BINARY_DIR}/utils)
 
-# Main executable
-add_executable(stable_vector stable_vector.cpp stable_vector.hpp)
-
-target_include_directories(stable_vector PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-target_link_libraries(stable_vector PRIVATE utils)
-
 # Test executable
 add_executable(stable_vector_test stable_vector_test.cpp)
 

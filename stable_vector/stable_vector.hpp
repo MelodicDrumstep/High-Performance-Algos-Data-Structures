@@ -22,12 +22,6 @@ class StableVector {
     class Chunk {
     public:
         void push_back(const T & element) {
-            // DEBUGING
-            #ifdef DEBUG_STABLE_VECTOR
-            std::cout << "[Chunk::push_back] chunk_size: " << chunk_size << std::endl;
-            #endif
-            // DEBUGING
-
             if(chunk_size >= ChunkSize) {
                 throw std::out_of_range("[Chunk::push_back]");
             }
@@ -57,7 +51,9 @@ class StableVector {
 
     private:
         std::array<T, ChunkSize> elements;
-        // make sure T has default constructor
+        // For simplicity, I use std::array here.
+        // Then I have to make sure T has default constructor
+        // if not, I should use std::vector<T> instead
         std::size_t chunk_size = 0;
     };
 
@@ -168,7 +164,7 @@ public:
             // std::unique_ptr is not copyable, so we need to use resize
             // and then copy the elements
             chunks_.resize(capacity / ChunkSize);
-            for(size_t i = size_ / ChunkSize; i < capacity / ChunkSize; i++) {
+            for(size_t i = size_ / ChunkSize + 1; i < capacity / ChunkSize; i++) {
                 chunks_[i] = std::make_unique<Chunk>();
             }
         }
@@ -215,12 +211,6 @@ public:
 
 private:
     Chunk & get_last_chunk_for_insert() {
-        // DEBUGING
-        #ifdef DEBUG_STABLE_VECTOR
-        std::cout << "[get_last_chunk_for_insert] size_: " << size_ << ", chunks_.size(): " << chunks_.size() << std::endl;
-        #endif
-        // DEBUGING
-
         if(((size_ % ChunkSize) == 0) && ((size_ / ChunkSize) == chunks_.size())) {
             // no more space, need to insert a new chunk
             chunks_.push_back(std::make_unique<Chunk>());

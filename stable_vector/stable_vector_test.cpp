@@ -2,7 +2,10 @@
 #include <string>
 #include <cassert>
 #include <vector>
+#include <random>
 #include "stable_vector.hpp"
+
+#define DEBUG_STABLE_VECTOR_TEST
 
 using namespace hpds;
 
@@ -34,10 +37,24 @@ void test_basic_operations() {
 
     // Test element access
     all_passed = (vec[0] == 1 && vec[1] == 2 && vec[2] == 3);
+
+    // DEBUGING
+    #ifdef DEBUG_STABLE_VECTOR_TEST
+    std::cout << "[test_basic_operations] vec[0]: " << vec[0] << ", vec[1]: " << vec[1] << ", vec[2]: " << vec[2] << std::endl;
+    #endif
+    // DEBUGING
+    
     print_test_result("Element access", all_passed);
     
     // Test front and back
     all_passed = (vec.front() == 1 && vec.back() == 3);
+
+    // DEBUGING
+    #ifdef DEBUG_STABLE_VECTOR_TEST
+    std::cout << "[test_basic_operations] vec.front(): " << vec.front() << ", vec.back(): " << vec.back() << std::endl;
+    #endif
+    // DEBUGING
+
     print_test_result("Front and back", all_passed);
     
     // Test clear
@@ -159,6 +176,68 @@ void test_comparison_with_std_vector() {
     print_test_result("Clear comparison", all_passed);
 }
 
+// Test iterator stability with random insertions
+void test_iterator_stability_with_random_insertions() {
+    std::cout << "\n=== Testing Iterator Stability with Random Insertions ===" << std::endl;
+    
+    StableVector<int> vec;
+    std::vector<int> std_vec;
+    bool all_passed = true;
+    
+    // Initialize random number generator
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1, 1000000);
+    
+    // Insert initial elements
+    for (int i = 0; i < 100; ++i) {
+        vec.push_back(i);
+        std_vec.push_back(i);
+    }
+    
+    // Store iterators to some elements
+    auto it1 = vec.begin() + 10;  // Points to 10
+    auto it2 = vec.begin() + 50;  // Points to 50
+    auto it3 = vec.begin() + 90;  // Points to 90
+    
+    // Store the values these iterators point to
+    int val1 = *it1;
+    int val2 = *it2;
+    int val3 = *it3;
+    
+    // Insert many random numbers
+    for (int i = 0; i < 10000; ++i) {
+        int random_num = dis(gen);
+        vec.push_back(random_num);
+        std_vec.push_back(random_num);
+        
+        // Periodically check if iterators still point to correct values
+        if (i % 1000 == 0) {
+            all_passed &= (*it1 == val1);
+            all_passed &= (*it2 == val2);
+            all_passed &= (*it3 == val3);
+            
+            // Also verify the elements are in correct positions in the vector
+            all_passed &= (vec[10] == val1);
+            all_passed &= (vec[50] == val2);
+            all_passed &= (vec[90] == val3);
+        }
+    }
+    
+    // Final check of iterator stability
+    all_passed &= (*it1 == val1);
+    all_passed &= (*it2 == val2);
+    all_passed &= (*it3 == val3);
+    print_test_result("Iterator stability after 10000 random insertions", all_passed);
+    
+    // Verify the entire vector matches std::vector
+    all_passed = true;
+    for (size_t i = 0; i < vec.size(); ++i) {
+        all_passed &= (vec[i] == std_vec[i]);
+    }
+    print_test_result("Vector content matches std::vector after random insertions", all_passed);
+}
+
 int main() {
     std::cout << "Starting StableVector Tests...\n" << std::endl;
     
@@ -166,6 +245,7 @@ int main() {
     test_iterator_stability();
     test_custom_type();
     test_comparison_with_std_vector();
+    test_iterator_stability_with_random_insertions();
     
     std::cout << "\nAll tests completed!" << std::endl;
     return 0;
