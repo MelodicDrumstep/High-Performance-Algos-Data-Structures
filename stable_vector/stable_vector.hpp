@@ -14,7 +14,7 @@
 
 namespace hpds {
 
-template <typename T, std::size_t ChunkSize = 256, std::size_t InitialCapacity = 256>
+template <typename T, std::size_t ChunkSize = 256, std::size_t InitialCapacity = ChunkSize>
 requires ((((ChunkSize) & (ChunkSize - 1)) == 0))
 // make sure ChunkSize is a power of 2, for the compiler to optimize
 // out modular operations
@@ -163,11 +163,11 @@ public:
         if((capacity / ChunkSize) > (size_ / ChunkSize)) {
             // std::unique_ptr is not copyable, so we need to use resize
             // and then copy the elements
-            chunks_.resize(capacity / ChunkSize);
+            chunks_.reserve(capacity / ChunkSize);
 
             // if the last chunk is not full, we don't need to chunk "size_ / ChunkSize"
             for(size_t i = size_ / ChunkSize + ((size_ % ChunkSize) != 0); i < capacity / ChunkSize; i++) {
-                chunks_[i] = std::make_unique<Chunk>();
+                chunks_.emplace_back(std::make_unique<Chunk>());
             }
         }
     }
@@ -222,12 +222,19 @@ private:
             // DEBUGING
 
             // no more space, expand the capacity by 2
-            chunks_.resize(size_ * 2 / ChunkSize);
+            chunks_.reserve(size_ * 2 / ChunkSize);
 
             for(size_t i = size_ / ChunkSize; i < size_ * 2 / ChunkSize; i++) {
-                chunks_[i] = std::make_unique<Chunk>();
+                chunks_.emplace_back(std::make_unique<Chunk>());
             }
         }
+
+        // DEBUGING
+        #ifdef DEBUG_STABLE_VECTOR
+        std::cout << "[StableVector::get_last_chunk_for_insert] size_: " << size_
+            << ", size_ / ChunkSize: " << (size_ / ChunkSize) << std::endl;
+        #endif
+        // DEBUGING
 
         return *(chunks_[size_ / ChunkSize]);
     }

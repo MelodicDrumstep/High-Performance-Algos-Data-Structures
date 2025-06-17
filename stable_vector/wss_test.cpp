@@ -6,8 +6,8 @@
 
 using namespace hpds;
 
-constexpr static int32_t TestTimes = 500'000;
-constexpr static int32_t HeapRandomizationTimes = 100;
+constexpr static int32_t TestTimes = 1'000'000;
+constexpr static int32_t HeapRandomizationTimes = 1000;
 constexpr static std::size_t ChunkSize = 4 * 4096;
 
 void WSS_StableVector() {
@@ -17,6 +17,7 @@ void WSS_StableVector() {
     for(int32_t i = 0; i < TestTimes; i++) {
         for(int32_t j = 0; j < HeapRandomizationTimes; j++) {
             l.push_back(j);
+            doNotOptimizeAway(l.back());
         }
         v.push_back(i);
     }
@@ -35,6 +36,7 @@ void WSS_UnorderedMap() {
     for(int32_t i = 0; i < TestTimes; i++) {
         for(int32_t j = 0; j < HeapRandomizationTimes; j++) {
             l.push_back(j);
+            doNotOptimizeAway(l.back());
         }
         m[i] = i;
     }

@@ -37,8 +37,8 @@ TEST_PID=$!
 echo "Monitoring process $TEST_PID with wss.pl..."
 echo "Press Ctrl+C to stop monitoring"
 
-# Run wss.pl with cumulative output every 0.1 seconds
-$WSS_EXE_PATH -C "$TEST_PID" 0.1
+# Run wss.pl with cumulative output
+$WSS_EXE_PATH -s 0 "$TEST_PID" 1
 
 # Wait for the test process to finish
 wait $TEST_PID 
