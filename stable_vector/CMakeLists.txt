@@ -18,3 +18,12 @@ target_include_directories(stable_vector_test PRIVATE
 )
 
 target_link_libraries(stable_vector_test PRIVATE utils)
+
+# WSS test executable
+add_executable(wss_test wss_test.cpp)
+
+target_include_directories(wss_test PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(wss_test PRIVATE utils)

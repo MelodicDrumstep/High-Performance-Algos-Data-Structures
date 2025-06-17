@@ -5,7 +5,7 @@
 #include <random>
 #include "stable_vector.hpp"
 
-#define DEBUG_STABLE_VECTOR_TEST
+// #define DEBUG_STABLE_VECTOR_TEST
 
 using namespace hpds;
 

@@ -164,7 +164,9 @@ public:
             // std::unique_ptr is not copyable, so we need to use resize
             // and then copy the elements
             chunks_.resize(capacity / ChunkSize);
-            for(size_t i = size_ / ChunkSize + 1; i < capacity / ChunkSize; i++) {
+
+            // if the last chunk is not full, we don't need to chunk "size_ / ChunkSize"
+            for(size_t i = size_ / ChunkSize + ((size_ % ChunkSize) != 0); i < capacity / ChunkSize; i++) {
                 chunks_[i] = std::make_unique<Chunk>();
             }
         }
@@ -212,8 +214,19 @@ public:
 private:
     Chunk & get_last_chunk_for_insert() {
         if(((size_ % ChunkSize) == 0) && ((size_ / ChunkSize) == chunks_.size())) {
-            // no more space, need to insert a new chunk
-            chunks_.push_back(std::make_unique<Chunk>());
+            // DEBUGING 
+            #ifdef DEBUG_STABLE_VECTOR
+            std::cout << "[StableVector::get_last_chunk_for_insert] size_: " << size_
+                << ", chunks_.size(): " << chunks_.size() << std::endl;
+            #endif
+            // DEBUGING
+
+            // no more space, expand the capacity by 2
+            chunks_.resize(size_ * 2 / ChunkSize);
+
+            for(size_t i = size_ / ChunkSize; i < size_ * 2 / ChunkSize; i++) {
+                chunks_[i] = std::make_unique<Chunk>();
+            }
         }
 
         return *(chunks_[size_ / ChunkSize]);
