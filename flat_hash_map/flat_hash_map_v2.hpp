@@ -7,6 +7,7 @@
 #include <utility>
 #include <optional>
 #include <cassert>
+#include <bitset>
 #include <cstddef>
 
 // #define DEBUG_FHM
@@ -57,8 +58,15 @@ public:
             // DEBUGING
             #ifdef PRINT_FHM_CMP_POS
             static uint64_t cnt = 0;
+            // std::cout << "pos in bits : " << std::bitset<8>(pos) << std::endl;
+            // std::cout << "static_cast<ValidAndPosStructType>(start_pos) in bits : " 
+            //     << std::bitset<8>(static_cast<ValidAndPosStructType>(start_pos)) << std::endl;
+            // std::cout << "(static_cast<ValidAndPosStructType>(start_pos) 
+            //     & (~(1 << size_pos_in_bits))) in bits : " 
+            //     << std::bitset<8>((static_cast<ValidAndPosStructType>(start_pos) 
+            //     & (~(1 << size_pos_in_bits)))) << std::endl;
             bool result = (pos == (static_cast<ValidAndPosStructType>(start_pos) 
-                & (~(1 << size_pos_in_bits))));
+                & ((1 << size_pos_in_bits) - 1)));
             if(result) {
                 cnt++;
                 if(cnt % 100 == 0) {
@@ -69,11 +77,11 @@ public:
             // DEBUGING
 
             return (pos == (static_cast<ValidAndPosStructType>(start_pos) 
-                & (~(1 << size_pos_in_bits))));
+                & ((1 << size_pos_in_bits) - 1)));
             // magic mask
             // for ValidAndPosStructType == uint8_t, sizeof is 1
             // 1 << size_pos_in_bits is 10000000
-            // (~(1 << size_pos_in_bits)) is 01111111
+            // ((1 << size_pos_in_bits) - 1) is 01111111
         }
     };
         

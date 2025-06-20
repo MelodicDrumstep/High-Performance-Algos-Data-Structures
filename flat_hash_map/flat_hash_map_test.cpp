@@ -10,7 +10,7 @@ using namespace hpds;
 
 // #define DEBUG_FHM_TEST
 
-#define ChosenFlatHashMap FlatHashMapV1a
+#define ChosenFlatHashMap FlatHashMapV1c
 
 // Basic functionality tests
 TEST(FlatHashMapTest, BasicOperations) {
