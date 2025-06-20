@@ -4,12 +4,13 @@
 #include <string>
 #include "flat_hash_map_v0.hpp"
 #include "flat_hash_map_v1.hpp"
+#include "flat_hash_map_v2.hpp"
 
 using namespace hpds;
 
 // #define DEBUG_FHM_TEST
 
-#define ChosenFlatHashMap FlatHashMapV1b
+#define ChosenFlatHashMap FlatHashMapV1a
 
 // Basic functionality tests
 TEST(FlatHashMapTest, BasicOperations) {

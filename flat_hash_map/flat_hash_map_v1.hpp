@@ -41,13 +41,15 @@ class FlatHashMapV1 {
 public:
     // Keep struct alignment padding in mind
     struct ElementT {
+        constexpr static std::size_t size_pos_in_bits = (sizeof(ValidAndPosStructType) * 8 - 1);
+
         ValidAndPosStructType is_valid : 1;
-        ValidAndPosStructType pos : (sizeof(ValidAndPosStructType) * 8 - 1);
+        ValidAndPosStructType pos : size_pos_in_bits;
         std::pair<K, V> pair;
 
         ElementT() : is_valid(0), pos(0) {}
-        void set(bool valid, ValidAndPosStructType p, const K& key, const V& value) {
-            is_valid = valid;
+        void set(ValidAndPosStructType p, const K& key, const V& value) {
+            is_valid = true;
             pos = p;
             pair = std::pair<K, V>(key, value);
         }
@@ -62,7 +64,7 @@ public:
             #ifdef PRINT_FHM_CMP_POS
             static uint64_t cnt = 0;
             bool result = (pos == (static_cast<ValidAndPosStructType>(start_pos) 
-                & (~(1 << (sizeof(ValidAndPosStructType) * 8 - 1)))));
+                & (~(1 << size_pos_in_bits))));
             if(result) {
                 cnt++;
                 if(cnt % 100 == 0) {
@@ -73,11 +75,11 @@ public:
             // DEBUGING
 
             return (pos == (static_cast<ValidAndPosStructType>(start_pos) 
-                & (~(1 << (sizeof(ValidAndPosStructType) * 8 - 1)))));
+                & (~(1 << size_pos_in_bits))));
             // magic mask
             // for ValidAndPosStructType == uint8_t, sizeof is 1
-            // 1 << (sizeof(ValidAndPosStructType) * 8 - 1) is 10000000
-            // (~(1 << (sizeof(ValidAndPosStructType) * 8 - 1))) is 01111111
+            // 1 << size_pos_in_bits is 10000000
+            // (~(1 << size_pos_in_bits)) is 01111111
         }
     };
         
@@ -101,11 +103,11 @@ public:
         }
 
     private:
-        bool & getValidFlagField() {
+        void invalidate() {
             // A fatal bug happened here, here's the reason for the bug
             // 1. I don't consider struct alignment rule
             // 2. I don't convert pair_ptr to uint8_t * before pointer arithmatic
-            return *(reinterpret_cast<bool *>(reinterpret_cast<uint8_t *>(pair_ptr_) - offsetof(ElementT, pair)));
+            *(reinterpret_cast<bool *>(reinterpret_cast<uint8_t *>(pair_ptr_) - offsetof(ElementT, pair))) = false;
         }
         std::pair<K, V> * pair_ptr_;
     };
@@ -347,7 +349,7 @@ auto FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEqual, Al
     //     std::cout << "[insert] Setting" << std::endl;
     // #endif
 
-    elements_[pos].set(true, start_pos, pair.first, pair.second);
+    elements_[pos].set(start_pos, pair.first, pair.second);
     size_++;
     return {IteratorT(&(elements_[pos].pair)), true};
 }
@@ -375,7 +377,7 @@ std::size_t FlatHashMapV1<ValidAndPosStructType, K, V, InitCapacity, Hash, KeyEq
     assert(key == it -> first);
 
     // assert(static_cast<uint8_t>(it.getValidFlagField()) == 0x1);
-    it.getValidFlagField() = false;
+    it.invalidate();
     size_--;
     return 1;
 }

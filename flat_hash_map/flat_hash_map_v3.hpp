@@ -9,7 +9,7 @@
 #include <cassert>
 #include <cstddef>
 
-//#define DEBUG_FHM
+// #define DEBUG_FHM
 
 namespace hpds {
 // hpds is for High-Performance Data Structures
@@ -17,22 +17,45 @@ namespace hpds {
 template <typename K, typename V,
           std::size_t InitCapacity = 256,
           typename Hash = std::hash<K>,
-          typename KeyEqual = std::equal_to<K>, // for simplicity I ignore this template parameter temporarily
+          typename KeyEqual = std::equal_to<K>,
           typename Allocator = std::allocator<std::pair<const K, V>>>
 requires ((InitCapacity > 0) && ((InitCapacity & (InitCapacity - 1)) == 0))
-class FlatHashMapV0 {
+class FlatHashMapV2 {
 public:
+    struct MetaT {
+        uint32_t is_valid : 1;
+        uint32_t pos : 31;
+
+        MetaT() : is_valid(0), pos(0) {}
+
+        void set(bool valid, uint32_t p) {
+            is_valid = valid;
+            pos = p;
+        }
+
+        friend std::ostream & operator<<(std::ostream & cout, const ElementT & element) {
+            return (cout << "{ is_valid : " << is_valid << ", pos : " << pos  <<  " }\n");
+        }
+    };
+
     // Keep struct alignment padding in mind
     struct ElementT {
-        bool is_valid = false;
         std::pair<K, V> pair;
+
+        void set(const K& key, const V& value) {
+            pair = std::pair<K, V>(key, value);
+        }
+
+        friend std::ostream & operator<<(std::ostream & cout, const ElementT & element) {
+            return (cout << "{ key : " << element.pair.first << ", value : " << element.pair.second << " }\n");
+        }
     };
-    
+        
     friend class IteratorT;
 
     class IteratorT {
     public:
-        friend class FlatHashMapV0;
+        friend class FlatHashMapV2;
         IteratorT(std::pair<K, V> * pair = nullptr) : pair_ptr_(pair) {}
         IteratorT(const IteratorT & other) = default;
 
@@ -48,18 +71,18 @@ public:
         }
 
     private:
-        void invalidate() {
+        bool & getValidFlagField() {
             // A fatal bug happened here, here's the reason for the bug
             // 1. I don't consider struct alignment rule
             // 2. I don't convert pair_ptr to uint8_t * before pointer arithmatic
-            *(reinterpret_cast<bool *>(reinterpret_cast<uint8_t *>(pair_ptr_) - offsetof(ElementT, pair))) = false;
+            return *(reinterpret_cast<bool *>(reinterpret_cast<uint8_t *>(pair_ptr_) - offsetof(ElementT, pair)));
         }
         std::pair<K, V> * pair_ptr_;
     };
 
-    FlatHashMapV0() : elements_(InitCapacity), capacity_(InitCapacity) {}
-    FlatHashMapV0(const FlatHashMapV0 & other) = default;
-    FlatHashMapV0(FlatHashMapV0 && other) noexcept = default;
+    FlatHashMapV2() : elements_(InitCapacity), capacity_(InitCapacity) {}
+    FlatHashMapV2(const FlatHashMapV2 & other) = default;
+    FlatHashMapV2(FlatHashMapV2 && other) noexcept = default;
 
     bool empty() const noexcept;
     std::size_t size() const noexcept;
@@ -114,7 +137,7 @@ template <typename K, typename V,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-bool FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::empty() const noexcept {
+bool FlatHashMapV2<K, V, InitCapacity, Hash, KeyEqual, Allocator>::empty() const noexcept {
     return size_ == 0;
 }
 
@@ -123,7 +146,7 @@ template <typename K, typename V,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-std::size_t FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::size() const noexcept {
+std::size_t FlatHashMapV2<K, V, InitCapacity, Hash, KeyEqual, Allocator>::size() const noexcept {
     return size_;
 }
 
@@ -132,7 +155,7 @@ template <typename K, typename V,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-std::size_t FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::capacity() const noexcept {
+std::size_t FlatHashMapV2<K, V, InitCapacity, Hash, KeyEqual, Allocator>::capacity() const noexcept {
     return capacity_;
 }
 
@@ -141,18 +164,19 @@ template <typename K, typename V,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-const V & FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::at(const K & key) const {
+const V & FlatHashMapV2<K, V, InitCapacity, Hash, KeyEqual, Allocator>::at(const K & key) const {
     std::size_t pos = Hash()(key) % capacity_;
+    std::size_t start_pos = pos;
     std::size_t cnt = 0;
     do {
         auto & element = elements_.at(pos);
         if(element.is_valid) {
             // DEBUGING
             #ifdef DEBUG_FHM
-            std::cout << "[FlatHashMapV0::at] key " << key << " is not found. pos is " << pos << std::endl;
+            std::cout << "[FlatHashMapV2::at] key " << key << " is not found. pos is " << pos << std::endl;
             #endif
             // DEBUGING
-            if(element.pair.first == key) {
+            if((element.pos == start_pos) && (element.pair.first == key)) {
                 break;
             }
         }
@@ -162,7 +186,7 @@ const V & FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::at(const
     } while (cnt < capacity_);
 
     if(cnt == capacity_) {
-        throw std::out_of_range("[FlatHashMapV0::at] key is not found");
+        throw std::out_of_range("[FlatHashMapV2::at] key is not found");
     }
     return elements_.at(pos).pair.second;
 }
@@ -172,11 +196,19 @@ template <typename K, typename V,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-V & FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](const K & key) {
+V & FlatHashMapV2<K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](const K & key) {
     if(load_factor() > max_load_factor_) {
         expand_and_rehash();
     }
     std::size_t pos = Hash()(key) % capacity_;
+    std::size_t start_pos = pos;
+
+    // DEBUGING
+    #ifdef DEBUG_FHM
+    std::cout << "[FlatHashMap::operator[]] capacity is " << capacity_ << ", key is " << key 
+        << ", start_pos is " << start_pos << "\n";
+    #endif
+    // DEBUGING
 
     // NOTE: In this naive implementation, I cannot just iterate through the element
     // from position "pos", and insert a dump element if we encounter an invalid element.
@@ -192,16 +224,23 @@ V & FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](con
     if(it != end()) {
         return it -> second;
     }
-    
 
     do {
         auto & element = elements_[pos];
+
+        // DEBUGING
+        #ifdef DEBUG_FHM
+        std::cout << "[FlatHashMap::operator[]] pos is " << pos << ", and element is " << element << "\n";
+        #endif
+        // DEBUGING
+
         if((!element.is_valid)) {
             // How does the statement "map[k] = v" automatically update the size of the hashmap?
             // We can define the semantic of operator[] in a smart way.
             // If map[k] does not exists, we insert a dump element and increment the size.
             // And we return the dump element.
             element.is_valid = true;
+            element.pos = start_pos;
             element.pair.first = key;
 
             // // DEBUGING
@@ -210,7 +249,7 @@ V & FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::operator[](con
             size_++;
             break;
         }
-        else if(element.pair.first == key) {
+        else if((element.pos == start_pos) && (element.pair.first == key)) {
             break;
         }
         pos = (pos + 1) % capacity_;
@@ -223,12 +262,13 @@ template <typename K, typename V,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-auto FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::find(const K & key) -> IteratorT {
+auto FlatHashMapV2<K, V, InitCapacity, Hash, KeyEqual, Allocator>::find(const K & key) -> IteratorT {
     std::size_t pos = Hash()(key) % capacity_;
+    std::size_t start_pos = pos;
     std::size_t cnt = 0;
     do {
         auto & element = elements_[pos];
-        if((element.is_valid) && (element.pair.first == key)) {
+        if((element.is_valid) && (element.pos == start_pos) && (element.pair.first == key)) {
             return IteratorT(&element.pair);
         }
         pos = (pos + 1) % capacity_;
@@ -242,7 +282,7 @@ template <typename K, typename V,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-auto FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::insert(const std::pair<const K, V> & pair) -> std::pair<IteratorT, bool> {
+auto FlatHashMapV2<K, V, InitCapacity, Hash, KeyEqual, Allocator>::insert(const std::pair<const K, V> & pair) -> std::pair<IteratorT, bool> {
     if(load_factor() > max_load_factor_) {
         // #ifdef DEBUG_FHM
         //     std::cout << "size is " << size_ << "capacity is " << capacity_ << std::endl;
@@ -253,6 +293,7 @@ auto FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::insert(const 
 
     const K & key = pair.first;
     std::size_t pos = Hash()(key) % capacity_;
+    std::size_t start_pos = pos;
     do {
         auto & element = elements_.at(pos);
         if(element.pair.first == key) {
@@ -269,7 +310,7 @@ auto FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::insert(const 
     //     std::cout << "[insert] Setting" << std::endl;
     // #endif
 
-    elements_[pos] = {true, {pair.first, pair.second}};
+    elements_[pos].set(true, start_pos, pair.first, pair.second);
     size_++;
     return {IteratorT(&(elements_[pos].pair)), true};
 }
@@ -279,7 +320,7 @@ template <typename K, typename V,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-std::size_t FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::erase(const K & key) {
+std::size_t FlatHashMapV2<K, V, InitCapacity, Hash, KeyEqual, Allocator>::erase(const K & key) {
     IteratorT it = find(key);
     if(it == end()) {
         return 0;
@@ -288,7 +329,7 @@ std::size_t FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::erase(
     // DEBUGING
     #ifdef DEBUG_FHM
     if(key != it -> first) {
-        std::cout << "[FlatHashMapV0::erase] key != it -> first!! Error\n";
+        std::cout << "[FlatHashMapV2::erase] key != it -> first!! Error\n";
     }
     #endif
     // DEBUGING
@@ -296,7 +337,7 @@ std::size_t FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::erase(
     assert(key == it -> first);
 
     // assert(static_cast<uint8_t>(it.getValidFlagField()) == 0x1);
-    it.invalidate();
+    it.getValidFlagField() = false;
     size_--;
     return 1;
 }
@@ -306,17 +347,19 @@ template <typename K, typename V,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-void FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::expand_and_rehash() {
+void FlatHashMapV2<K, V, InitCapacity, Hash, KeyEqual, Allocator>::expand_and_rehash() {
     ContainerT new_elements(elements_.size() * 2);
     capacity_ *= 2;
     for(auto & element : elements_) {
         if(element.is_valid) {
             std::size_t new_pos = Hash()(element.pair.first) % capacity_;
+            std::size_t new_start_pos = new_pos;
             while(true) {
                 // Don't forget to apply linear probe when resizing
                 auto & new_element = new_elements[new_pos];
                 if(!new_element.is_valid) {
                     new_element = element;
+                    new_element.pos = new_start_pos;
                     break;
                 }
                 new_pos = (new_pos + 1) % capacity_;
@@ -331,7 +374,7 @@ template <typename K, typename V,
           typename Hash,
           typename KeyEqual,
           typename Allocator>
-void FlatHashMapV0<K, V, InitCapacity, Hash, KeyEqual, Allocator>::clear() {
+void FlatHashMapV2<K, V, InitCapacity, Hash, KeyEqual, Allocator>::clear() {
     capacity_ = InitCapacity;
     elements_.clear();
     elements_.resize(InitCapacity);
